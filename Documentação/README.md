@@ -9,4 +9,4 @@
 - Compromisso com os Prazos de Entrega
 
 ## Imagem de Apoio para Padronização dos Commits
-![Padronização dos Commits](Padronização%de%Commits.png)
+![Padronização de Commits](Padronização%de%Commits.png)
