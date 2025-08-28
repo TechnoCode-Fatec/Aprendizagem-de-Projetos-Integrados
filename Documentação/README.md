@@ -36,7 +36,7 @@
   - **`develop`** - Sendo a Branch de integração contínua, onde todas as atualizações são consolidadas e validadas antes de serem unificadas ao **`main`**
 
 ### Branches de Sprint
-  - Cada Sprint terá sua respectiva Branch criada a partir do **`main`**
+  - Cada Sprint terá sua respectiva Branch criada a partir da Branch **`develop`**
   - Essa Branch é responsável pela validação de todas as entregas da Sprint em questão.
 
 ### Branches de Feature/Tarefa
