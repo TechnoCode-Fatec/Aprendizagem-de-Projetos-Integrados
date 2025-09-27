@@ -1,4 +1,65 @@
-# Representantes da Equipe
+# API 2º BD – 2025-2  
+## Ciclo de Vida de Trabalhos de Graduação (TG) da modalidade Portfólio  
+
+### 📌 Descrição do Desafio
+A confecção e orientação de Trabalhos de Graduação (TG) da modalidade Portfólio representam um desafio tanto para os alunos quanto para os professores.  
+Um TG Portfólio é composto por uma seção de apresentação do aluno e várias seções correspondentes aos APIs, uma para cada semestre (com um total de 6).  
+
+O processo atual de correção é lento e pouco eficiente, pois envolve plataformas como e-mail institucional e MS Teams, que muitas vezes falham em notificações ou dispersam mensagens importantes. Isso gera atrasos, perda de histórico de correções e dificuldades para consolidar o documento final em formato Markdown.  
+
+Nosso projeto busca propor uma solução em **Java Desktop**, com persistência em **Banco de Dados Relacional**, para melhorar a comunicação, manter o histórico de interações e facilitar a geração do TG final.  
+
+---
+
+### 📶 Backlog do Produto
+
+
+---
+
+### 🛠️ Tecnologias Utilizadas
+- **Linguagem:** Java Desktop (JavaFX)  
+- **Banco de Dados:** Relacional (MySQL)  
+- **Conexão BD:** JDBC  
+- **Controle de Versão:** Git e GitHub  
+
+---
+
+### 📑 Requisitos Não Funcionais
+- ✅ Manual de Instalação (obrigatório, no Git)  
+- ✅ Manual do Usuário (obrigatório)  
+- ✅ Modelo Entidade-Relacionamento (MER) do Banco de Dados  
+
+---
+
+### 🌱 Estratégia de Branch
+Utilizaremos o **GitHub Flow**:  
+- `main` → versão estável do sistema.  
+- `feature/...` → novas funcionalidades.  
+- `bugfix/...` → correções de bugs.  
+- `docs/...` → documentação.  
+- Pull Requests obrigatórios antes do merge.  
+
+---
+
+### 📝 Padrão de Commits
+Seguindo o **Conventional Commits** simplificado:  
+- `feat: <descrição>` → nova funcionalidade  
+- `fix: <descrição>` → correção de bug  
+- `docs: <descrição>` → mudanças na documentação  
+- `style: <descrição>` → alterações de estilo/identação  
+- `refactor: <descrição>` → refatoração de código  
+- `test: <descrição>` → adição/alteração de testes  
+- `chore: <descrição>` → manutenção geral  
+
+**Exemplo:**  
+```bash
+feat (TG-01): implementação do CRUD de alunos
+docs: inclusão do manual de instalação
+```
+
+---
+
+### 👥 Representantes da Equipe
 | Função        | Nome                              | LinkedIn & GitHub                                                                                                                                                                                                                                                                                                                      | Foto                                                                                                                                                                                                                                       |
 |:-------------:|:---------------------------------:|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
 | Scrum Master  | João Pedro Barni                  | [![Linkedin Badge](https://img.shields.io/badge/Linkedin-blue?style=flat-square&logo=Linkedin&logoColor=white)](https://www.linkedin.com/in/joao-pedro-barni-lima/) <br> [![GitHub Badge](https://img.shields.io/badge/GitHub-111217?style=flat-square&logo=github&logoColor=white)](https://github.com/SaturnSeraphin)                | <img src="https://media.licdn.com/dms/image/v2/D4D03AQHov5WKOHnVTA/profile-displayphoto-scale_200_200/B4DZjt1Qo3G8AY-/0/1756336820726?e=1759363200&v=beta&t=ubUptDpr3FIlsUzoCqFMkH7ICOoq8sjYhhtrhGUlzp4" width="100">                      |
