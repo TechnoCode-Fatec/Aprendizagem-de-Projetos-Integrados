@@ -1,56 +1,51 @@
 # Repositório Referente à Documentação da Equipe
 ## Critérios de Permanência da Equipe:
 ### Assiduidade
-  - Todos os membros da equipe devem participar ativamente nas reuniões presenciais ou virtuais da equipe.
-  - Caso não seja possível comparecer, o membro deve avisar com antecedência e buscar atualização do que foi discutido.
-  - Ausências frequentes ou sem justificativa serão avaliadas pela equipe e podem comprometer a permanência no projeto.
+
+  - Cada membro deve comparecer a pelo menos ***80% das reuniões presenciais ou virtuais mensais.***
+    
+  - Ausências devem ser comunicadas com no mínimo ***12h de antecedência.***
+    
+  - O membro ausente deve se atualizar com o time em até ***48h após a reunião.***
+
+  - ***Mais de 3 faltas injustificadas consecutivas ou 5 faltas no semestre resultam em avaliação da permanência.***
   
 ### Cordialidade
-  - É fundamental manter o respeito e a empatia entre todos os membros da equipe.
-  - As discussões devem ser construtivas, sempre com foco no projeto e nunca em ataques pessoais.
-  - Não serão toleradas atitudes de desrespeito, preconceito ou qualquer forma de discriminação.
+
+  - Zero tolerância para atitudes ***discriminatórias, ofensivas ou desrespeitosas.***
+    
+  - Conflitos devem ser resolvidos em conversa mediada pela equipe antes de qualquer medida maior.
+    
+  - ***Registro: se houver 2 ocorrências formais de desrespeito (relatadas pela equipe), será necessária a avaliação coletiva.***
 
 ### Cooperatividade
-  - Espera-se que cada membro auxilie os colegas sempre que possível, compartilhando conhecimento e contribuindo para a resolução de problemas
-  - A colaboração deve se sobrepor ao individualismo: o sucesso do grupo é prioridade sobre conquistas pessoais.
-  - Todos devem estar abertos a feedbacks e dispostos a adaptar-se às necessidades da equipe.
+
+  - Espera-se que cada membro contribua em pelo menos ***70%*** das discussões de grupo com ideias, revisões ou apoio.
+
+  - Cada integrante deve prestar auxílio em no mínimo ***2 tarefas de colegas por ciclo de entrega (mesmo que seja revisão, teste ou feedback).***
+
+  - ***Recusa frequente em colaborar será registrada — 3 registros no semestre levam à reavaliação do papel na equipe.***
   
 ### Compromisso com os Prazos de Entrega
-  - Cada tarefa atribuída deve ser cumprida dentro do prazo estabelecido.
-  - Caso surja algum imprevisto, o membro deve comunicar o grupo de imediato para reorganização das responsabilidades.
-  - Atrasos recorrentes sem justificativa podem gerar reavaliação do papel do membro na equipe.
+
+  - Cumprimento de ***90%*** dos prazos individuais estipulados pela equipe.
+
+  - Em caso de imprevisto, o aviso deve ser dado com pelo menos ***24h de antecedência.***
+
+  - ***Mais de 2 atrasos sem justificativa por ciclo de projeto acarretam redistribuição das responsabilidades e registro de ocorrência.***
 
 ### Responsabilidade e Qualidade
-  - As entregas devem ser feitas com atenção e cuidado, visando qualidade e não apenas quantidade.
-  - Cada membro é responsável pelo impacto do seu trabalho no resultado final.
-  - A revisão mútua entre colegas é incentivada para garantir a excelência do projeto.
+
+  - Cada entrega deve passar por revisão cruzada (ao menos 1 colega revisa).
+
+  - Se a entrega for reprovada em revisão por descuido evidente (erros básicos, falta de padrão), conta como ***1 ocorrência.***
+
+  - ***3 ocorrências no semestre geram necessidade de plano de melhoria individual.***
 
 ### Proatividade
-  - Membros devem buscar antecipar problemas e propor soluções, em vez de esperar que terceiros os apontem.
-  - Sugestões de melhorias e ideias inovadoras são sempre bem-vindas e valorizadas.
-  - Atitude passiva ou falta de engajamento pode comprometer o desenvolvimento do projeto.
 
-## Estratégia de Branches 
-### Branches Principais
-  - **`main`** - Sendo a Branch principal, representando a versão final do Projeto.
-  - **`develop`** - Sendo a Branch de integração contínua, onde todas as atualizações são consolidadas e validadas antes de serem unificadas ao **`main`**
+  - Cada membro deve trazer ao menos ***1 sugestão de melhoria*** ou ideia por mês (seja técnica, organizacional ou estética).
 
-### Branches de Sprint
-  - Cada Sprint terá sua respectiva Branch criada a partir da Branch **`develop`**
-  - Essa Branch é responsável pela validação de todas as entregas da Sprint em questão.
+  - Participar de pelo menos ***1 ação voluntária de apoio*** (ajuda fora da própria tarefa, proposta de solução, antecipação de problema) a cada ciclo.
 
-### Branches de Feature/Tarefa
-  - Cada item do Backlog terá sua própria Branch criada a partir da Branch da Sprint.
-  - Nomeclatura padrão:
-      - **`feature/nome-da-feature`**
-      - **`bugfix/nome-do-bug`**
-  - Após concluída, a feature é mergeada de volta na branch da Sprint via Pull Request.
-
-## Regras:
-  - Nunca Commitar diretamente no **`main`** ou no **`develop`**
-  - Branches de feature/bugfix são temporárias e devem ser deletadas após o merge.
-  - Commits pequenos e descritivos para facilitar o histórico.
-  - Pull Requests precisam de revisão por pelo menos 1 membro da equipe.
-  
-## Imagem de Apoio para Padronização dos Commits
-![Padronização de Commits](PadronizacaoCommits.png)
+  - ***Atitude passiva recorrente será registrada — 2 registros seguidos já levam à conversa de alinhamento.***
