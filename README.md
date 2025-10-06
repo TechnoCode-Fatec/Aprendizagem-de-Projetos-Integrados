@@ -1,5 +1,5 @@
 # API 2º BD – 2025-2  
-## Ciclo de Vida de Trabalhos de Graduação (TG) da modalidade Portfólio  
+## TechnoTG  
 
 ### 📌 Descrição do Desafio
 A confecção e orientação de Trabalhos de Graduação (TG) da modalidade Portfólio representam um desafio tanto para os alunos quanto para os professores.  
