@@ -12,6 +12,18 @@ Nosso projeto busca propor uma solução em **Java Desktop**, com persistência 
 ---
 
 ### 📶 Backlog do Produto
+| Funcionaliade | User Storye | Prioridade | Status |
+|-------------|-------------|-------------| ----------- |
+| Visualização e correção de secções | Como orientador, quero visualizar as seções dos alunos e corrigi-las. | Alta | Planejado |
+| Controle dos Alunos | Como orientador, quero ter um controle com todos os alunos que estou orientando, para ver rapidamente quem está em atraso, em revisão ou finalizou seções. | Alta | Planejado |
+| Envio de TGs | Como aluno, quero enviar os TG’s em seções e receber os feedbacks. | Alta | Planejado |
+| Análise de Feedbacks | Como aluno, quero analisar os feedbacks recebidos e corrigi-los | Alta | Planejado |
+| Visualização de Orientadores | Como cliente, quero visualizar os orientadores e seus alunos atribuídos. | Média | Planejado |
+| Feedback do Orientador | Como orientador, quero adicionar feedbacks em cada seção e manter os feedbacks visíveis. | Média | Planejado |
+| Aprovação de Seções | Como orientador, quero aprovar as seções para controlar o progresso. | Média | Planejado |
+| Visualização de Portfólios | Como orientador, quero visualizar os portfólios completos e suas seções separadamente. | Média | Planejado |
+| Manual de Usuário | Como orientador, quero ter um manual de usuário dentro do projeto, explicando como usar o sistema. | Baixa | Planejado |
+| Manual de Instalação | Como orientador, quero um manual de instalação para o GitHub, para futura entrega do projeto. | Baixa | Planejado |
 
 
 ---
