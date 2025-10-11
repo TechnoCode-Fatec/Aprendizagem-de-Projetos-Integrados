@@ -14,16 +14,220 @@ Nosso projeto busca propor uma solução em **Java Desktop**, com persistência 
 ### 📶 Backlog do Produto
 | Funcionaliade | User Storye | Prioridade | Status |
 |-------------|-------------|-------------| ----------- |
-| Visualização e correção de secções | Como orientador, quero visualizar as seções dos alunos e corrigi-las. | Alta | Planejado |
+| Visualização e correção de secções | Como orientador, quero visualizar as seções dos alunos e corrigi-las, para auxiliar os TG´s dos alunos. | Alta | Planejado |
 | Controle dos Alunos | Como orientador, quero ter um controle com todos os alunos que estou orientando, para ver rapidamente quem está em atraso, em revisão ou finalizou seções. | Alta | Planejado |
-| Envio de TGs | Como aluno, quero enviar os TG’s em seções e receber os feedbacks. | Alta | Planejado |
-| Análise de Feedbacks | Como aluno, quero analisar os feedbacks recebidos e corrigi-los | Alta | Planejado |
-| Visualização de Orientadores | Como cliente, quero visualizar os orientadores e seus alunos atribuídos. | Média | Planejado |
-| Feedback do Orientador | Como orientador, quero adicionar feedbacks em cada seção e manter os feedbacks visíveis. | Média | Planejado |
-| Aprovação de Seções | Como orientador, quero aprovar as seções para controlar o progresso. | Média | Planejado |
-| Visualização de Portfólios | Como orientador, quero visualizar os portfólios completos e suas seções separadamente. | Média | Planejado |
+| Envio de TGs | Como aluno, quero enviar os TG’s em seções e receber os feedbacks, para arrumar os TG´s conforme o orientador recomendou  | Alta | Planejado |
+| Análise de Feedbacks | Como aluno, quero analisar os feedbacks recebidos e corrigi-los, para alinhar com a opinião do orientador | Alta | Planejado |
+| Visualização de Orientadores | Como cliente, quero visualizar os orientadores e seus alunos atribuídos, para noção de como está sendo as orientações | Média | Planejado |
+| Feedback do Orientador | Como orientador, quero adicionar feedbacks em cada seção e manter os feedbacks visíveis, para ter controle dos feedbacks que já foram feitos | Média | Planejado |
+| Aprovação de Seções | Como orientador, quero aprovar as seções para controlar o progresso, assim evidenciando ao aluno quando seu TG estiver pronto para continuar | Média | Planejado |
+| Visualização de Portfólios | Como orientador, quero visualizar os portfólios completos e suas seções separadamente, para ter facilidade em corrigi-los | Média | Planejado |
 | Manual de Usuário | Como orientador, quero ter um manual de usuário dentro do projeto, explicando como usar o sistema. | Baixa | Planejado |
 | Manual de Instalação | Como orientador, quero um manual de instalação para o GitHub, para futura entrega do projeto. | Baixa | Planejado |
+
+
+---
+
+### 🟢 Definition of Ready (DoR) — Definição de Pronto
+A finalidade do DoR, é estabelecer um conjunto de critérios que um item de trabalho deve atender antes de poder ser iniciado pela equipe, garantindo que tarefas e histórias de usuário estejam claras, detalhadas e prontas para o desenvolvimento, evitando que a equipe comece um trabalho incompleto e comprometa o cronograma. 
+
+---
+
+### Critérios para uma User Story ser iniciada
+
+### 1️⃣ Clareza e Compreensão
+A história de usuário deve estar escrita de forma clara, seguindo o formato:
+
+> **Como** [tipo de usuário], **quero** [ação ou funcionalidade], **para** [objetivo ou benefício].
+
+Assim, o time entende completamente **o que precisa ser feito** e **por que** aquilo é importante.
+
+### 2️⃣ Critérios de Aceitação Definidos
+Devem existir **critérios objetivos** que indiquem quando a história será considerada concluída.
+
+📌 *Exemplo:*  
+> “O aluno consegue enviar um TG e recebe uma mensagem de sucesso.”
+
+Esses critérios servem como base para testes e validação da entrega.
+
+---
+
+### 3️⃣ Valor de Negócio Identificado
+É necessário deixar claro **por que essa funcionalidade é importante** e **o que ela agrega** ao sistema.  
+Exemplos de valor de negócio:
+- Melhora o controle do fluxo de TCCs;  
+- Simplifica a comunicação entre orientador e aluno;  
+- Garante rastreabilidade e organização do processo.
+
+---
+
+### 4️⃣ Esforço Estimado
+Assim que a tarefa for definida, o time deve **avaliar sua complexidade e esforço**, utilizando métodos como:
+
+- **Planning Poker**  
+- **Estimativas em horas ou story points**
+
+Isso permite um melhor entendimento da dificuldade e viabilidade de entrega no sprint.
+
+---
+
+### 5️⃣ Modelagem e Dependências Resolvidas
+Antes do desenvolvimento começar:
+- As **entidades envolvidas** (classes, tabelas, relações) devem estar **mapeadas e revisadas**;  
+- **Dependências técnicas** (como conexões com banco de dados, autenticação, bibliotecas externas etc.) devem estar resolvidas ou documentadas.
+
+---
+
+### DoR Individual por User Story
+### 1. Visualização e correção de seções
+Critérios:
+- Orientador pode visualizar lista de seções por aluno
+- Pode adicionar comentários/correções em cada seção
+- Status da seção é atualizado após correção
+  
+UI/UX: Rascunho da tela de visualização e correção
+
+Regras:
+- Apenas orientadores acessam seções de seus alunos
+- Histórico de alterações deve ser mantido
+
+Dados Necessários: ID do aluno, seções do TG, comentários
+
+---
+### 2. Controle dos Alunos
+Critérios:
+- Lista de alunos com status (atraso, revisão, finalizado)
+- Filtros por status
+- Indicador visual de status (ex: cores)
+  
+UI/UX: Wireframe da dashboard do orientador
+
+Regras:
+- Status é atualizado com base em prazos
+  
+Dados: Alunos, prazos, status de seções
+
+---
+### 3. Envio de TGs
+Critérios:
+- Aluno pode fazer upload de arquivos por seção
+- Sistema valida formato/tamanho do arquivo
+- Aluno recebe confirmação de envio
+  
+UI/UX: Tela de upload com drag-and-drop ou seletor de arquivos
+
+Regras:
+- Apenas seções não finalizadas podem receber envios
+
+Dados: Arquivo, data de envio, ID da seção
+
+---
+### 4. Análise de Feedbacks
+Critérios:
+- Aluno visualiza feedbacks por seção
+- Pode marcar feedback como “corrigido”
+- Notificação para o orientador quando correção é feita
+  
+UI/UX: Tela de feedbacks com lista e ações
+
+Regras:
+- Feedback permanece visível até a seção ser aprovada
+
+Dados: Comentários, status de correção
+
+---
+### 5. Visualização de Orientadores
+Critérios:
+- Cliente visualiza lista de orientadores
+- Pode expandir para ver alunos de cada orientador
+  
+UI/UX: Layout de lista/detalhes
+
+Regras:
+- Apenas o dono do projeto tem acesso
+
+Dados: Orientadores, alunos vinculados
+
+---
+### 6. Feedback do Orientador
+Critérios:
+- Orientador adiciona/comenta em cada seção
+- Feedbacks ficam visíveis para o aluno
+- Possibilidade de editar feedback recente
+
+UI/UX: Componente de comentários na tela de correção
+
+Regras:
+- Feedback não pode ser excluído, apenas editado em tempo limite
+  
+Dados: Texto do feedback, timestamp, ID do orientador
+
+---
+### 7. Aprovação de Seções
+Critérios:
+- Botão “Aprovar Seção” na tela de correção
+- Status da seção muda para “Aprovado”
+- Aluno é notificado
+  
+UI/UX: Botão com confirmação
+
+Regras:
+- Apenas orientador responsável pode aprovar
+  
+Dados: Status da seção, data de aprovação
+
+---
+### 8. Visualização de Portfólios
+Critérios:
+- Orientador acessa visão geral do portfólio
+- Pode navegar entre seções
+- Visualização separada por seção ou consolidada
+  
+UI/UX: Página de portfólio com abas/seções
+
+Regras:
+- Portfólio só é visível se pelo menos uma seção foi enviada
+
+Dados: Seções, conteúdos, status
+
+---
+### 9. Manual de Usuário
+Critérios:
+- Acesso via menu do sistema
+- Conteúdo cobrindo funcionalidades principais
+- Interface responsiva e de fácil leitura
+
+UI/UX: Página estática ou com navegação interna
+
+Regras:
+- Conteúdo deve ser mantido atualizado com as versões
+
+Dados: Textos, imagens (se necessário)
+
+---
+
+### 10. Manual de Instalação
+Critérios:
+- Documento disponível no repositório (ex: README.md)
+- Passos claros para setup local e deploy
+- Lista de dependências e configurações
+
+UI/UX: — (não se aplica)
+
+Regras:
+- Deve ser compatível com a versão atual do código
+
+Dados: Comandos, configurações, ambientes
+
+---
+
+🔵 Definition of Done (DoD) — Definição de Feito
+A finalidade do DoD, é definir de forma formal e compartilhada os critérios de uma tarefa, user story ou incremento que deve ser atendido para ser considerada finalizada.
+
+---
+
+### Critérios para uma User Story ser iniciada
+
 
 
 ---
