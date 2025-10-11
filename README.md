@@ -28,7 +28,7 @@ Nosso projeto busca propor uma solução em **Java Desktop**, com persistência 
 
 ---
 
-### 🟢 Definition of Ready (DoR) — Definição de Pronto
+### 🟢 Definition of Ready (DoR) — Definição para Iniciar
 A finalidade do DoR, é estabelecer um conjunto de critérios que um item de trabalho deve atender antes de poder ser iniciado pela equipe, garantindo que tarefas e histórias de usuário estejam claras, detalhadas e prontas para o desenvolvimento, evitando que a equipe comece um trabalho incompleto e comprometa o cronograma. 
 
 ---
@@ -221,17 +221,140 @@ Dados: Comandos, configurações, ambientes
 
 ---
 
-🔵 Definition of Done (DoD) — Definição de Feito
+### 🔵 Definition of Done (DoD) — Definição de Feito
 A finalidade do DoD, é definir de forma formal e compartilhada os critérios de uma tarefa, user story ou incremento que deve ser atendido para ser considerada finalizada.
 
 ---
 
-### Critérios para uma User Story ser iniciada
+### Critérios para uma User Story ser finalizada
 
+### 🧩 1. Implementação completa
+
+- A funcionalidade foi codificada integralmente, sem trechos faltando ou “gambiarras temporárias”.
+- O código está integrado ao repositório principal (ex.: main ou develop) e compila/executa sem erros.
 
 
 ---
+### 🧪 2. Testes
+   
+- Foram realizados testes unitários, de integração e/ou funcionais, conforme aplicável.
+- Todos os testes passam com sucesso.
+- Cobertura mínima de testes atendida (por exemplo, 80% de cobertura).
+- O recurso foi testado manualmente e validado conforme os critérios de aceitação.
 
+---
+### 📋 3. Critérios de aceitação cumpridos
+- Todos os critérios de aceitação da história foram atendidos.
+- O Product Owner ou responsável confirmou que o comportamento está conforme o esperado.
+---
+### DoD Individual por User Story
+
+### 1️⃣ Visualização e correção de seções
+
+DoD:
+- O orientador consegue visualizar todas as seções dos TGs dos alunos atribuídos.
+- É possível editar/corrigir as seções e salvar as alterações.
+- Alterações ficam registradas e visíveis para o aluno.
+- Testes unitários e funcionais validados.
+- Interface validada conforme protótipo.
+- Critérios de aceitação e feedback do PO revisados e aprovados.
+---
+### 2️⃣ Controle dos Alunos
+
+DoD:
+- Tela/listagem de alunos implementada e exibindo status (em atraso, revisão, finalizado).
+- Informações carregadas corretamente do banco de dados.
+- Ordenação e filtros funcionam corretamente.
+- Testes de integração realizados.
+- Documentação do módulo atualizada.
+- Nenhum erro no carregamento de dados.
+
+---
+### 3️⃣ Envio de TGs
+
+DoD:
+- O aluno consegue fazer upload das seções do TG (com validação de formato e tamanho).
+- O sistema registra o envio e vincula ao aluno e orientador corretos.
+- Mensagem de confirmação ou erro exibida ao usuário.
+- Logs e erros tratados.
+- Testes de envio realizados com sucesso.
+- Feedback positivo do orientador visível após o envio.
+
+---
+### 4️⃣ Análise de Feedbacks
+
+DoD:
+- O aluno visualiza todos os feedbacks deixados pelo orientador, por seção.
+- Feedbacks são atualizados em tempo real após correção.
+- Interface clara e validada com usuários.
+- Testes unitários e de interface realizados.
+- Código revisado e documentado.
+
+---
+### 5️⃣ Visualização de Orientadores
+
+DoD:
+
+- Listagem de orientadores implementada e vinculada aos respectivos alunos.
+- Dados consistentes com o banco de dados.
+- Permissões de acesso validadas (apenas clientes/autorizados visualizam).
+- Testes de listagem e performance executados.
+- Nenhum erro de exibição ou acesso indevido.
+
+---
+### 6️⃣ Feedback do Orientador
+
+DoD:
+- Orientador consegue adicionar e editar feedbacks em cada seção.
+- Feedbacks ficam visíveis para o aluno imediatamente.
+- Histórico de feedbacks mantido.
+- Testes de inserção, edição e visualização validados.
+- Interface validada conforme protótipo.
+- Código revisado e sem erros de lógica.
+
+---
+### 7️⃣ Aprovação de Seções
+
+DoD:
+- Orientador pode aprovar ou reprovar seções específicas do TG.
+- O sistema registra a aprovação e notifica o aluno.
+- Status do TG atualizado corretamente.
+- Testes de fluxo completo realizados (aprovar → atualizar status → notificar).
+- Sem bugs ou inconsistências.
+
+---
+### 8️⃣ Visualização de Portfólios
+
+DoD:
+- Orientador pode visualizar o portfólio completo do aluno e suas seções.
+- Filtros e pesquisa por aluno/seção funcionando.
+- Dados carregam rapidamente e sem erros.
+- Interface revisada e aprovada.
+- Testes de usabilidade e performance realizados.
+
+---
+### 9️⃣ Manual de Usuário
+
+DoD:
+
+- Documento criado dentro do projeto (PDF ou página HTML).
+- Explica claramente as funcionalidades principais.
+- Testado por alguém fora da equipe (usuário-teste).
+- Atualizado conforme versão atual do sistema.
+- Link acessível dentro do sistema ou README.
+
+---
+### 🔟 Manual de Instalação
+
+DoD:
+
+- Manual disponível no repositório (GitHub ou pasta /docs).
+- Passos de instalação, configuração e execução testados em ambiente limpo.
+- Inclui dependências, versões e comandos.
+- Seguido com sucesso por outro membro do time.
+- Documentação validada e atualizada com versão final do sistema.
+
+---
 ### 🛠️ Tecnologias Utilizadas
 - **Linguagem:** Java Desktop (JavaFX)  
 - **Banco de Dados:** Relacional (MySQL)  
