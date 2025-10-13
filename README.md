@@ -47,6 +47,10 @@ Entregar as principais funcionalidades que viabilizam a comunicação entre alun
 | **F05** | **Visualização de orientadores** | Como cliente, quero visualizar os orientadores e seus alunos atribuídos, para ter noção de como estão sendo as orientações. | - Criar listagem de orientadores<br>- Exibir quantidade de alunos por orientador<br>- Implementar paginação e busca<br>- Testes de listagem e performance | Cliente visualiza orientadores e respectivas orientações sem erros. | 🔸 Média | ⏳ Planejado |
 
 ---
+## Diagrama de Entidade-Relacionamento (DER)
+<img width="1956" height="1159" alt="imagem (4)" src="https://github.com/user-attachments/assets/c9857d51-5c0a-44e9-8abf-5ad490e06596" />
+
+---
 
 ### 🟢 Definition of Ready (DoR) — Definição para Iniciar
 A finalidade do DoR, é estabelecer um conjunto de critérios que um item de trabalho deve atender antes de poder ser iniciado pela equipe, garantindo que tarefas e histórias de usuário estejam claras, detalhadas e prontas para o desenvolvimento, evitando que a equipe comece um trabalho incompleto e comprometa o cronograma. 
