@@ -22,8 +22,7 @@ Nosso projeto busca propor uma solução em **Java Desktop**, com persistência 
 | Feedback do Orientador | Como orientador, quero adicionar feedbacks de forma separada em cada seção e manter os feedbacks visíveis, para ter controle dos feedbacks que já foram feitos | Média | Planejado |
 | Aprovação de Seções | Como orientador, quero aprovar as seções para controlar o progresso, assim evidenciando ao aluno quando seu TG estiver pronto para continuar | Média | Planejado |
 | Visualização de Portfólios | Como orientador, quero visualizar os portfólios completos e suas seções separadamente, para ter facilidade em corrigi-los | Média | Planejado |
-| Manual de Usuário | Como orientador, quero ter um manual de usuário dentro do projeto, explicando como usar o sistema. | Baixa | Planejado |
-| Manual de Instalação | Como orientador, quero um manual de instalação para o GitHub, para futura entrega do projeto. | Baixa | Planejado |
+
 
 
 ---
