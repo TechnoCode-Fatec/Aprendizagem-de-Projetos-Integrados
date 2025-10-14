@@ -1,14 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.technocode.Controllers.TelaOrientadorController"
-            prefHeight="400.0" prefWidth="600.0">
+<VBox alignment="TOP_CENTER" prefHeight="400.0" prefWidth="600.0"
+      style="-fx-background-color: #C4C4C4;"
+      xmlns="http://javafx.com/javafx/17.0.12"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.technocode.Controllers.TelaOrientadorController">
 
-</AnchorPane>
+    <children>
+        <HBox alignment="CENTER" prefHeight="44.0" prefWidth="600.0" style="-fx-spacing: 25;">
+            <children>
+                <Button mnemonicParsing="false" onAction="#voltarLogin" prefHeight="30.0" prefWidth="113.0"
+                        style="-fx-background-color: #5E5555;" text="Voltar" textFill="WHITE">
+                    <font><Font size="14.0" /></font>
+                </Button>
+                <Label alignment="CENTER" prefHeight="47.0" prefWidth="295.0" text="INTERFACE ORIENTADOR">
+                    <font><Font name="System Bold" size="24.0" /></font>
+                </Label>
+                <Button mnemonicParsing="false" prefHeight="30.0" prefWidth="113.0"
+                        style="-fx-background-color: #5E5555;" text="Perfil" textFill="WHITE">
+                    <font><Font size="14.0" /></font>
+                </Button>
+            </children>
+        </HBox>
+
+        <VBox prefHeight="20.0" />
+
+        <TableView fx:id="tabelaAlunos" prefHeight="327.0" prefWidth="600.0">
+            <columns>
+                <TableColumn fx:id="colEmail" text="Email" prefWidth="100.0" />
+                <TableColumn fx:id="colEmailFatec" text="Email Fatec" prefWidth="130.0" />
+                <TableColumn fx:id="colNome" text="Nome" prefWidth="100.0" />
+                <TableColumn fx:id="colRA" text="RA" prefWidth="80.0" />
+                <TableColumn fx:id="colMatriculado" text="Matriculado em:" prefWidth="110.0" />
+                <TableColumn fx:id="colAnalisar" text="Analisar Aluno" prefWidth="120.0" />
+            </columns>
+        </TableView>
+    </children>
+</VBox>
