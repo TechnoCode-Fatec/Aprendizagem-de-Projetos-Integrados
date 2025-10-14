@@ -37,13 +37,14 @@ Entregar as principais funcionalidades que viabilizam a comunicação entre alun
 
 ## 🧩 Funcionalidades da Sprint
 
-| ID | Funcionalidade | User Story | Tarefas Técnicas | Critérios de Aceitação | Prioridade | Status |
-|:--:|:--|:--|:--|:--|:--:|:--:|
-| **F01** | **Visualização e correção de seções** | Como orientador, quero visualizar as seções dos alunos e corrigi-las, para auxiliar os TGs dos alunos. | - Criar tela de visualização de seções<br>- Implementar edição e salvamento de correções<br>- Integrar com banco de dados (Tabelas: Aluno, TG, Seção)<br>- Exibir status (em revisão / corrigido)<br>- Testes unitários e funcionais | O orientador consegue abrir as seções, editar e salvar correções visíveis ao aluno. | 🔺 Alta | 🚧 Em desenvolvimento |
-| **F02** | **Controle dos alunos** | Como orientador, quero ter um controle com todos os alunos que estou orientando, para ver rapidamente quem está em atraso, em revisão ou finalizou seções. | - Criar módulo de listagem de alunos<br>- Exibir status geral (em atraso / revisão / finalizado)<br>- Implementar filtros e busca<br>- Conectar com base de dados<br>- Testes de integração | Lista de alunos exibe status atualizado corretamente. | 🔺 Alta | ⏳ Planejado |
-| **F03** | **Envio de TGs** | Como aluno, quero enviar os TGs em seções e receber os feedbacks, para arrumar os TGs conforme o orientador recomendou. | - Criar tela de envio de TGs<br>- Implementar upload com validação<br>- Armazenar seções no servidor<br>- Registrar histórico de envios<br>- Implementar retorno (feedback pendente ou recebido) | O aluno consegue enviar TGs e visualizar feedbacks pendentes. | 🔺 Alta | ⏳ Planejado |
-| **F04** | **Análise de feedbacks** | Como aluno, quero analisar os feedbacks recebidos e corrigi-los, para alinhar com a opinião do orientador. | - Criar interface de exibição dos feedbacks<br>- Vincular feedback às seções do TG<br>- Implementar atualização dinâmica dos feedbacks<br>- Testes unitários e validação com orientador | Feedbacks aparecem por seção e refletem correções feitas. | 🔺 Alta | ⏳ Planejado |
-| **F05** | **Visualização de orientadores** | Como cliente, quero visualizar os orientadores e seus alunos atribuídos, para ter noção de como estão sendo as orientações. | - Criar listagem de orientadores<br>- Exibir quantidade de alunos por orientador<br>- Implementar paginação e busca<br>- Testes de listagem e performance | Cliente visualiza orientadores e respectivas orientações sem erros. | 🔸 Média | ⏳ Planejado |
+| ID | Funcionalidade | User Story | Critérios de Aceitação | Prioridade | Status |
+|:--:|:--|:--|:--|:--:|:--:|
+| **F01** | **Visualização e correção de seções** | Como orientador, quero visualizar as seções dos alunos e corrigi-las, para auxiliar os TGs dos alunos. | O orientador consegue abrir as seções, editar e salvar correções visíveis ao aluno. | 🔺 Alta | 🚧 Em desenvolvimento |
+| **F02** | **Controle dos alunos** | Como orientador, quero ter um controle com todos os alunos que estou orientando, para ver rapidamente quem está em atraso, em revisão ou finalizou seções. | Lista de alunos exibe status atualizado corretamente. | 🔺 Alta | ⏳ Planejado |
+| **F03** | **Envio de TGs** | Como aluno, quero enviar os TGs em seções e receber os feedbacks, para arrumar os TGs conforme o orientador recomendou. | O aluno consegue enviar TGs e visualizar feedbacks pendentes. | 🔺 Alta | ⏳ Planejado |
+| **F04** | **Análise de feedbacks** | Como aluno, quero analisar os feedbacks recebidos e corrigi-los, para alinhar com a opinião do orientador. | Feedbacks aparecem por seção e refletem correções feitas. | 🔺 Alta | ⏳ Planejado |
+| **F05** | **Visualização de orientadores** | Como cliente, quero visualizar os orientadores e seus alunos atribuídos, para ter noção de como estão sendo as orientações. | Cliente visualiza orientadores e respectivas orientações sem erros. | 🔸 Média | ⏳ Planejado |
+
 
 ---
 ## Diagrama de Entidade-Relacionamento (DER)
