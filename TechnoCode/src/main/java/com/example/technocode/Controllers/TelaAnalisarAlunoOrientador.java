@@ -13,20 +13,27 @@ import javafx.event.ActionEvent;
 import java.io.IOException;
 
 public class TelaAnalisarAlunoOrientador {
-    @FXML private Label nomeAluno;
-    @FXML private Label raAluno;
-    @FXML private Label emailAluno;
-    @FXML private Label emailFatecAluno;
-    @FXML private Label cursoAluno;
-    @FXML private Label labelTitulo;
-    @FXML private Button btnVerApresentacoes;
-    @FXML private Button btnVerApis;
+    @FXML
+    private Label nomeAluno;
+    @FXML
+    private Label raAluno;
+    @FXML
+    private Label emailAluno;
+    @FXML
+    private Label emailFatecAluno;
+    @FXML
+    private Label cursoAluno;
+    @FXML
+    private Label labelTitulo;
+    @FXML
+    private Button btnVerApresentacoes;
+    @FXML
+    private Button btnVerEntregas;
 
     @FXML
     public void initialize() {
         // Inicialização dos componentes, se necessário
-        btnVerApresentacoes.setOnAction(this::verApresentacoes);
-        btnVerApis.setOnAction(this::verApis);
+//        btnVerApresentacoes.setOnAction(this::verApresentacoes);
     }
 
     public void setDadosAluno(Aluno aluno) {
@@ -54,24 +61,39 @@ public class TelaAnalisarAlunoOrientador {
         }
     }
 
-    @FXML
-    private void verApresentacoes(ActionEvent event) {
-        try {
-            // TODO: Implementar a lógica para ver apresentações
-            System.out.println("Abrindo visualização de apresentações...");
-        } catch (Exception e) {
-            System.err.println("Erro ao abrir apresentações: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
+//    @FXML
+//    private void verApresentacoes(ActionEvent event) {
+//        try {
+//            // TODO: Implementar a lógica para ver apresentações
+//            System.out.println("Abrindo visualização de apresentações...");
+//        } catch (Exception e) {
+//            System.err.println("Erro ao abrir apresentações: " + e.getMessage());
+//            e.printStackTrace();
+//        }
+//    }
 
+    //    @FXML
+//    private void verEntregas(ActionEvent event) {
+//        try {
+//            // TODO: Implementar a lógica para ver APIs
+//            System.out.println("Abrindo visualização de Entregas...");
+//        } catch (Exception e) {
+//            System.err.println("Erro ao abrir APIs: " + e.getMessage());
+//            e.printStackTrace();
+//        }
+//    }
     @FXML
-    private void verApis(ActionEvent event) {
+    private void verEntregas(ActionEvent event) {
         try {
-            // TODO: Implementar a lógica para ver APIs
-            System.out.println("Abrindo visualização de APIs...");
-        } catch (Exception e) {
-            System.err.println("Erro ao abrir APIs: " + e.getMessage());
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-entregasDoAluno.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            System.err.println("Erro ao abrir tela de entregas: " + e.getMessage());
             e.printStackTrace();
         }
     }

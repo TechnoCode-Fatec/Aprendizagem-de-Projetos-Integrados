@@ -52,15 +52,6 @@ public class TelaOrientadorController {
             tabelaAlunos.getItems().addAll(
                     new Aluno("joao@gmail.com", "joao@fatec.sp.gov.br", "João Silva", "12345", "TG1"),
                     new Aluno("maria@gmail.com", "maria@fatec.sp.gov.br", "Maria Souza", "67890", "TG2"),
-                    new Aluno("gabrielrocha@gmail.com", "gabriel.borges4@fatec.com.br", "Gabriel Rocha", "123456", "TG1 e TG2"),
-                    new Aluno("joao@gmail.com", "joao@fatec.sp.gov.br", "João Silva", "12345", "TG1"),
-                    new Aluno("maria@gmail.com", "maria@fatec.sp.gov.br", "Maria Souza", "67890", "TG2"),
-                    new Aluno("gabrielrocha@gmail.com", "gabriel.borges4@fatec.com.br", "Gabriel Rocha", "123456", "TG1 e TG2"),
-                    new Aluno("joao@gmail.com", "joao@fatec.sp.gov.br", "João Silva", "12345", "TG1"),
-                    new Aluno("maria@gmail.com", "maria@fatec.sp.gov.br", "Maria Souza", "67890", "TG2"),
-                    new Aluno("gabrielrocha@gmail.com", "gabriel.borges4@fatec.com.br", "Gabriel Rocha", "123456", "TG1 e TG2"),
-                    new Aluno("joao@gmail.com", "joao@fatec.sp.gov.br", "João Silva", "12345", "TG1"),
-                    new Aluno("maria@gmail.com", "maria@fatec.sp.gov.br", "Maria Souza", "67890", "TG2"),
                     new Aluno("gabrielrocha@gmail.com", "gabriel.borges4@fatec.com.br", "Gabriel Rocha", "123456", "TG1 e TG2")
             );
 
