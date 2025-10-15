@@ -112,10 +112,10 @@ public class TelaOrientadorController {
 
     private void abrirTelaAluno(Aluno aluno) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-analisarAluno-orientador.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-entregasDoAluno.fxml"));
             Parent root = loader.load();
 
-            TelaAnalisarAlunoOrientador controller = loader.getController();
+            TelaEntregasDoAluno controller = loader.getController();
             controller.setDadosAluno(aluno);
 
             Stage stage = (Stage) tabelaAlunos.getScene().getWindow();

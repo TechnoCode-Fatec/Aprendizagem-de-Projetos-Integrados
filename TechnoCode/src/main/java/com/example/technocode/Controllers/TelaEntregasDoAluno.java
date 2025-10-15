@@ -159,5 +159,13 @@ public class TelaEntregasDoAluno {
     }
 
 
-
+    public void setDadosAluno(Aluno aluno) {
+        if (aluno != null) {
+            nomeAluno.setText(aluno.getNome());
+            raAluno.setText(aluno.getRa());
+            emailAluno.setText(aluno.getEmail());
+            emailFatecAluno.setText(aluno.getEmailFatec());
+            cursoAluno.setText(aluno.getCurso());
+        }
+    }
 }
