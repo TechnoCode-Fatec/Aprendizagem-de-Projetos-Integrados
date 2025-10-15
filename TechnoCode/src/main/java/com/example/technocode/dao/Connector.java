@@ -10,13 +10,18 @@ public class Connector {
         return DriverManager.getConnection("jdbc:mysql://localhost:3306/technotg?useTimezone=true&serverTimezone=UTC", "technocode", "pass123");
     }
 
-    public void cadastrarSessaoApi(String aluno, String semestreCurso, Integer ano, String semestreAno, Integer versao, String empresa, String problema, String solucao, String linkRepositorio, String tecnologias, String contribuicoes, String hardSkills, String softSkills){
+    public void cadastrarSessaoApi(String emailAluno, String semestreCurso, Integer ano,
+                                   String semestreAno, Integer versao, String empresa,
+                                   String problema, String solucao, String linkRepositorio,
+                                   String tecnologias, String contribuicoes, String hardSkills, String softSkills){
         Connection con = null;
         try {
             con = getConnection();
-            String insert_sql = "insert into technotg (aluno, semestre_curso, ano, semestre_ano, versao, empresa, problema, solucao, link_repositorio, tecnlogias, contribuicoes, hard_skills, soft_skills) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
-            PreparedStatement pst = con.prepareStatement(insert_sql);
-            pst.setString(1, aluno);
+            String insertSql = "insert into secao_api (aluno, semestre_curso, ano, semestre_ano," +
+                    " versao, empresa, problema, solucao, link_repositorio, tecnologias, contribuicoes," +
+                    " hard_skills, soft_skills) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            PreparedStatement pst = con.prepareStatement(insertSql);
+            pst.setString(1, emailAluno);
             pst.setString(2, semestreCurso);
             pst.setInt(3, ano);
             pst.setString(4, semestreAno);
@@ -42,4 +47,40 @@ public class Connector {
             }
         }
     }
+
+    public void cadastrarApresentacao(String emailAluno, String nome, Integer idade,
+                                      String curso, Integer versao, String motivacao,
+                                      String historico, String linkGithub, String linkLinkedin,
+                                      String principaisConhecimentos){
+        Connection con = null;
+        try{
+            con = getConnection();
+            String insertSql = "insert into secao_apresentacao (aluno, nome, idade,curso" +
+                    "versao, motivacao, historico, link_github, link_linkedin, principais_conhecimentos) " +
+                    "values (?,?,?,?,?,?,?,?,?,?)";
+            PreparedStatement pst = con.prepareStatement(insertSql);
+            pst.setString(1, emailAluno);
+            pst.setString(2, nome);
+            pst.setInt(3, idade);
+            pst.setString(4, curso);
+            pst.setInt(5, versao);
+            pst.setString(6, motivacao);
+            pst.setString(7, historico);
+            pst.setString(8, linkGithub);
+            pst.setString(9, linkLinkedin);
+            pst.setString(10, principaisConhecimentos);
+            pst.executeUpdate();
+        }catch (SQLException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("Erro ao inserir nova Sessão Apresentação!", ex);
+        }finally {
+            try {
+                if (con != null) con.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                throw new RuntimeException("Erro ao fechar conexão", ex);
+            }
+        }
+    }
+
 }
