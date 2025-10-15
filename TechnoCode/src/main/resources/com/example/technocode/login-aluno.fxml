@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: C4C4C4; -fx-spacing: 8;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.LoginAlunoController">
+   <children>
+       <Label prefHeight="47.0" prefWidth="220.0" text="LOGIN ALUNO">
+         <font>
+            <Font name="System Bold" size="32.0" />
+         </font></Label>
+
+       <HBox alignment="CENTER" prefHeight="48.0" prefWidth="600.0">
+         <children>
+            <Label text="Email:   ">
+                <font>
+                    <Font name="Inter Regular" size="28.0" />
+                </font></Label>
+            <TextField prefHeight="36.0" prefWidth="230.0" />
+         </children></HBox>
+      <HBox alignment="CENTER" prefHeight="42.0" prefWidth="600.0">
+         <children>
+            <Label prefHeight="35.0" prefWidth="99.0" text="Senha: ">
+                <font>
+                    <Font name="Inter Regular" size="28.0" />
+                </font></Label>
+            <TextField prefHeight="34.0" prefWidth="230.0" />
+         </children></HBox>
+      <Button fx:id="btnLoginAluno" mnemonicParsing="false" onAction="#loginAluno" prefHeight="50.0" prefWidth="153.0" style="-fx-background-color: #5E5555;" text="ENTRAR" textFill="WHITE">
+         <font>
+            <Font name="Inter Regular" size="23.0" />
+         </font>
+      </Button>
+   </children>
+</VBox>
