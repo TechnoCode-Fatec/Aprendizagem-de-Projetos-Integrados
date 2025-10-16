@@ -17,9 +17,7 @@ public class Connector {
         Connection con = null;
         try {
             con = getConnection();
-            String insertSql = "insert into secao_api (aluno, semestre_curso, ano, semestre_ano," +
-                    " versao, empresa, problema, solucao, link_repositorio, tecnologias, contribuicoes," +
-                    " hard_skills, soft_skills) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            String insertSql = "insert into secao_api (aluno, semestre_curso, ano, semestre_ano, versao, empresa, problema, solucao, link_repositorio, tecnologias, contribuicoes,hard_skills, soft_skills) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
             PreparedStatement pst = con.prepareStatement(insertSql);
             pst.setString(1, emailAluno);
             pst.setString(2, semestreCurso);

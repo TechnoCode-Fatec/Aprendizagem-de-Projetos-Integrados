@@ -7,6 +7,8 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
+import java.sql.SQLOutput;
+
 public class FormularioApiController {
     @FXML
     private ChoiceBox<String> choiceBoxSemestre,choiceBoxSemestreDoCurso;
@@ -23,9 +25,9 @@ public class FormularioApiController {
     @FXML
     private void enviarSecaoApi(ActionEvent event) {
         Connector connector = new Connector();
-        connector.cadastrarSessaoApi("@email", choiceBoxSemestreDoCurso.getValue(), Integer.parseInt(txtAno.getText()), choiceBoxSemestre.getValue(), 1,
+        connector.cadastrarSessaoApi("joao.silva@fatec.sp.gov.br", choiceBoxSemestreDoCurso.getValue(), Integer.parseInt(txtAno.getText()), choiceBoxSemestre.getValue(), 1,
                 txtEmpresa.getText(), txtProblema.getText(), txtSolucao.getText(),txtLinkRepositorio.getText(),txtTecnologias.getText(),
                 txtContribuicoes.getText(),txtHardSkills.getText(),txtSoftSkills.getText());
-
+        System.out.println("Cadastrado com sucesso");
     }
 }
