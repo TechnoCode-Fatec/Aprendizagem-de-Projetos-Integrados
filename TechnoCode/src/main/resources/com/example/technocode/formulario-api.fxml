@@ -33,58 +33,58 @@
              <Label prefHeight="18.0" prefWidth="140.0" text="Semestre do curso:" />
              <ChoiceBox fx:id="choiceBoxSemestreDoCurso" prefWidth="150.0" />
              <Label text="Ano:" />
-             <TextField prefHeight="26.0" prefWidth="63.0" />
+             <TextField fx:id="txtAno" prefHeight="26.0" prefWidth="63.0" />
              <Label text="Semestre:" />
              <ChoiceBox fx:id="choiceBoxSemestre" prefHeight="26.0" prefWidth="51.0" />
         </HBox>
         <HBox prefHeight="27.0" prefWidth="600.0" style="-fx-spacing: 18; -fx-padding: 8;">
             <children>
                 <Label prefHeight="18.0" prefWidth="140.0" text="Empresa Parceira:" />
-            <TextField prefHeight="26.0" prefWidth="229.0" />
+            <TextField fx:id="txtEmpresa" prefHeight="26.0" prefWidth="229.0" />
             </children>
         </HBox>
         <HBox prefHeight="73.0" prefWidth="600.0" style="-fx-spacing: 18; -fx-padding: 8;">
             <children>
                 <Label prefHeight="18.0" prefWidth="140.0" text="Problema:" />
-            <TextArea prefHeight="39.0" prefWidth="418.0" />
+            <TextArea fx:id="txtProblema" prefHeight="39.0" prefWidth="418.0" />
             </children>
         </HBox>
         <HBox prefHeight="80.0" prefWidth="600.0" style="-fx-spacing: 18; -fx-padding: 8;">
             <children>
                 <Label prefHeight="18.0" prefWidth="140.0" text="Solução:" />
-                <TextArea prefHeight="63.0" prefWidth="418.0" />
+                <TextArea fx:id="txtSolucao" prefHeight="63.0" prefWidth="418.0" />
             </children>
         </HBox>
         <HBox prefHeight="27.0" prefWidth="600.0" style="-fx-spacing: 18; -fx-padding: 8;">
             <children>
                 <Label prefHeight="46.0" prefWidth="140.0" text="Link do repositório:" />
-            <TextField prefHeight="26.0" prefWidth="272.0" />
+            <TextField fx:id="txtLinkRepositorio" prefHeight="26.0" prefWidth="272.0" />
             </children>
         </HBox>
         <HBox prefHeight="27.0" prefWidth="600.0" style="-fx-spacing: 18; -fx-padding: 8;">
             <children>
                 <Label prefHeight="18.0" prefWidth="140.0" text="Tecnologias utilizadas:" />
-            <TextArea prefHeight="39.0" prefWidth="418.0" />
+            <TextArea fx:id="txtTecnologias" prefHeight="39.0" prefWidth="418.0" />
             </children>
         </HBox>
         <HBox prefHeight="27.0" prefWidth="600.0" style="-fx-spacing: 18; -fx-padding: 8;">
             <Label prefHeight="18.0" prefWidth="140.0" text="Contribuições pessoais:" />
-         <TextArea prefHeight="39.0" prefWidth="418.0" />
+         <TextArea fx:id="txtContribuicoes" prefHeight="39.0" prefWidth="418.0" />
         </HBox>
         <HBox prefHeight="0.0" prefWidth="600.0" style="-fx-spacing: 18; -fx-padding: 8;">
             <children>
                 <Label prefHeight="18.0" prefWidth="140.0" text="Hard Skills:" />
-                <TextArea prefHeight="39.0" prefWidth="418.0" />
+                <TextArea fx:id="txtHardSkills" prefHeight="39.0" prefWidth="418.0" />
             </children>
         </HBox>
         <HBox prefHeight="0.0" prefWidth="600.0" style="-fx-spacing: 18; -fx-padding: 8;">
             <children>
                 <Label prefHeight="18.0" prefWidth="140.0" text="Soft Skills" />
-                <TextArea prefHeight="39.0" prefWidth="418.0" />
+                <TextArea fx:id="txtSoftSkills" prefHeight="39.0" prefWidth="418.0" />
             </children>
         </HBox>
     </VBox>
-    <Button mnemonicParsing="false" prefHeight="30.0" prefWidth="130.0" style="-fx-background-color: #5E5555;" text="ENVIAR" textFill="WHITE" />
+    <Button mnemonicParsing="false" onAction="#enviarSecaoApi" prefHeight="30.0" prefWidth="130.0" style="-fx-background-color: #5E5555;" text="ENVIAR" textFill="WHITE" />
 
 
 </VBox>
