@@ -20,9 +20,10 @@ Nosso projeto busca propor uma solução em **Java Desktop**, com persistência 
 | Análise de Feedbacks | Como aluno, quero analisar os feedbacks recebidos e corrigi-los, para alinhar com a opinião do orientador | Alta | Planejado |
 | Visualização de Orientadores | Como professor de TG, quero visualizar os orientadores e seus alunos atribuídos, para manter controle do andamento dos trabalhos | Média | Planejado |
 | Feedback do Orientador | Como orientador, quero adicionar feedbacks de forma separada em cada seção e manter os feedbacks visíveis, para ter controle dos feedbacks que já foram feitos | Média | Planejado |
+| Histórico do Orientador | Como orientador, quero acessar o histórico de versões das seções do TG de cada aluno, para acompanhar a evolução e manter controle das correções | Média | Planejado
 | Aprovação de Seções | Como orientador, quero aprovar as seções para controlar o progresso, assim evidenciando ao aluno quando seu TG estiver pronto para continuar | Média | Planejado |
 | Visualização de Portfólios | Como orientador, quero visualizar os portfólios completos e suas seções separadamente, para ter facilidade em corrigi-los | Média | Planejado |
-
+| Formato MD | Como aluno, quero exportar meu TG em formato MD (MarkDown), quando estiver finalizado, conforme foi pedido pela instituição | Baixa | Planejado |
 
 
 ---
