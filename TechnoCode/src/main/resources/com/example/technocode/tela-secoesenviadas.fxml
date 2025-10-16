@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="TOP_CENTER" prefHeight="614.0" prefWidth="600.0" style="-fx-background-color: C4C4C4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.TelaSecoesenviadasController">
+    <children>
+        <HBox alignment="CENTER" prefHeight="44.0" prefWidth="600.0" style="-fx-spacing: 25;">
+            <children>
+                <Button mnemonicParsing="false" onAction="#voltarTelaOrientador" prefHeight="30.0" prefWidth="113.0" style="-fx-background-color: #5E5555;" text="Voltar" textFill="WHITE">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Button>
+                <Label fx:id="labelTitulo" alignment="CENTER" prefHeight="47.0" prefWidth="295.0" text="ANÁLISE DO ALUNO">
+                    <font>
+                        <Font name="System Bold" size="26.0" />
+                    </font>
+                </Label>
+            </children>
+        </HBox>
+        <VBox alignment="CENTER" prefHeight="532.0" prefWidth="600.0" style="-fx-spacing: 15; -fx-padding: 20;">
+            <children>
+                <VBox alignment="TOP_CENTER" prefHeight="457.0" prefWidth="560.0" style="-fx-background-color: EAEAEA; -fx-padding: 20;">
+                    <children>
+                        <Label text="Entregas do Aluno">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
+                        </Label>
+                        <VBox prefHeight="202.0" prefWidth="520.0" style="-fx-spacing: 10; -fx-padding: 10;">
+                     <children>
+                        <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+                          <tabs>
+                            <Tab text="Nome Completo">
+                              <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                       <children>
+                                          <TextArea fx:id="feedbackTextNome" prefHeight="103.0" prefWidth="499.0" />
+                                          <ScrollBar orientation="VERTICAL" prefHeight="102.0" prefWidth="14.0" />
+                                          <CheckBox fx:id="feedbackNome" layoutX="286.0" layoutY="116.0" mnemonicParsing="false" onAction="#feedbackSecao" text="Feedback" />
+                                       </children>
+                                    </AnchorPane>
+                              </content>
+                            </Tab>
+                              <Tab fx:id="feedbackTextIdade" text="Idade">
+                                  <content>
+                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                          <children>
+                                              <TextArea prefHeight="103.0" prefWidth="499.0" />
+                                              <ScrollBar orientation="VERTICAL" prefHeight="102.0" prefWidth="14.0" />
+                                              <CheckBox fx:id="feedbackIdade" layoutX="286.0" layoutY="116.0" mnemonicParsing="false" onAction="#feedbackSecao" text="Feedback" />
+                                          </children>
+                                      </AnchorPane>
+                                  </content>
+                              </Tab>
+                              <Tab fx:id="feedbackTextCurso" text="Curso">
+                                  <content>
+                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                          <children>
+                                              <TextArea prefHeight="103.0" prefWidth="499.0" />
+                                              <ScrollBar orientation="VERTICAL" prefHeight="102.0" prefWidth="14.0" />
+                                              <CheckBox fx:id="feedbackCurso" layoutX="286.0" layoutY="116.0" mnemonicParsing="false" onAction="#feedbackSecao" text="Feedback" />
+                                          </children>
+                                      </AnchorPane>
+                                  </content>
+                              </Tab>
+                              <Tab fx:id="feedbackTextMotivacao" text="Motivação para entrar na Fatec">
+                                  <content>
+                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                          <children>
+                                              <TextArea prefHeight="103.0" prefWidth="499.0" />
+                                              <ScrollBar orientation="VERTICAL" prefHeight="102.0" prefWidth="14.0" />
+                                              <CheckBox fx:id="feedbackMotivacao" layoutX="286.0" layoutY="116.0" mnemonicParsing="false" onAction="#feedbackSecao" text="Feedback" />
+                                          </children>
+                                      </AnchorPane>
+                                  </content>
+                              </Tab>
+                              <Tab fx:id="feedbackTextHistorico" text="Histórico Academico">
+                                  <content>
+                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                          <children>
+                                              <TextArea prefHeight="103.0" prefWidth="499.0" />
+                                              <ScrollBar orientation="VERTICAL" prefHeight="102.0" prefWidth="14.0" />
+                                              <CheckBox fx:id="feedbackHistorico" layoutX="286.0" layoutY="116.0" mnemonicParsing="false" onAction="#feedbackSecao" text="Feedback" />
+                                          </children>
+                                      </AnchorPane>
+                                  </content>
+                              </Tab>
+                              <Tab fx:id="feedbackTextGithub" text="GitHub">
+                                  <content>
+                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                          <children>
+                                              <TextArea prefHeight="103.0" prefWidth="499.0" />
+                                              <ScrollBar orientation="VERTICAL" prefHeight="102.0" prefWidth="14.0" />
+                                              <CheckBox fx:id="feedbackGithub" layoutX="286.0" layoutY="116.0" mnemonicParsing="false" onAction="#feedbackSecao" text="Feedback" />
+                                          </children>
+                                      </AnchorPane>
+                                  </content>
+                              </Tab>
+                              <Tab text="Linkedin">
+                                  <content>
+                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                          <children>
+                                              <TextArea fx:id="feedbackTextLinkedin" prefHeight="103.0" prefWidth="499.0" />
+                                              <ScrollBar orientation="VERTICAL" prefHeight="102.0" prefWidth="14.0" />
+                                              <CheckBox fx:id="feedbackLinkedin" layoutX="286.0" layoutY="116.0" mnemonicParsing="false" onAction="#feedbackSecao" text="Feedback" />
+                                          </children>
+                                      </AnchorPane>
+                                  </content>
+                              </Tab>
+                              <Tab fx:id="feedbackTextConhecimentos" text="Principais Conhecimentos">
+                                  <content>
+                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                          <children>
+                                              <TextArea prefHeight="103.0" prefWidth="499.0" />
+                                              <ScrollBar orientation="VERTICAL" prefHeight="102.0" prefWidth="14.0" />
+                                              <CheckBox fx:id="feedbackConhecimentos" layoutX="286.0" layoutY="116.0" mnemonicParsing="false" onAction="#feedbackSecao" text="Feedback" />
+                                          </children>
+                                      </AnchorPane>
+                                  </content>
+                              </Tab>
+                          </tabs>
+                        </TabPane>
+                     </children></VBox>
+                  <VBox layoutX="30.0" layoutY="57.0" prefHeight="202.0" prefWidth="520.0" style="-fx-spacing: 10; -fx-padding: 10;" />
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+      <HBox alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="73.0" prefWidth="600.0" style="-fx-spacing: 25;">
+         <children>
+            <Button mnemonicParsing="false" onAction="#voltarTelaOrientador" prefHeight="29.0" prefWidth="138.0" style="-fx-background-color: #5E5555;" text="Enviar Feedback" textFill="WHITE">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Button>
+            <Button layoutX="93.0" layoutY="14.0" mnemonicParsing="false" onAction="#voltarTelaOrientador" prefHeight="30.0" prefWidth="130.0" style="-fx-background-color: #5E5555;" text="Validar Seção" textFill="WHITE">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Button>
+         </children>
+      </HBox>
+    </children>
+</VBox>

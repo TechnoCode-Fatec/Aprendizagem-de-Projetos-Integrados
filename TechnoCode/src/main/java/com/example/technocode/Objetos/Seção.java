@@ -1,4 +1,4 @@
-package com.example.technocode;
+package com.example.technocode.Objetos;
 
 public class Seção {
     private String nomeSecao;
