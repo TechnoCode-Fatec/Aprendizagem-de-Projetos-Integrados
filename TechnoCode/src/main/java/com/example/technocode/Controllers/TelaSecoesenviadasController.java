@@ -17,6 +17,27 @@ import java.util.Map;
 
 public class TelaSecoesenviadasController {
 
+    private Map<String, Boolean> validacoes = new HashMap<>();
+
+    @FXML private CheckBox validarNome;
+    @FXML private CheckBox validarIdade;
+    @FXML private CheckBox validarCurso;
+    @FXML private CheckBox validarMotivacao;
+    @FXML private CheckBox validarHistorico;
+    @FXML private CheckBox validarGithub;
+    @FXML private CheckBox validarLinkedin;
+    @FXML private CheckBox validarConhecimentos;
+
+    @FXML private TextArea alunoTextNome;
+    @FXML private TextArea alunoTextIdade;
+    @FXML private TextArea alunoTextCurso;
+    @FXML private TextArea alunoTextMotivacao;
+    @FXML private TextArea alunoTextHistorico;
+    @FXML private TextArea alunoTextGithub;
+    @FXML private TextArea alunoTextLinkedin;
+    @FXML private TextArea alunoTextConhecimentos;
+
+
     @FXML private TextArea feedbackTextNome;
     @FXML private TextArea feedbackTextIdade;
     @FXML private TextArea feedbackTextCurso;
@@ -35,6 +56,19 @@ public class TelaSecoesenviadasController {
     @FXML private CheckBox feedbackGithub;
     @FXML private CheckBox feedbackLinkedin;
     @FXML private CheckBox feedbackConhecimentos;
+
+    @FXML
+    public void initialize() {
+        // Inicializa todas as TextAreas como invisíveis
+        feedbackTextNome.setVisible(false);
+        feedbackTextIdade.setVisible(false);
+        feedbackTextCurso.setVisible(false);
+        feedbackTextMotivacao.setVisible(false);
+        feedbackTextHistorico.setVisible(false);
+        feedbackTextGithub.setVisible(false);
+        feedbackTextLinkedin.setVisible(false);
+        feedbackTextConhecimentos.setVisible(false);
+    }
 
     @FXML
     private void voltarTelaOrientador(ActionEvent event) throws IOException {
@@ -75,11 +109,22 @@ public class TelaSecoesenviadasController {
             feedbackArea = feedbackTextConhecimentos;
         }
 
-        // Mostra ou esconde a área de feedback
+        // Mostra ou esconde a área de feedback e limpa o texto quando esconde
         if (feedbackArea != null) {
             feedbackArea.setVisible(checkBox.isSelected());
+            if (!checkBox.isSelected()) {
+                feedbackArea.clear(); // Limpa o texto quando esconde
+            } else {
+                // Configura um texto padrão ou placeholder quando mostra
+                feedbackArea.setPromptText("Digite seu feedback aqui...");
+
+                // Ajusta o tamanho para um campo menor
+                feedbackArea.setPrefHeight(100); // Altura menor
+                feedbackArea.setWrapText(true); // Permite quebra de linha automática
+            }
         }
     }
+
 
 
     @FXML
@@ -124,4 +169,110 @@ public class TelaSecoesenviadasController {
         alert.setContentText("Feedbacks enviados com sucesso!");
         alert.showAndWait();
     }
+
+    @FXML
+    public void validarSecao(ActionEvent event) {
+        CheckBox checkBox = (CheckBox) event.getSource();
+        boolean isValidado = checkBox.isSelected();
+
+        String secaoValidada = "";
+        String mensagemAdicional = "";
+
+        // Identifica qual seção está sendo validada
+        if (checkBox == validarNome) {
+            secaoValidada = "Nome";
+            validacoes.put("Nome", isValidado);
+            mensagemAdicional = isValidado ? "Nome do aluno foi aprovado" : "Nome do aluno precisa de revisão";
+        } else if (checkBox == validarIdade) {
+            secaoValidada = "Idade";
+            validacoes.put("Idade", isValidado);
+            mensagemAdicional = isValidado ? "Idade foi confirmada" : "Idade precisa ser verificada";
+        } else if (checkBox == validarCurso) {
+            secaoValidada = "Curso";
+            validacoes.put("Curso", isValidado);
+            mensagemAdicional = isValidado ? "Informações do curso foram confirmadas" : "Informações do curso precisam ser revisadas";
+        } else if (checkBox == validarMotivacao) {
+            secaoValidada = "Motivação";
+            validacoes.put("Motivação", isValidado);
+            mensagemAdicional = isValidado ? "Motivação foi aprovada" : "Motivação precisa ser melhorada";
+        } else if (checkBox == validarHistorico) {
+            secaoValidada = "Histórico";
+            validacoes.put("Histórico", isValidado);
+            mensagemAdicional = isValidado ? "Histórico foi aprovado" : "Histórico precisa ser complementado";
+        } else if (checkBox == validarGithub) {
+            secaoValidada = "GitHub";
+            validacoes.put("GitHub", isValidado);
+            mensagemAdicional = isValidado ? "Perfil do GitHub foi aprovado" : "Perfil do GitHub precisa ser atualizado";
+        } else if (checkBox == validarLinkedin) {
+            secaoValidada = "LinkedIn";
+            validacoes.put("LinkedIn", isValidado);
+            mensagemAdicional = isValidado ? "Perfil do LinkedIn foi aprovado" : "Perfil do LinkedIn precisa ser atualizado";
+        } else if (checkBox == validarConhecimentos) {
+            secaoValidada = "Conhecimentos";
+            validacoes.put("Conhecimentos", isValidado);
+            mensagemAdicional = isValidado ? "Conhecimentos foram aprovados" : "Conhecimentos precisam ser revisados";
+        }
+
+        // Exibe mensagem de confirmação com detalhes
+        if (!secaoValidada.isEmpty()) {
+            String status = isValidado ? "validada" : "invalidada";
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Status da Validação");
+            alert.setHeaderText("Seção: " + secaoValidada);
+            alert.setContentText(mensagemAdicional);
+            alert.showAndWait();
+
+            // Atualiza o status da seção no banco de dados ou sistema
+            atualizarStatusSecao(secaoValidada, isValidado);
+        }
+    }
+
+    private void atualizarStatusSecao(String secao, boolean status) {
+        try {
+            // TODO: Implementar a lógica de atualização no banco de dados
+            System.out.println("Atualizando status da seção " + secao + ": " + status);
+
+            // Aqui você pode adicionar a lógica para salvar no banco de dados
+            // Exemplo de como poderia ser:
+            // String sql = "UPDATE secao_apresentacao SET status = ? WHERE secao = ? AND aluno = ?";
+            // PreparedStatement pst = connection.prepareStatement(sql);
+            // pst.setBoolean(1, status);
+            // pst.setString(2, secao);
+            // pst.setString(3, alunoAtual);
+            // pst.executeUpdate();
+
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erro");
+            alert.setHeaderText("Erro ao atualizar status");
+            alert.setContentText("Não foi possível atualizar o status da seção no banco de dados.");
+            alert.showAndWait();
+            e.printStackTrace();
+        }
+    }
+
+    // Método para verificar se todas as seções foram validadas
+    public boolean todasSecoesValidadas() {
+        for (Boolean validado : validacoes.values()) {
+            if (!validado) {
+                return false;
+            }
+        }
+        return !validacoes.isEmpty();
+    }
+
+    public void setDadosDoAluno(Map<String, String> dados) {
+        if (dados != null) {
+            alunoTextNome.setText(dados.getOrDefault("nome", ""));
+            alunoTextIdade.setText(dados.getOrDefault("idade", ""));
+            alunoTextCurso.setText(dados.getOrDefault("curso", ""));
+            alunoTextMotivacao.setText(dados.getOrDefault("motivacao", ""));
+            alunoTextHistorico.setText(dados.getOrDefault("historico", ""));
+            alunoTextGithub.setText(dados.getOrDefault("github", ""));
+            alunoTextLinkedin.setText(dados.getOrDefault("linkedin", ""));
+            alunoTextConhecimentos.setText(dados.getOrDefault("conhecimentos", ""));
+        }
+    }
+
+
 }

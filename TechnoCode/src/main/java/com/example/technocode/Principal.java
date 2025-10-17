@@ -10,8 +10,8 @@ import java.io.IOException;
 public class Principal extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Principal.class.getResource("tela-inicial-orientador.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 600, 400);
+        FXMLLoader fxmlLoader = new FXMLLoader(Principal.class.getResource("tela-secoesenviadasAPI.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 600, 614);
         stage.setTitle("Gerenciador de login");
         stage.setScene(scene);
         stage.show();
