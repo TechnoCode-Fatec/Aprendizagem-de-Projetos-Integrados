@@ -19,7 +19,7 @@
        <HBox alignment="CENTER" prefHeight="46.0" prefWidth="600.0" style="-fx-spacing: 10;">
            <children>
                <Label text="Senha" />
-               <TextField />
+               <TextField fx:id="txtSenha" />
            </children>
        </HBox>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" style="-fx-spacing: 100;">
@@ -29,7 +29,7 @@
                   <Font size="20.0" />
                </font>
             </Button>
-            <Button alignment="TOP_LEFT" mnemonicParsing="false" style="-fx-background-color: GREY;" text="Entrar">
+            <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#login" style="-fx-background-color: GREY;" text="Entrar">
                <font>
                   <Font size="20.0" />
                </font>

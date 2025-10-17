@@ -1,9 +1,8 @@
 package com.example.technocode.dao;
 
-import com.example.technocode.Controllers.CadastroController;
 
 import java.sql.*;
-import java.util.Objects;
+
 
 
 public class Connector {
@@ -16,7 +15,6 @@ public class Connector {
         try {
            con = getConnection();
            String insertSql = "";
-            CadastroController telaCadastro = new CadastroController();
             if ( "Aluno".equals(tipo)){
                 insertSql =  "INSERT INTO aluno (nome, email, senha) VALUES (?, ?, ?)";
             }else if ("Orientador".equals(tipo)){
@@ -39,6 +37,34 @@ public class Connector {
                 throw new RuntimeException("Erro ao fechar conexão", ex);
             }
         }
+    }
+
+    public String login(String email, String senha){
+        Connection con = null;
+        try{
+            con = getConnection();
+            String sqlOrientador = "SELECT * FROM orientador WHERE email = ? AND senha = ?";
+            PreparedStatement pst = con.prepareStatement(sqlOrientador);
+            pst.setString(1, email);
+            pst.setString(2, senha);
+            ResultSet rs = pst.executeQuery();
+            if(rs.next()){
+                return "Orientador";
+            }
+            String sqlAluno = "SELECT * FROM aluno WHERE email = ? AND senha = ?";
+            pst = con.prepareStatement(sqlAluno);
+            pst.setString(1, email);
+            pst.setString(2, senha);
+            rs = pst.executeQuery();
+            if(rs.next()){
+                return "Aluno";
+            }
+            return null;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     public void cadastrarSessaoApi(String emailAluno, String semestreCurso, Integer ano,
