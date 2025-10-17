@@ -1,13 +1,44 @@
 package com.example.technocode.dao;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import com.example.technocode.Controllers.CadastroController;
+
+import java.sql.*;
+import java.util.Objects;
+
 
 public class Connector {
     public Connection getConnection() throws SQLException {
         return DriverManager.getConnection("jdbc:mysql://localhost:3306/technotg?useTimezone=true&serverTimezone=UTC", "technocode", "pass123");
+    }
+
+    public void cadastrarUsuario(String nome, String email, String senha){
+        Connection con = null;
+        try {
+           con = getConnection();
+           String insertSql = "";
+            CadastroController telaCadastro = new CadastroController();
+            if (Objects.equals(telaCadastro.getTipoUsuario(), "Aluno")){
+                insertSql =  "INSERT INTO aluno (nome, email, senha) VALUES (?, ?, ?)";
+            }else if (Objects.equals(telaCadastro.getTipoUsuario(), "Orientador")){
+                insertSql = "INSERT INTO orientador (nome, email, senha) VALUES (?, ?, ?)";
+            }
+            PreparedStatement pst = con.prepareStatement(insertSql);
+            pst.setString(1, nome);
+            pst.setString(2, email);
+            pst.setString(3, senha);
+            pst.executeUpdate();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("Erro ao inserir nova Sessão API!", ex);
+        }finally {
+            try {
+                if (con != null) con.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                throw new RuntimeException("Erro ao fechar conexão", ex);
+            }
+        }
     }
 
     public void cadastrarSessaoApi(String emailAluno, String semestreCurso, Integer ano,
@@ -46,7 +77,7 @@ public class Connector {
         }
     }
 
-    public void cadastrarApresentacao(String emailAluno, String nome, Integer idade,
+    public void cadastrarApresentacao(String emailAluno, String nome, Date idade,
                                       String curso, Integer versao, String motivacao,
                                       String historico, String linkGithub, String linkLinkedin,
                                       String principaisConhecimentos){
@@ -59,7 +90,7 @@ public class Connector {
             PreparedStatement pst = con.prepareStatement(insertSql);
             pst.setString(1, emailAluno);
             pst.setString(2, nome);
-            pst.setInt(3, idade);
+            pst.setDate(3, idade);
             pst.setString(4, curso);
             pst.setInt(5, versao);
             pst.setString(6, motivacao);
