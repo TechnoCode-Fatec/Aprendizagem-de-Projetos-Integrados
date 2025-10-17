@@ -11,15 +11,15 @@ public class Connector {
         return DriverManager.getConnection("jdbc:mysql://localhost:3306/technotg?useTimezone=true&serverTimezone=UTC", "technocode", "pass123");
     }
 
-    public void cadastrarUsuario(String nome, String email, String senha){
+    public void cadastrarUsuario(String nome, String email, String senha, String tipo){
         Connection con = null;
         try {
            con = getConnection();
            String insertSql = "";
             CadastroController telaCadastro = new CadastroController();
-            if (Objects.equals(telaCadastro.getTipoUsuario(), "Aluno")){
+            if ( "Aluno".equals(tipo)){
                 insertSql =  "INSERT INTO aluno (nome, email, senha) VALUES (?, ?, ?)";
-            }else if (Objects.equals(telaCadastro.getTipoUsuario(), "Orientador")){
+            }else if ("Orientador".equals(tipo)){
                 insertSql = "INSERT INTO orientador (nome, email, senha) VALUES (?, ?, ?)";
             }
             PreparedStatement pst = con.prepareStatement(insertSql);

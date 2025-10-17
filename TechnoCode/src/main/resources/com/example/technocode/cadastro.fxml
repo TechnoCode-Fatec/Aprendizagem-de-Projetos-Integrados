@@ -25,7 +25,7 @@
                    <font>
                        <Font name="Inter Regular" size="28.0" />
                    </font></Label>
-               <TextField prefHeight="36.0" prefWidth="230.0" />
+               <TextField fx:id="txtNome" prefHeight="36.0" prefWidth="230.0" />
            </children></HBox>
        <HBox alignment="CENTER" prefHeight="48.0" prefWidth="600.0">
          <children>
@@ -33,7 +33,7 @@
                 <font>
                     <Font name="Inter Regular" size="28.0" />
                 </font></Label>
-            <TextField prefHeight="36.0" prefWidth="230.0" />
+            <TextField fx:id="txtEmail" prefHeight="36.0" prefWidth="230.0" />
          </children></HBox>
       <HBox alignment="CENTER" prefHeight="42.0" prefWidth="600.0">
          <children>
@@ -41,11 +41,11 @@
                 <font>
                     <Font name="Inter Regular" size="28.0" />
                 </font></Label>
-            <TextField prefHeight="34.0" prefWidth="230.0" />
+            <TextField fx:id="txtSenha" prefHeight="34.0" prefWidth="230.0" />
          </children></HBox>
        <HBox alignment="CENTER" prefHeight="56.0" prefWidth="600.0" style="-fx-spacing: 50;">
            <children>
-               <RadioButton fx:id="radioAluno" text="Aluno" >
+               <RadioButton fx:id="radioAluno" text="Aluno">
                    <font>
                        <Font name="System Bold" size="21.0" />
                    </font>
@@ -57,7 +57,7 @@
                </RadioButton>
            </children>
        </HBox>
-      <Button fx:id="btnLoginAluno" mnemonicParsing="false" onAction="#loginAluno" prefHeight="50.0" prefWidth="180.0" style="-fx-background-color: #5E5555;" text="CADASTRAR" textFill="WHITE">
+      <Button fx:id="btnCadastrar" mnemonicParsing="false" onAction="#cadastrarUsuario" prefHeight="50.0" prefWidth="180.0" style="-fx-background-color: #5E5555;" text="CADASTRAR" textFill="WHITE">
          <font>
             <Font name="Inter Regular" size="23.0" />
          </font>
