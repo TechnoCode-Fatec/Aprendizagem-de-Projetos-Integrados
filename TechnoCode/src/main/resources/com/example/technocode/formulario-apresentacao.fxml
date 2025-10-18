@@ -7,7 +7,7 @@
 <VBox alignment="TOP_CENTER" prefHeight="508.0" prefWidth="600.0" style="-fx-background-color: #C4C4C4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.FormularioApresentacaoController">
     <HBox alignment="CENTER" prefHeight="44.0" prefWidth="600.0" style="-fx-spacing: 25;">
         <children>
-            <Button mnemonicParsing="false" prefHeight="30.0" prefWidth="113.0" style="-fx-background-color: #5E5555;" text="Voltar" textFill="WHITE">
+            <Button mnemonicParsing="false" onAction="#voltar" prefHeight="30.0" prefWidth="113.0" style="-fx-background-color: #5E5555;" text="Voltar" textFill="WHITE">
                 <font>
                     <Font size="14.0" />
                 </font></Button>

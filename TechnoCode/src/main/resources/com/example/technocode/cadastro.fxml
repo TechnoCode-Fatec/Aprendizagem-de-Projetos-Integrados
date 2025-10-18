@@ -8,7 +8,7 @@
    <children>
 
        <HBox prefHeight="0.0" prefWidth="600.0" style="-fx-spacing: 50; -fx-padding: 10;">
-           <Button fx:id="btnVoltar" mnemonicParsing="false" prefHeight="50.0" prefWidth="153.0" style="-fx-background-color: #5E5555;" text="VOLTAR" textFill="WHITE">
+           <Button mnemonicParsing="false" onAction="#voltar" prefHeight="50.0" prefWidth="153.0" style="-fx-background-color: #5E5555;" text="VOLTAR" textFill="WHITE">
                <font>
                    <Font name="Inter Regular" size="23.0" />
                </font>

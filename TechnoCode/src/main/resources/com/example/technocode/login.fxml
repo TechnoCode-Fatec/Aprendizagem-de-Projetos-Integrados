@@ -24,7 +24,7 @@
        </HBox>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" style="-fx-spacing: 100;">
          <children>
-            <Button mnemonicParsing="false" style="-fx-background-color: GREY;" text="Novo Login">
+            <Button mnemonicParsing="false" onAction="#cadastrarUsuario" style="-fx-background-color: GREY;" text="Novo Login">
                <font>
                   <Font size="20.0" />
                </font>
