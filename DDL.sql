@@ -18,7 +18,7 @@ CREATE TABLE aluno(
 		email VARCHAR(120) PRIMARY KEY NOT NULL,
         nome VARCHAR(250) NOT NULL,
         senha VARCHAR(100) NOT NULL,
-        orientador VARCHAR(250) NOT NULL,
+        orientador VARCHAR(250),
         FOREIGN KEY (orientador) REFERENCES orientador (email)
 );
 
