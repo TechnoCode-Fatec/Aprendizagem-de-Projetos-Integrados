@@ -1,7 +1,7 @@
 package com.example.technocode.Controllers;
 
 import com.example.technocode.Objetos.Aluno;
-import com.example.technocode.Seção;
+import com.example.technocode.Objetos.Seção;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,8 +12,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import java.io.IOException;
-
 import java.io.IOException;
 
 public class TelaEntregasDoAluno {
@@ -45,7 +43,7 @@ public class TelaEntregasDoAluno {
     @FXML
     private void voltarTelaOrientador(ActionEvent event) throws IOException {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-analisarAluno-orientador.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-inicial-orientador.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
@@ -132,13 +130,14 @@ public class TelaEntregasDoAluno {
         }
 
 
-        private void abrirSecao(Seção secao) {
+    private void abrirSecao(Seção secao) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-analisarSecao.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-secoesenviadas.fxml"));
             Parent root = loader.load();
 
-            TelaEntregasDoAluno controller = loader.getController();
-            controller.setDadosSecao(secao);
+            TelaSecoesenviadasController controller = loader.getController(); // Mudança aqui
+            // Aqui você pode adicionar um método para passar os dados da seção
+            // controller.setDadosSecao(secao);
 
             Stage stage = (Stage) tabelaSecao.getScene().getWindow();
             Scene scene = new Scene(root);
@@ -148,6 +147,7 @@ public class TelaEntregasDoAluno {
             System.err.println("Erro ao abrir tela de análise da seção: " + e.getMessage());
             e.printStackTrace();
         }
+
     }
 
     public void setDadosSecao(Seção secao) {

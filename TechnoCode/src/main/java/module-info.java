@@ -7,9 +7,10 @@ module com.example.technocode {
 
     opens com.example.technocode to javafx.fxml;
     opens com.example.technocode.Controllers to javafx.fxml;
-    opens com.example.technocode.Objetos to javafx.base; // Adicione esta linha
+    // Adicione esta linha
 
     exports com.example.technocode;
     exports com.example.technocode.Controllers;
     exports com.example.technocode.Objetos;
+    opens com.example.technocode.Objetos to javafx.base, javafx.fxml;
 }

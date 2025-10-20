@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="TOP_CENTER" prefHeight="614.0" prefWidth="600.0" style="-fx-background-color: C4C4C4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.TelaSecoesenviadasAPIController">
+    <children>
+        <HBox alignment="CENTER" prefHeight="44.0" prefWidth="600.0" style="-fx-spacing: 25;">
+            <children>
+                <Button mnemonicParsing="false" onAction="#voltarTelaOrientador" prefHeight="30.0" prefWidth="113.0" style="-fx-background-color: #5E5555;" text="Voltar" textFill="WHITE">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Button>
+                <Label fx:id="labelTitulo" alignment="CENTER" prefHeight="47.0" prefWidth="295.0" text="ANÁLISE DO ALUNO">
+                    <font>
+                        <Font name="System Bold" size="26.0" />
+                    </font>
+                </Label>
+            </children>
+        </HBox>
+        <VBox alignment="CENTER" prefHeight="532.0" prefWidth="600.0" style="-fx-spacing: 15; -fx-padding: 20;">
+            <children>
+                <VBox alignment="TOP_CENTER" prefHeight="457.0" prefWidth="560.0" style="-fx-background-color: EAEAEA; -fx-padding: 20;">
+                    <children>
+                        <Label text="Entregas do Aluno, API">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
+                        </Label>
+                        <VBox prefHeight="378.0" prefWidth="520.0" style="-fx-spacing: 10; -fx-padding: 10;">
+                            <children>
+                                <TabPane prefHeight="356.0" prefWidth="499.0" tabClosingPolicy="UNAVAILABLE">
+                                    <tabs>
+                                        <Tab text="Semestre do curso">
+                                            <content>
+                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="302.0" prefWidth="499.0">
+                                                    <children>
+                                                        <!-- Área do texto do aluno (sempre visível) -->
+                                                        <TextArea fx:id="alunoTextSemestreCurso" editable="false" layoutX="10.0" layoutY="10.0" prefHeight="150.0" prefWidth="479.0" promptText="Conteúdo enviado pelo aluno" style="-fx-background-color: #f0f0f0;" wrapText="true" />
+
+                                                        <!-- Área de feedback do orientador (inicialmente invisível) -->
+                                                        <TextArea fx:id="feedbackTextSemestreCurso" layoutX="10.0" layoutY="170.0" prefHeight="100.0" prefWidth="479.0" promptText="Digite seu feedback aqui..." visible="false" wrapText="true" />
+
+                                                        <!-- Checkboxes agrupados -->
+                                                        <HBox layoutX="10.0" layoutY="280.0" spacing="20">
+                                                            <children>
+                                                                <CheckBox fx:id="validarSemestreCurso" mnemonicParsing="false" onAction="#validarSecao" text="Validado" />
+                                                                <CheckBox fx:id="feedbackSemestreCurso" mnemonicParsing="false" onAction="#feedbackSecao" text="Feedback" />
+                                                            </children>
+                                                        </HBox>
+                                                    </children>
+                                                </AnchorPane>
+                                            </content>
+                                        </Tab>
+
+
+                                        <Tab text="Ano do projeto">
+                                            <content>
+                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="302.0" prefWidth="499.0">
+                                                    <children>
+                                                        <!-- Área do texto do aluno (sempre visível) -->
+                                                        <TextArea fx:id="alunoTextAno" editable="false" layoutX="10.0" layoutY="10.0" prefHeight="150.0" prefWidth="479.0" promptText="Conteúdo enviado pelo aluno" style="-fx-background-color: #f0f0f0;" wrapText="true" />
+
+                                                        <!-- Área de feedback do orientador (inicialmente invisível) -->
+                                                        <TextArea fx:id="feedbackTextAno" layoutX="10.0" layoutY="170.0" prefHeight="100.0" prefWidth="479.0" promptText="Digite seu feedback aqui..." visible="false" wrapText="true" />
+
+                                                        <!-- Checkboxes agrupados -->
+                                                        <HBox layoutX="10.0" layoutY="280.0" spacing="20">
+                                                            <children>
+                                                                <CheckBox fx:id="validarAno" mnemonicParsing="false" onAction="#validarSecao" text="Validado" />
+                                                                <CheckBox fx:id="feedbackAno" mnemonicParsing="false" onAction="#feedbackSecao" text="Feedback" />
+                                                            </children>
+                                                        </HBox>
+                                                    </children>
+                                                </AnchorPane>
+                                            </content>
+                                        </Tab>
+
+                                        <Tab text="Semestre do ano (1,2)">
+                                            <content>
+                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="302.0" prefWidth="499.0">
+                                                    <children>
+                                                        <!-- Área do texto do aluno (sempre visível) -->
+                                                        <TextArea fx:id="alunoTextSemestre" editable="false" layoutX="10.0" layoutY="10.0" prefHeight="150.0" prefWidth="479.0" promptText="Conteúdo enviado pelo aluno" style="-fx-background-color: #f0f0f0;" wrapText="true" />
+
+                                                        <!-- Área de feedback do orientador (inicialmente invisível) -->
+                                                        <TextArea fx:id="feedbackTextSemestre" layoutX="10.0" layoutY="170.0" prefHeight="100.0" prefWidth="479.0" promptText="Digite seu feedback aqui..." visible="false" wrapText="true" />
+
+                                                        <!-- Checkboxes agrupados -->
+                                                        <HBox layoutX="10.0" layoutY="280.0" spacing="20">
+                                                            <children>
+                                                                <CheckBox fx:id="validarSemestre" mnemonicParsing="false" onAction="#validarSecao" text="Validado" />
+                                                                <CheckBox fx:id="feedbackSemestre" mnemonicParsing="false" onAction="#feedbackSecao" text="Feedback" />
+                                                            </children>
+                                                        </HBox>
+                                                    </children>
+                                                </AnchorPane>
+                                            </content>
+                                        </Tab>
+
+                                        <Tab text="Empresa parceira">
+                                            <content>
+                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="302.0" prefWidth="499.0">
+                                                    <children>
+                                                        <!-- Área do texto do aluno (sempre visível) -->
+                                                        <TextArea fx:id="alunoTextEmpresa" editable="false" layoutX="10.0" layoutY="10.0" prefHeight="150.0" prefWidth="479.0" promptText="Conteúdo enviado pelo aluno" style="-fx-background-color: #f0f0f0;" wrapText="true" />
+
+                                                        <!-- Área de feedback do orientador (inicialmente invisível) -->
+                                                        <TextArea fx:id="feedbackTextEmpresa" layoutX="10.0" layoutY="170.0" prefHeight="100.0" prefWidth="479.0" promptText="Digite seu feedback aqui..." visible="false" wrapText="true" />
+
+                                                        <!-- Checkboxes agrupados -->
+                                                        <HBox layoutX="10.0" layoutY="280.0" spacing="20">
+                                                            <children>
+                                                                <CheckBox fx:id="validarEmpresa" mnemonicParsing="false" onAction="#validarSecao" text="Validado" />
+                                                                <CheckBox fx:id="feedbackEmpresa" mnemonicParsing="false" onAction="#feedbackSecao" text="Feedback" />
+                                                            </children>
+                                                        </HBox>
+                                                    </children>
+                                                </AnchorPane>
+                                            </content>
+                                        </Tab>
+
+
+                                        <Tab text="Problema">
+                                            <content>
+                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="302.0" prefWidth="499.0">
+                                                    <children>
+                                                        <!-- Área do texto do aluno (sempre visível) -->
+                                                        <TextArea fx:id="alunoTextProblema" editable="false" layoutX="10.0" layoutY="10.0" prefHeight="150.0" prefWidth="479.0" promptText="Conteúdo enviado pelo aluno" style="-fx-background-color: #f0f0f0;" wrapText="true" />
+
+                                                        <!-- Área de feedback do orientador (inicialmente invisível) -->
+                                                        <TextArea fx:id="feedbackTextProblema" layoutX="10.0" layoutY="170.0" prefHeight="100.0" prefWidth="479.0" promptText="Digite seu feedback aqui..." visible="false" wrapText="true" />
+
+                                                        <!-- Checkboxes agrupados -->
+                                                        <HBox layoutX="10.0" layoutY="280.0" spacing="20">
+                                                            <children>
+                                                                <CheckBox fx:id="validarProblema" mnemonicParsing="false" onAction="#validarSecao" text="Validado" />
+                                                                <CheckBox fx:id="feedbackProblema" mnemonicParsing="false" onAction="#feedbackSecao" text="Feedback" />
+                                                            </children>
+                                                        </HBox>
+                                                    </children>
+                                                </AnchorPane>
+                                            </content>
+                                        </Tab>
+
+                                        <Tab text="Solução">
+                                            <content>
+                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="302.0" prefWidth="499.0">
+                                                    <children>
+                                                        <!-- Área do texto do aluno (sempre visível) -->
+                                                        <TextArea fx:id="alunoTextSolucao" editable="false" layoutX="10.0" layoutY="10.0" prefHeight="150.0" prefWidth="479.0" promptText="Conteúdo enviado pelo aluno" style="-fx-background-color: #f0f0f0;" wrapText="true" />
+
+                                                        <!-- Área de feedback do orientador (inicialmente invisível) -->
+                                                        <TextArea fx:id="feedbackTextSolucao" layoutX="10.0" layoutY="170.0" prefHeight="100.0" prefWidth="479.0" promptText="Digite seu feedback aqui..." visible="false" wrapText="true" />
+
+                                                        <!-- Checkboxes agrupados -->
+                                                        <HBox layoutX="10.0" layoutY="280.0" spacing="20">
+                                                            <children>
+                                                                <CheckBox fx:id="validarSolucao" mnemonicParsing="false" onAction="#validarSecao" text="Validado" />
+                                                                <CheckBox fx:id="feedbackSolucao" mnemonicParsing="false" onAction="#feedbackSecao" text="Feedback" />
+                                                            </children>
+                                                        </HBox>
+                                                    </children>
+                                                </AnchorPane>
+                                            </content>
+                                        </Tab>
+
+                                        <Tab text="Link Repositório">
+                                            <content>
+                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="302.0" prefWidth="499.0">
+                                                    <children>
+                                                        <!-- Área do texto do aluno (sempre visível) -->
+                                                        <TextArea fx:id="alunoTextRepositorio" editable="false" layoutX="10.0" layoutY="10.0" prefHeight="150.0" prefWidth="479.0" promptText="Conteúdo enviado pelo aluno" style="-fx-background-color: #f0f0f0;" wrapText="true" />
+
+                                                        <!-- Área de feedback do orientador (inicialmente invisível) -->
+                                                        <TextArea fx:id="feedbackTextRepositorio" layoutX="10.0" layoutY="170.0" prefHeight="100.0" prefWidth="479.0" promptText="Digite seu feedback aqui..." visible="false" wrapText="true" />
+
+                                                        <!-- Checkboxes agrupados -->
+                                                        <HBox layoutX="10.0" layoutY="280.0" spacing="20">
+                                                            <children>
+                                                                <CheckBox fx:id="validarRepositorio" mnemonicParsing="false" onAction="#validarSecao" text="Validado" />
+                                                                <CheckBox fx:id="feedbackRepositorio" mnemonicParsing="false" onAction="#feedbackSecao" text="Feedback" />
+                                                            </children>
+                                                        </HBox>
+                                                    </children>
+                                                </AnchorPane>
+                                            </content>
+                                        </Tab>
+
+                                        <Tab text="Tecnologias Utilizadas">
+                                            <content>
+                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="302.0" prefWidth="499.0">
+                                                    <children>
+                                                        <!-- Área do texto do aluno (sempre visível) -->
+                                                        <TextArea fx:id="alunoTextTecnologias" editable="false" layoutX="10.0" layoutY="10.0" prefHeight="150.0" prefWidth="479.0" promptText="Conteúdo enviado pelo aluno" style="-fx-background-color: #f0f0f0;" wrapText="true" />
+
+                                                        <!-- Área de feedback do orientador (inicialmente invisível) -->
+                                                        <TextArea fx:id="feedbackTextTecnologias" layoutX="10.0" layoutY="170.0" prefHeight="100.0" prefWidth="479.0" promptText="Digite seu feedback aqui..." visible="false" wrapText="true" />
+
+                                                        <!-- Checkboxes agrupados -->
+                                                        <HBox layoutX="10.0" layoutY="280.0" spacing="20">
+                                                            <children>
+                                                                <CheckBox fx:id="validarTecnologias" mnemonicParsing="false" onAction="#validarSecao" text="Validado" />
+                                                                <CheckBox fx:id="feedbackTecnologias" mnemonicParsing="false" onAction="#feedbackSecao" text="Feedback" />
+                                                            </children>
+                                                        </HBox>
+                                                    </children>
+                                                </AnchorPane>
+                                            </content>
+                                        </Tab>
+
+                                        <Tab text="Contribuições pessoais">
+                                            <content>
+                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="302.0" prefWidth="499.0">
+                                                    <children>
+                                                        <!-- Área do texto do aluno (sempre visível) -->
+                                                        <TextArea fx:id="alunoTextCP" editable="false" layoutX="10.0" layoutY="10.0" prefHeight="150.0" prefWidth="479.0" promptText="Conteúdo enviado pelo aluno" style="-fx-background-color: #f0f0f0;" wrapText="true" />
+
+                                                        <!-- Área de feedback do orientador (inicialmente invisível) -->
+                                                        <TextArea fx:id="feedbackTextCP" layoutX="10.0" layoutY="170.0" prefHeight="100.0" prefWidth="479.0" promptText="Digite seu feedback aqui..." visible="false" wrapText="true" />
+
+                                                        <!-- Checkboxes agrupados -->
+                                                        <HBox layoutX="10.0" layoutY="280.0" spacing="20">
+                                                            <children>
+                                                                <CheckBox fx:id="validarCP" mnemonicParsing="false" onAction="#validarSecao" text="Validado" />
+                                                                <CheckBox fx:id="feedbackCP" mnemonicParsing="false" onAction="#feedbackSecao" text="Feedback" />
+                                                            </children>
+                                                        </HBox>
+                                                    </children>
+                                                </AnchorPane>
+                                            </content>
+                                        </Tab>
+
+                                        <Tab text="Hard Skills">
+                                            <content>
+                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="302.0" prefWidth="499.0">
+                                                    <children>
+                                                        <!-- Área do texto do aluno (sempre visível) -->
+                                                        <TextArea fx:id="alunoTextHS" editable="false" layoutX="10.0" layoutY="10.0" prefHeight="150.0" prefWidth="479.0" promptText="Conteúdo enviado pelo aluno" style="-fx-background-color: #f0f0f0;" wrapText="true" />
+
+                                                        <!-- Área de feedback do orientador (inicialmente invisível) -->
+                                                        <TextArea fx:id="feedbackTextHS" layoutX="10.0" layoutY="170.0" prefHeight="100.0" prefWidth="479.0" promptText="Digite seu feedback aqui..." visible="false" wrapText="true" />
+
+                                                        <!-- Checkboxes agrupados -->
+                                                        <HBox layoutX="10.0" layoutY="280.0" spacing="20">
+                                                            <children>
+                                                                <CheckBox fx:id="validarHS" mnemonicParsing="false" onAction="#validarSecao" text="Validado" />
+                                                                <CheckBox fx:id="feedbackHS" mnemonicParsing="false" onAction="#feedbackSecao" text="Feedback" />
+                                                            </children>
+                                                        </HBox>
+                                                    </children>
+                                                </AnchorPane>
+                                            </content>
+                                        </Tab>
+
+                                        <Tab text="Soft Skills">
+                                            <content>
+                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="302.0" prefWidth="499.0">
+                                                    <children>
+                                                        <!-- Área do texto do aluno (sempre visível) -->
+                                                        <TextArea fx:id="alunoTextSS" editable="false" layoutX="10.0" layoutY="10.0" prefHeight="150.0" prefWidth="479.0" promptText="Conteúdo enviado pelo aluno" style="-fx-background-color: #f0f0f0;" wrapText="true" />
+
+                                                        <!-- Área de feedback do orientador (inicialmente invisível) -->
+                                                        <TextArea fx:id="feedbackTextSS" layoutX="10.0" layoutY="170.0" prefHeight="100.0" prefWidth="479.0" promptText="Digite seu feedback aqui..." visible="false" wrapText="true" />
+
+                                                        <!-- Checkboxes agrupados -->
+                                                        <HBox layoutX="10.0" layoutY="280.0" spacing="20">
+                                                            <children>
+                                                                <CheckBox fx:id="validarSS" mnemonicParsing="false" onAction="#validarSecao" text="Validado" />
+                                                                <CheckBox fx:id="feedbackSS" mnemonicParsing="false" onAction="#feedbackSecao" text="Feedback" />
+                                                            </children>
+                                                        </HBox>
+                                                    </children>
+                                                </AnchorPane>
+                                            </content>
+                                        </Tab>
+
+                                    </tabs>
+                                </TabPane>
+
+                            </children></VBox>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+        <HBox alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="73.0" prefWidth="600.0" style="-fx-spacing: 25;">
+            <children>
+                <Button mnemonicParsing="false" onAction="#enviarFeedback" prefHeight="29.0" prefWidth="138.0" style="-fx-background-color: #5E5555;" text="Enviar Feedback" textFill="WHITE">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Button>
+                <Button layoutX="93.0" layoutY="14.0" mnemonicParsing="false" onAction="#voltarTelaOrientador" prefHeight="30.0" prefWidth="130.0" style="-fx-background-color: #5E5555;" text="Validar Seção" textFill="WHITE">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Button>
+            </children>
+        </HBox>
+    </children>
+</VBox>
