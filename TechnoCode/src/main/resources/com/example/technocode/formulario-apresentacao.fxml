@@ -7,7 +7,7 @@
 <VBox alignment="TOP_CENTER" prefHeight="508.0" prefWidth="600.0" style="-fx-background-color: #C4C4C4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.FormularioApresentacaoController">
     <HBox alignment="CENTER" prefHeight="44.0" prefWidth="600.0" style="-fx-spacing: 25;">
         <children>
-            <Button mnemonicParsing="false" prefHeight="30.0" prefWidth="113.0" style="-fx-background-color: #5E5555;" text="Voltar" textFill="WHITE">
+            <Button mnemonicParsing="false" onAction="#voltar" prefHeight="30.0" prefWidth="113.0" style="-fx-background-color: #5E5555;" text="Voltar" textFill="WHITE">
                 <font>
                     <Font size="14.0" />
                 </font></Button>
@@ -30,49 +30,49 @@
     <VBox alignment="CENTER" prefHeight="410.0" prefWidth="600.0">
         <HBox prefHeight="27.0" prefWidth="600.0" style="-fx-spacing: 100; -fx-padding: 8;">
             <Label prefHeight="18.0" prefWidth="183.0" text="Nome Completo:" />
-            <TextField prefHeight="26.0" prefWidth="272.0" />
+            <TextField fx:id="txtNome" prefHeight="26.0" prefWidth="272.0" />
         </HBox>
         <HBox prefHeight="27.0" prefWidth="600.0" style="-fx-spacing: 100; -fx-padding: 8;">
             <children>
                 <Label prefHeight="18.0" prefWidth="183.0" text="Idade:" />
-            <DatePicker />
+            <DatePicker fx:id="datePickerIdade" />
             </children>
         </HBox>
         <HBox prefHeight="27.0" prefWidth="600.0" style="-fx-spacing: 100; -fx-padding: 8;">
             <children>
                 <Label prefHeight="18.0" prefWidth="183.0" text="Curso:" />
-            <ChoiceBox prefWidth="150.0" />
+            <ChoiceBox fx:id="choiceBoxCurso" prefWidth="150.0" />
             </children>
         </HBox>
         <HBox prefHeight="533.0" prefWidth="600.0" style="-fx-spacing: 100; -fx-padding: 8;">
             <children>
                 <Label prefHeight="18.0" prefWidth="183.0" text="Motivação para entrar na Fatec:" />
-            <TextArea prefHeight="77.0" prefWidth="298.0" />
+            <TextArea fx:id="txtMotivacao" prefHeight="77.0" prefWidth="298.0" />
             </children>
         </HBox>
         <HBox prefHeight="27.0" prefWidth="600.0" style="-fx-spacing: 100; -fx-padding: 8;">
             <children>
                 <Label prefHeight="18.0" prefWidth="183.0" text="Histórico Academico:" />
-            <TextArea prefHeight="39.0" prefWidth="299.0" />
+            <TextArea fx:id="txtHistorico" prefHeight="39.0" prefWidth="299.0" />
             </children>
         </HBox>
         <HBox prefHeight="27.0" prefWidth="600.0" style="-fx-spacing: 100; -fx-padding: 8;">
             <children>
                 <Label prefHeight="18.0" prefWidth="183.0" text="Github:" />
-                <TextField prefHeight="26.0" prefWidth="270.0" />
+                <TextField fx:id="txtGithub" prefHeight="26.0" prefWidth="270.0" />
             </children>
         </HBox>
         <HBox prefHeight="27.0" prefWidth="600.0" style="-fx-spacing: 100; -fx-padding: 8;">
             <Label prefHeight="18.0" prefWidth="183.0" text="Linkedin:" />
-            <TextField prefHeight="26.0" prefWidth="269.0" />
+            <TextField fx:id="txtLinkedin" prefHeight="26.0" prefWidth="269.0" />
         </HBox>
         <HBox prefHeight="0.0" prefWidth="600.0" style="-fx-spacing: 100; -fx-padding: 8;">
             <children>
                 <Label prefHeight="18.0" prefWidth="183.0" text="Principais Conhecimentos:" />
-                <TextArea prefHeight="39.0" prefWidth="300.0" />
+                <TextArea fx:id="txtPrincipaisConhecimentos" prefHeight="39.0" prefWidth="300.0" />
             </children>
         </HBox>
     </VBox>
-   <Button mnemonicParsing="false" prefHeight="30.0" prefWidth="130.0" style="-fx-background-color: #5E5555;" text="ENVIAR" textFill="WHITE" />
+   <Button mnemonicParsing="false" onAction="#enviarApresentacao" prefHeight="30.0" prefWidth="130.0" style="-fx-background-color: #5E5555;" text="ENVIAR" textFill="WHITE" />
 
 </VBox>
