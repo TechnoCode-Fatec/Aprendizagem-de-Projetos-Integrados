@@ -28,7 +28,7 @@ public class Connector {
             throw new RuntimeException("Erro ao cadastrar aluno!", ex);
         }
     }
-    // 🔹 Cadastrar Orientador
+
     public void cadastrarOrientador(String nome, String email, String senha) {
         String insertSql = "INSERT INTO orientador (nome, email, senha) VALUES (?, ?, ?)";
 
@@ -46,7 +46,23 @@ public class Connector {
         }
     }
 
-
+    public List<String> alunos(String orientador) {
+        Connection conn = null;
+        List<String> alunos = new ArrayList<>();
+        try{
+            conn = getConnection();
+            String selectAlunos = "SELECT * FROM aluno WHERE orientador = ?";
+            PreparedStatement pst = conn.prepareStatement(selectAlunos);
+            pst.setString(1, orientador);
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                alunos.add(rs.getString("nome"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return alunos;
+    }
     public List<String> orientadores(){
         Connection con = null;
         List<String> nomes = new ArrayList<>();
