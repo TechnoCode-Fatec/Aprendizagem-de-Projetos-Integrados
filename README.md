@@ -44,7 +44,7 @@ Entregar as principais funcionalidades que viabilizam a comunicação entre alun
 | **Controle dos alunos** | Como orientador, quero ter um controle com todos os alunos que estou orientando, para ver rapidamente quem está em atraso, em revisão ou finalizou seções. | 🔺 Alta | ⏳ Planejado |
 | **Envio de TGs** | Como aluno, quero enviar os TGs em seções e receber os feedbacks, para arrumar os TGs conforme o orientador recomendou. | 🔺 Alta | ⏳ Planejado |
 | **Análise de feedbacks** | Como aluno, quero analisar os feedbacks recebidos e corrigi-los, para alinhar com a opinião do orientador. | 🔺 Alta | ⏳ Planejado |
-| **Visualização de orientadores** | Como professor de TG, quero visualizar os orientadores e seus alunos atribuídos, para ter noção de como estão sendo as orientações. |  🔸 Média | ⏳ Planejado |
+| **Feedback do Orientador** | Como orientador, quero adicionar feedbacks de forma separada em cada seção e manter os feedbacks visíveis, para ter controle dos feedbacks que já foram feitos. |  🔸 Média | ⏳ Planejado |
 
 
 ---
