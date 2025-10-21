@@ -2,7 +2,8 @@ package com.example.technocode.dao;
 
 
 import java.sql.*;
-
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Connector {
@@ -10,17 +11,30 @@ public class Connector {
         return DriverManager.getConnection("jdbc:mysql://localhost:3306/technotg?useTimezone=true&serverTimezone=UTC", "technocode", "pass123");
     }
 
-    public void cadastrarUsuario(String nome, String email, String senha, String tipo){
-        Connection con = null;
-        try {
-           con = getConnection();
-           String insertSql = "";
-            if ( "Aluno".equals(tipo)){
-                insertSql =  "INSERT INTO aluno (nome, email, senha) VALUES (?, ?, ?)";
-            }else if ("Orientador".equals(tipo)){
-                insertSql = "INSERT INTO orientador (nome, email, senha) VALUES (?, ?, ?)";
-            }
-            PreparedStatement pst = con.prepareStatement(insertSql);
+    public void cadastrarAluno(String nome, String email, String senha, String orientador) {
+        String insertSql = "INSERT INTO aluno (nome, email, senha, orientador) VALUES (?, ?, ?, ?)";
+
+        try (Connection con = getConnection();
+             PreparedStatement pst = con.prepareStatement(insertSql)) {
+
+            pst.setString(1, nome);
+            pst.setString(2, email);
+            pst.setString(3, senha);
+            pst.setString(4, orientador);
+            pst.executeUpdate();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("Erro ao cadastrar aluno!", ex);
+        }
+    }
+    // 🔹 Cadastrar Orientador
+    public void cadastrarOrientador(String nome, String email, String senha) {
+        String insertSql = "INSERT INTO orientador (nome, email, senha) VALUES (?, ?, ?)";
+
+        try (Connection con = getConnection();
+             PreparedStatement pst = con.prepareStatement(insertSql)) {
+
             pst.setString(1, nome);
             pst.setString(2, email);
             pst.setString(3, senha);
@@ -28,15 +42,26 @@ public class Connector {
 
         } catch (SQLException ex) {
             ex.printStackTrace();
-            throw new RuntimeException("Erro ao inserir nova Sessão API!", ex);
-        }finally {
-            try {
-                if (con != null) con.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-                throw new RuntimeException("Erro ao fechar conexão", ex);
-            }
+            throw new RuntimeException("Erro ao cadastrar orientador!", ex);
         }
+    }
+
+
+    public List<String> orientadores(){
+        Connection con = null;
+        List<String> nomes = new ArrayList<>();
+        try{
+            con = getConnection();
+            String selectSql = "SELECT nome FROM orientador";
+            PreparedStatement pst = con.prepareStatement(selectSql);
+            ResultSet rs = pst.executeQuery();
+            while(rs.next()){
+                nomes.add(rs.getString("nome"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar orientadores", e);
+        }
+        return nomes;
     }
 
     public String login(String email, String senha){
