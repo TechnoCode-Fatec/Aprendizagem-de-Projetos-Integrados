@@ -159,7 +159,7 @@ public class Connector {
         Connection con = null;
         try{
             con = getConnection();
-            String insertSql = "insert into secao_apresentacao (aluno, nome, idade,curso" +
+            String insertSql = "insert into secao_apresentacao (aluno, nome, idade,curso," +
                     "versao, motivacao, historico, link_github, link_linkedin, principais_conhecimentos) " +
                     "values (?,?,?,?,?,?,?,?,?,?)";
             PreparedStatement pst = con.prepareStatement(insertSql);
@@ -192,7 +192,7 @@ public class Connector {
         List<Map<String,String>> secoesApi = new ArrayList<>();
         try{
             conn = getConnection();
-            String selectSecoesApi = "SELECT semestre_curso, ano, semestre_ano, empresa FROM secao_api WHERE aluno = ?";
+            String selectSecoesApi = "SELECT semestre_curso, ano, semestre_ano, versao, empresa FROM secao_api WHERE aluno = ?";
             PreparedStatement pst = conn.prepareStatement(selectSecoesApi);
             pst.setString(1, emailAluno);
             ResultSet rs = pst.executeQuery();
@@ -200,17 +200,75 @@ public class Connector {
                 String semestreCurso = rs.getString("semestre_curso");
                 String ano = rs.getString("ano");
                 String semestreAno = rs.getString("semestre_ano");
+                String versao = rs.getString("versao");
                 String empresa = rs.getString("empresa");
 
                 Map<String, String> secao = new HashMap<>();
                 secao.put("id", semestreCurso + " " + ano + "/" + semestreAno);
                 secao.put("empresa", empresa);
+                secao.put("semestre_curso", semestreCurso);
+                secao.put("ano", ano);
+                secao.put("semestre_ano", semestreAno);
+                secao.put("versao", versao);
                 secoesApi.add(secao);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return secoesApi;
+    }
+
+    public Map<String, String> buscarDadosAluno(String emailAluno) {
+        Connection conn = null;
+        Map<String, String> dadosAluno = new HashMap<>();
+        try {
+            conn = getConnection();
+            String selectAluno = "SELECT nome, email, curso FROM aluno WHERE email = ?";
+            PreparedStatement pst = conn.prepareStatement(selectAluno);
+            pst.setString(1, emailAluno);
+            ResultSet rs = pst.executeQuery();
+            
+            if (rs.next()) {
+                dadosAluno.put("nome", rs.getString("nome"));
+                dadosAluno.put("email", rs.getString("email"));
+                dadosAluno.put("curso", rs.getString("curso"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar dados do aluno", e);
+        } finally {
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return dadosAluno;
+    }
+
+    public List<Map<String,String>> secoesApresentacao(String emailAluno){
+        Connection conn = null;
+        List<Map<String,String>> secoesApresentacao = new ArrayList<>();
+        try{
+            conn = getConnection();
+            String selectSecoesApresentacao = "SELECT nome, versao FROM secao_apresentacao WHERE aluno = ?";
+            PreparedStatement pst = conn.prepareStatement(selectSecoesApresentacao);
+            pst.setString(1, emailAluno);
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                String nome = rs.getString("nome");
+                String versao = rs.getString("versao");
+
+                Map<String, String> secao = new HashMap<>();
+                secao.put("id", nome);
+                secao.put("empresa", "Apresentação");
+                secao.put("versao", versao);
+                secao.put("tipo", "apresentacao");
+                secoesApresentacao.add(secao);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return secoesApresentacao;
     }
 
 

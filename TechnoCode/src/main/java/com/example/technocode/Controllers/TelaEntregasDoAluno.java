@@ -1,12 +1,11 @@
 package com.example.technocode.Controllers;
 
-import com.example.technocode.Objetos.Aluno;
-import com.example.technocode.Objetos.Seção;
 import com.example.technocode.dao.Connector;
 import javafx.beans.property.SimpleStringProperty;
 
 import java.util.Map;
 import java.util.List;
+import java.util.ArrayList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,12 +13,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 public class TelaEntregasDoAluno {
 
@@ -76,9 +71,20 @@ public class TelaEntregasDoAluno {
             return;
         }
         Connector connector = new Connector();
+        
+        // Carrega seções API
         List<Map<String,String>> secoesApi = connector.secoesApi(emailAlunoParaConsulta);
-        System.out.println("Carregando seções para: " + emailAlunoParaConsulta + " -> " + secoesApi.size() + " itens");
-        tabelaSecao.getItems().setAll(secoesApi);
+        
+        // Carrega seções de apresentação
+        List<Map<String,String>> secoesApresentacao = connector.secoesApresentacao(emailAlunoParaConsulta);
+        
+        // Combina as duas listas
+        List<Map<String,String>> todasSecoes = new ArrayList<>();
+        todasSecoes.addAll(secoesApi);
+        todasSecoes.addAll(secoesApresentacao);
+        
+        System.out.println("Carregando seções para: " + emailAlunoParaConsulta + " -> " + todasSecoes.size() + " itens (API: " + secoesApi.size() + ", Apresentação: " + secoesApresentacao.size() + ")");
+        tabelaSecao.getItems().setAll(todasSecoes);
     }
 
     private void addButtonToTable() {
@@ -89,12 +95,57 @@ public class TelaEntregasDoAluno {
                 btn.setOnAction(event -> {
                     Map<String, String> item = getTableView().getItems().get(getIndex());
                     try {
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-secoesenviadasAPI.fxml"));
-                        Parent root = loader.load();
-                        Stage stage = (Stage) tabelaSecao.getScene().getWindow();
-                        Scene scene = new Scene(root);
-                        stage.setScene(scene);
-                        stage.show();
+                        String tipo = item.getOrDefault("tipo", "api");
+                        
+                        if ("apresentacao".equals(tipo)) {
+                            // Abre tela de apresentação
+                            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-secoesenviadas.fxml"));
+                            Parent root = loader.load();
+
+                            TelaSecoesenviadasController controller = loader.getController();
+                            
+                            String versao = item.getOrDefault("versao", null);
+                            if (versao != null) {
+                                controller.setIdentificadorSecao(
+                                    emailAlunoParaConsulta,  // email do aluno
+                                    Integer.parseInt(versao) // versao
+                                );
+                            }
+                            
+                            Stage stage = (Stage) tabelaSecao.getScene().getWindow();
+                            Scene scene = new Scene(root);
+                            stage.setScene(scene);
+                            stage.show();
+                        } else {
+                            // Abre tela de API (comportamento original)
+                            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-secoesenviadasAPI.fxml"));
+                            Parent root = loader.load();
+
+                            TelaSecoesenviadasAPIController controller = loader.getController();
+                            
+                            String semestreCurso = item.getOrDefault("semestre_curso", null);
+                            String ano = item.getOrDefault("ano", null);
+                            String semestreAno = item.getOrDefault("semestre_ano", null);
+                            String versao = item.getOrDefault("versao", null);
+                            
+                            if (semestreCurso != null && ano != null && semestreAno != null && versao != null) {
+                                // Extrair apenas o ano da data (ex: "2024-01-01" -> "2024")
+                                String anoExtraido = ano.split("-")[0];
+                                
+                                controller.setIdentificadorSecao(
+                                    emailAlunoParaConsulta,  // email do aluno
+                                    semestreCurso,          // semestre_curso
+                                    Integer.parseInt(anoExtraido),   // ano extraído da data
+                                    semestreAno,            // semestre_ano
+                                    Integer.parseInt(versao) // versao
+                                );
+                            }
+                            
+                            Stage stage = (Stage) tabelaSecao.getScene().getWindow();
+                            Scene scene = new Scene(root);
+                            stage.setScene(scene);
+                            stage.show();
+                        }
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
@@ -127,11 +178,16 @@ public class TelaEntregasDoAluno {
 
 
 
-    public void setDadosAluno(Aluno aluno) {
-        if (aluno != null) {
-            nomeAluno.setText(aluno.getNome());
-            emailAluno.setText(aluno.getEmail());
-            cursoAluno.setText(aluno.getCurso());
+    public void setDadosAluno(String emailAluno) {
+        if (emailAluno != null && !emailAluno.isBlank()) {
+            Connector connector = new Connector();
+            Map<String, String> dadosAluno = connector.buscarDadosAluno(emailAluno);
+            
+            if (!dadosAluno.isEmpty()) {
+                nomeAluno.setText(dadosAluno.get("nome"));
+                this.emailAluno.setText(dadosAluno.get("email"));
+                cursoAluno.setText(dadosAluno.get("curso"));
+            }
         }
     }
 

@@ -29,6 +29,11 @@ public class FormularioApresentacaoController {
     private ChoiceBox<String> choiceBoxCurso;
 
     @FXML
+    private void initialize(){
+        choiceBoxCurso.getItems().addAll("ADS","BD");
+    }
+
+    @FXML
     private void enviarApresentacao(ActionEvent event) {
         Connector connector = new Connector();
         String emailAluno = LoginController.getEmailLogado();

@@ -1,6 +1,5 @@
 package com.example.technocode.Controllers;
 
-import com.example.technocode.Objetos.Aluno;
 import com.example.technocode.dao.Connector;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
@@ -91,15 +90,8 @@ public class TelaOrientadorController {
                                 btn.setStyle("-fx-background-color: black; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 5;");
                                 btn.setOnAction(event -> {
                                     Map<String, String> item = getTableView().getItems().get(getIndex());
-                                    // Constrói um Aluno a partir do Map atual da linha
-                                    Aluno aluno = new Aluno(
-                                            item.getOrDefault("email", null),      // email
-                                            null,                                   // emailFatec (não disponível no Map)
-                                            item.getOrDefault("nome", null),       // nome
-                                            null,                                   // ra (não disponível no Map)
-                                            item.getOrDefault("curso", null)       // curso
-                                    );
-                                    abrirTelaAluno(aluno);
+                                    String emailAluno = item.getOrDefault("email", null);
+                                    abrirTelaAluno(emailAluno);
                                 });
                             }
 
@@ -114,15 +106,15 @@ public class TelaOrientadorController {
         colAnalisar.setCellFactory(cellFactory);
     }
     
-    private void abrirTelaAluno(Aluno aluno) {
+    private void abrirTelaAluno(String emailAluno) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-entregasDoAluno.fxml"));
             Parent root = loader.load();
 
             TelaEntregasDoAluno controller = loader.getController();
-            controller.setDadosAluno(aluno);
+            controller.setDadosAluno(emailAluno);
             // PASSA O E-MAIL DO ALUNO PARA A PRÓXIMA TELA
-            controller.setEmailAlunoParaConsulta(aluno.getEmail());
+            controller.setEmailAlunoParaConsulta(emailAluno);
 
             Stage stage = (Stage) tabelaAlunos.getScene().getWindow();
             Scene scene = new Scene(root);
