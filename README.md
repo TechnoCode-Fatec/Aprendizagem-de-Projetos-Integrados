@@ -12,7 +12,7 @@ Nosso projeto busca propor uma solução em **Java Desktop**, com persistência 
 ---
 
 ### 📶 Backlog do Produto
-| Funcionaliade | User Storye | Prioridade | Status |
+| Funcionaliade | User Storye | Prioridade | Status | 
 |-------------|-------------|-------------| ----------- |
 | Visualização e correção de secções | Como orientador, quero visualizar as seções dos alunos e corrigi-las, para auxiliar os TG´s dos alunos. | Alta | Planejado |
 | Controle dos Alunos | Como orientador, quero ter um controle com todos os alunos que estou orientando, para ver rapidamente quem está em atraso, em revisão ou finalizou seções. | Alta | Planejado |
@@ -24,6 +24,7 @@ Nosso projeto busca propor uma solução em **Java Desktop**, com persistência 
 | Aprovação de Seções | Como orientador, quero aprovar as seções para controlar o progresso, assim evidenciando ao aluno quando seu TG estiver pronto para continuar | Média | Planejado |
 | Visualização de Portfólios | Como orientador, quero visualizar os portfólios completos e suas seções separadamente, para ter facilidade em corrigi-los | Média | Planejado |
 | Formato MD | Como aluno, quero exportar meu TG em formato MD (MarkDown), quando estiver finalizado, conforme foi pedido pela instituição | Baixa | Planejado |
+| Agendamento de TG | Como professor de TG, quero agendar um dia e uma sala para encontrar o aluno e fazer e defesa do TG, para que o aluno comprove a sua aptidão e domínio sobre o tema estudado | Baixa | Planejado |
 
 
 ---
