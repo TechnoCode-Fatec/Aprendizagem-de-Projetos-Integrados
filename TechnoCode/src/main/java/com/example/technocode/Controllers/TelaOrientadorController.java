@@ -53,7 +53,7 @@ public class TelaOrientadorController {
                     new SimpleStringProperty(data.getValue().get("curso"))
             );
             Connector con = new Connector();
-            List<Map<String, String>> alunos = con.alunos("mineda@");
+            List<Map<String, String>> alunos = con.alunos(LoginController.getEmailLogado());
 
             tabelaAlunos.getItems().setAll(alunos);
 
@@ -65,7 +65,7 @@ public class TelaOrientadorController {
             System.out.println("Número de alunos na tabela: " + tabelaAlunos.getItems().size());
 
             // Adiciona os botões de "Analisar"
-//            addButtonToTable();
+            addButtonToTable();
 
             // Força a atualização da tabela
             tabelaAlunos.refresh();
@@ -78,44 +78,42 @@ public class TelaOrientadorController {
     }
 
 
-//    private void addButtonToTable() {
-//        Callback<TableColumn<Aluno, Void>, TableCell<Aluno, Void>> cellFactory = new Callback<>() {
-//            @Override
-//            public TableCell<Aluno, Void> call(final TableColumn<Aluno, Void> param) {
-//                return new TableCell<>() {
-//
-//                    private final Button btn = new Button("Analisar");
-//
-//                    {
-//                        btn.setOnAction(event -> {
-//                            Aluno aluno = getTableView().getItems().get(getIndex());
-//                            abrirTelaAluno(aluno);
-//                        });
-//
-//                        btn.setStyle("""
-//                            -fx-background-color: #5e5555;
-//                            -fx-text-fill: white;
-//                            -fx-font-weight: bold;
-//                            -fx-cursor: hand;
-//                            -fx-background-radius: 5;
-//                        """);
-//                    }
-//
-//                    @Override
-//                    protected void updateItem(Void item, boolean empty) {
-//                        super.updateItem(item, empty);
-//                        if (empty) {
-//                            setGraphic(null);
-//                        } else {
-//                            setGraphic(btn);
-//                        }
-//                    }
-//                };
-//            }
-//        };
-//        colAnalisar.setCellFactory(cellFactory);
-//    }
+    private void addButtonToTable() {
+        Callback<TableColumn<Map<String, String>, Void>, TableCell<Map<String, String>, Void>> cellFactory =
+                new Callback<>() {
+                    @Override
+                    public TableCell<Map<String, String>, Void> call(final TableColumn<Map<String, String>, Void> param) {
+                        return new TableCell<>() {
 
+                            private final Button btn = new Button("analisar");
+
+                            {
+                                btn.setStyle("-fx-background-color: black; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 5;");
+                                btn.setOnAction(event -> {
+                                    Map<String, String> item = getTableView().getItems().get(getIndex());
+                                    // Constrói um Aluno a partir do Map atual da linha
+                                    Aluno aluno = new Aluno(
+                                            item.getOrDefault("email", null),      // email
+                                            null,                                   // emailFatec (não disponível no Map)
+                                            item.getOrDefault("nome", null),       // nome
+                                            null,                                   // ra (não disponível no Map)
+                                            item.getOrDefault("curso", null)       // curso
+                                    );
+                                    abrirTelaAluno(aluno);
+                                });
+                            }
+
+                            @Override
+                            protected void updateItem(Void item, boolean empty) {
+                                super.updateItem(item, empty);
+                                setGraphic(empty ? null : btn);
+                            }
+                        };
+                    }
+                };
+        colAnalisar.setCellFactory(cellFactory);
+    }
+    
     private void abrirTelaAluno(Aluno aluno) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-entregasDoAluno.fxml"));
@@ -123,6 +121,8 @@ public class TelaOrientadorController {
 
             TelaEntregasDoAluno controller = loader.getController();
             controller.setDadosAluno(aluno);
+            // PASSA O E-MAIL DO ALUNO PARA A PRÓXIMA TELA
+            controller.setEmailAlunoParaConsulta(aluno.getEmail());
 
             Stage stage = (Stage) tabelaAlunos.getScene().getWindow();
             Scene scene = new Scene(root);

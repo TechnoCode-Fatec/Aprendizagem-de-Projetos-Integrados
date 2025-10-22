@@ -67,6 +67,16 @@
             <ComboBox fx:id="comboBoxOrientador" prefWidth="150.0" />
          </children>
       </HBox>
+       <HBox fx:id="hBoxCurso" alignment="CENTER" prefHeight="36.0" prefWidth="600.0" style="-fx-spacing: 10;">
+           <children>
+               <Label text="Curso:">
+                   <font>
+                       <Font name="Inter Regular" size="20.0" />
+                   </font>
+               </Label>
+               <ComboBox fx:id="comboBoxCurso" prefWidth="150.0" />
+           </children>
+       </HBox>
       <Button fx:id="btnCadastrar" mnemonicParsing="false" onAction="#cadastrarUsuario" prefHeight="50.0" prefWidth="180.0" style="-fx-background-color: #5E5555;" text="CADASTRAR" textFill="WHITE">
          <font>
             <Font name="Inter Regular" size="23.0" />

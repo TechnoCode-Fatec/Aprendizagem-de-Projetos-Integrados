@@ -31,7 +31,8 @@ public class FormularioApiController {
     @FXML
     private void enviarSecaoApi(ActionEvent event) {
         Connector connector = new Connector();
-        connector.cadastrarSessaoApi("joao.silva@fatec.sp.gov.br", choiceBoxSemestreDoCurso.getValue(), Integer.parseInt(txtAno.getText()), choiceBoxSemestre.getValue(), 1,
+        String emailAluno = LoginController.getEmailLogado();
+        connector.cadastrarSessaoApi(emailAluno, choiceBoxSemestreDoCurso.getValue(), Integer.parseInt(txtAno.getText()), choiceBoxSemestre.getValue(), 1,
                 txtEmpresa.getText(), txtProblema.getText(), txtSolucao.getText(),txtLinkRepositorio.getText(),txtTecnologias.getText(),
                 txtContribuicoes.getText(),txtHardSkills.getText(),txtSoftSkills.getText());
         System.out.println("Cadastrado com sucesso");

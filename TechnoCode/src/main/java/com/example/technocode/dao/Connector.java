@@ -13,8 +13,8 @@ public class Connector {
         return DriverManager.getConnection("jdbc:mysql://localhost:3306/technotg?useTimezone=true&serverTimezone=UTC", "technocode", "pass123");
     }
 
-    public void cadastrarAluno(String nome, String email, String senha, String orientador) {
-        String insertSql = "INSERT INTO aluno (nome, email, senha, orientador) VALUES (?, ?, ?, ?)";
+    public void cadastrarAluno(String nome, String email, String senha, String orientador, String curso) {
+        String insertSql = "INSERT INTO aluno (nome, email, senha, orientador, curso) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection con = getConnection();
              PreparedStatement pst = con.prepareStatement(insertSql)) {
@@ -23,6 +23,7 @@ public class Connector {
             pst.setString(2, email);
             pst.setString(3, senha);
             pst.setString(4, orientador);
+            pst.setString(5, curso);
             pst.executeUpdate();
 
         } catch (SQLException ex) {
@@ -53,7 +54,7 @@ public class Connector {
         List<Map<String,String>> alunos = new ArrayList<>();
         try{
             conn = getConnection();
-            String selectAlunos = "SELECT nome, email, orientador FROM aluno WHERE orientador = ?";
+            String selectAlunos = "SELECT nome, email, curso FROM aluno WHERE orientador = ?";
             PreparedStatement pst = conn.prepareStatement(selectAlunos);
             pst.setString(1, orientador);
             ResultSet rs = pst.executeQuery();
@@ -61,7 +62,7 @@ public class Connector {
                 Map<String, String> aluno = new HashMap<>();
                 aluno.put("nome", rs.getString("nome"));
                 aluno.put("email", rs.getString("email"));
-                aluno.put("curso", rs.getString("orientador")); // se quiser exibir o orientador no lugar de “curso”
+                aluno.put("curso", rs.getString("curso"));
                 alunos.add(aluno);
             }
         } catch (SQLException e) {
@@ -69,6 +70,7 @@ public class Connector {
         }
         return alunos;
     }
+
     public List<String> orientadores(){
         Connection con = null;
         List<String> nomes = new ArrayList<>();
@@ -184,5 +186,32 @@ public class Connector {
             }
         }
     }
+
+    public List<Map<String,String>> secoesApi(String emailAluno){
+        Connection conn = null;
+        List<Map<String,String>> secoesApi = new ArrayList<>();
+        try{
+            conn = getConnection();
+            String selectSecoesApi = "SELECT semestre_curso, ano, semestre_ano, empresa FROM secao_api WHERE aluno = ?";
+            PreparedStatement pst = conn.prepareStatement(selectSecoesApi);
+            pst.setString(1, emailAluno);
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                String semestreCurso = rs.getString("semestre_curso");
+                String ano = rs.getString("ano");
+                String semestreAno = rs.getString("semestre_ano");
+                String empresa = rs.getString("empresa");
+
+                Map<String, String> secao = new HashMap<>();
+                secao.put("id", semestreCurso + " " + ano + "/" + semestreAno);
+                secao.put("empresa", empresa);
+                secoesApi.add(secao);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return secoesApi;
+    }
+
 
 }
