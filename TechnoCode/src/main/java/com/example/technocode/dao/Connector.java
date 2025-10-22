@@ -3,7 +3,9 @@ package com.example.technocode.dao;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class Connector {
@@ -46,17 +48,21 @@ public class Connector {
         }
     }
 
-    public List<String> alunos(String orientador) {
+    public List<Map<String,String>> alunos(String orientador) {
         Connection conn = null;
-        List<String> alunos = new ArrayList<>();
+        List<Map<String,String>> alunos = new ArrayList<>();
         try{
             conn = getConnection();
-            String selectAlunos = "SELECT * FROM aluno WHERE orientador = ?";
+            String selectAlunos = "SELECT nome, email, orientador FROM aluno WHERE orientador = ?";
             PreparedStatement pst = conn.prepareStatement(selectAlunos);
             pst.setString(1, orientador);
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
-                alunos.add(rs.getString("nome"));
+                Map<String, String> aluno = new HashMap<>();
+                aluno.put("nome", rs.getString("nome"));
+                aluno.put("email", rs.getString("email"));
+                aluno.put("curso", rs.getString("orientador")); // se quiser exibir o orientador no lugar de “curso”
+                alunos.add(aluno);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -68,11 +74,11 @@ public class Connector {
         List<String> nomes = new ArrayList<>();
         try{
             con = getConnection();
-            String selectSql = "SELECT nome FROM orientador";
+            String selectSql = "SELECT email FROM orientador";
             PreparedStatement pst = con.prepareStatement(selectSql);
             ResultSet rs = pst.executeQuery();
             while(rs.next()){
-                nomes.add(rs.getString("nome"));
+                nomes.add(rs.getString("email"));
             }
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao buscar orientadores", e);
