@@ -25,9 +25,9 @@ public class CadastroController {
     @FXML
     private TextField txtNome, txtEmail, txtSenha;
     @FXML
-    HBox hBoxOrientador;
+    HBox hBoxOrientador, hBoxCurso;
     @FXML
-    ComboBox<String> comboBoxOrientador;
+    ComboBox<String> comboBoxOrientador, comboBoxCurso;
 
     private ToggleGroup grupoUsuario;
 
@@ -39,17 +39,17 @@ public class CadastroController {
         radioOrientador.setToggleGroup(grupoUsuario);
         radioOrientador.setUserData("Orientador");
         hBoxOrientador.setVisible(false);
+        hBoxCurso.setVisible(false);
         Connector con =  new Connector();
         List<String> orientadores = con.orientadores();
         comboBoxOrientador.getItems().addAll(orientadores);
+        comboBoxCurso.getItems().addAll("TG1", "TG2", "TG1/TG2");
 
     }
     public void voltar(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/login.fxml"));
         Parent root = loader.load();
-
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
@@ -66,7 +66,7 @@ public class CadastroController {
         String tipo  = getTipoUsuario();
         Connector conn = new Connector();
         if (tipo.equals("Aluno")){
-            conn.cadastrarAluno(txtNome.getText(), txtEmail.getText(), txtSenha.getText(), comboBoxOrientador.getValue());
+            conn.cadastrarAluno(txtNome.getText(), txtEmail.getText(), txtSenha.getText(), comboBoxOrientador.getValue(), comboBoxCurso.getValue());
         }else if (tipo.equals("Orientador")){
             conn.cadastrarOrientador(txtNome.getText(), txtEmail.getText(), txtSenha.getText());
         }
@@ -77,5 +77,6 @@ public class CadastroController {
     private void toggleHboxOrientador(ActionEvent event) {
         RadioButton selected = (RadioButton) event.getSource();
         hBoxOrientador.setVisible(selected == radioAluno);
+        hBoxCurso.setVisible(selected == radioAluno);
     }
 }

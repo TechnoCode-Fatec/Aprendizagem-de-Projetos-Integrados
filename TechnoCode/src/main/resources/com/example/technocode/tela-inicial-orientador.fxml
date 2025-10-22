@@ -25,8 +25,8 @@
 
         <TableView fx:id="tabelaAlunos" prefHeight="327.0" prefWidth="600.0">
             <columns>
-                <TableColumn fx:id="colEmail" prefWidth="100.0" text="Email" />
-                <TableColumn fx:id="colRA" prefWidth="80.0" text="Nome" />
+                <TableColumn fx:id="colNome" prefWidth="100.0" text="Email" />
+                <TableColumn fx:id="colEmail" prefWidth="80.0" text="Nome" />
                 <TableColumn fx:id="colMatriculado" prefWidth="110.0" text="Matéria" />
                 <TableColumn fx:id="colAnalisar" prefWidth="120.0" text="Analisar Aluno" />
             </columns>

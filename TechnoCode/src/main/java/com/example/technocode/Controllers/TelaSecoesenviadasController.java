@@ -1,7 +1,6 @@
 package com.example.technocode.Controllers;
 
-
-import com.example.technocode.Objetos.Seção;
+import com.example.technocode.dao.Connector;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,10 +11,22 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
 
 public class TelaSecoesenviadasController {
+
+    // Identificador da seção
+    private String alunoId;
+    private int versaoId;
+
+    // Status por campo (Aprovado | Revisar | null)
+    private final Map<String, String> statusPorCampo = new HashMap<>();
 
     private Map<String, Boolean> validacoes = new HashMap<>();
 
@@ -68,6 +79,39 @@ public class TelaSecoesenviadasController {
         feedbackTextGithub.setVisible(false);
         feedbackTextLinkedin.setVisible(false);
         feedbackTextConhecimentos.setVisible(false);
+    }
+
+    // Recebe identificador da secao e carrega dados
+    public void setIdentificadorSecao(String aluno, int versao) {
+        this.alunoId = aluno;
+        this.versaoId = versao;
+        carregarSecaoAluno();
+    }
+
+    // 1) Carrega dados da secao_apresentacao
+    public void carregarSecaoAluno() {
+        if (alunoId == null) return;
+        String sql = "SELECT nome, idade, curso, motivacao, historico, link_github, link_linkedin, principais_conhecimentos " +
+                "FROM secao_apresentacao WHERE aluno = ? AND versao = ?";
+        try (Connection con = new Connector().getConnection();
+             PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, alunoId);
+            pst.setInt(2, versaoId);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    if (alunoTextNome != null) alunoTextNome.setText(rs.getString("nome"));
+                    if (alunoTextIdade != null) alunoTextIdade.setText(rs.getString("idade"));
+                    if (alunoTextCurso != null) alunoTextCurso.setText(rs.getString("curso"));
+                    if (alunoTextMotivacao != null) alunoTextMotivacao.setText(rs.getString("motivacao"));
+                    if (alunoTextHistorico != null) alunoTextHistorico.setText(rs.getString("historico"));
+                    if (alunoTextGithub != null) alunoTextGithub.setText(rs.getString("link_github"));
+                    if (alunoTextLinkedin != null) alunoTextLinkedin.setText(rs.getString("link_linkedin"));
+                    if (alunoTextConhecimentos != null) alunoTextConhecimentos.setText(rs.getString("principais_conhecimentos"));
+                }
+            }
+        } catch (SQLException e) {
+            mostrarErro("Erro ao carregar seção do aluno", e);
+        }
     }
 
     @FXML
@@ -127,47 +171,104 @@ public class TelaSecoesenviadasController {
 
 
 
+    // 2) Aprovar/Revisar por campo (handlers dos botões)
+    @FXML private void aprovarNome(ActionEvent e) { aprovarCampo("nome", feedbackTextNome); }
+    @FXML private void revisarNome(ActionEvent e) { revisarCampo("nome", feedbackTextNome); }
+    @FXML private void aprovarIdade(ActionEvent e) { aprovarCampo("idade", feedbackTextIdade); }
+    @FXML private void revisarIdade(ActionEvent e) { revisarCampo("idade", feedbackTextIdade); }
+    @FXML private void aprovarCurso(ActionEvent e) { aprovarCampo("curso", feedbackTextCurso); }
+    @FXML private void revisarCurso(ActionEvent e) { revisarCampo("curso", feedbackTextCurso); }
+    @FXML private void aprovarMotivacao(ActionEvent e) { aprovarCampo("motivacao", feedbackTextMotivacao); }
+    @FXML private void revisarMotivacao(ActionEvent e) { revisarCampo("motivacao", feedbackTextMotivacao); }
+    @FXML private void aprovarHistorico(ActionEvent e) { aprovarCampo("historico", feedbackTextHistorico); }
+    @FXML private void revisarHistorico(ActionEvent e) { revisarCampo("historico", feedbackTextHistorico); }
+    @FXML private void aprovarGithub(ActionEvent e) { aprovarCampo("github", feedbackTextGithub); }
+    @FXML private void revisarGithub(ActionEvent e) { revisarCampo("github", feedbackTextGithub); }
+    @FXML private void aprovarLinkedin(ActionEvent e) { aprovarCampo("linkedin", feedbackTextLinkedin); }
+    @FXML private void revisarLinkedin(ActionEvent e) { revisarCampo("linkedin", feedbackTextLinkedin); }
+    @FXML private void aprovarConhecimentos(ActionEvent e) { aprovarCampo("conhecimentos", feedbackTextConhecimentos); }
+    @FXML private void revisarConhecimentos(ActionEvent e) { revisarCampo("conhecimentos", feedbackTextConhecimentos); }
+
+    private void aprovarCampo(String campo, TextArea areaFeedback) {
+        statusPorCampo.put(campo, "Aprovado");
+        if (areaFeedback != null) {
+            areaFeedback.setVisible(false);
+            areaFeedback.clear();
+        }
+    }
+
+    private void revisarCampo(String campo, TextArea areaFeedback) {
+        statusPorCampo.put(campo, "Revisar");
+        if (areaFeedback != null) {
+            areaFeedback.setVisible(true);
+            areaFeedback.setPromptText("Digite seu feedback aqui...");
+            areaFeedback.setPrefHeight(100);
+            areaFeedback.setWrapText(true);
+        }
+    }
+
+    // 3) Enviar feedbacks (INSERT único)
     @FXML
     public void enviarFeedback(ActionEvent event) {
-        // Coleta todos os feedbacks preenchidos
-        Map<String, String> feedbacks = new HashMap<>();
+        String sql = "INSERT INTO feedback_apresentacao (" +
+                "status_nome, feedback_nome, " +
+                "status_idade, feedback_idade, " +
+                "status_curso, feedback_curso, " +
+                "status_motivacao, feedback_motivacao, " +
+                "status_historico, feedback_historico, " +
+                "status_github, feedback_github, " +
+                "status_linkedin, feedback_linkedin, " +
+                "status_conhecimentos, feedback_conhecimentos, " +
+                "aluno, versao) " +
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-        if (feedbackNome.isSelected() && !feedbackTextNome.getText().isEmpty()) {
-            feedbacks.put("Nome Completo", feedbackTextNome.getText());
-        }
-        if (feedbackIdade.isSelected() && !feedbackTextIdade.getText().isEmpty()) {
-            feedbacks.put("Idade", feedbackTextIdade.getText());
-        }
-        if (feedbackCurso.isSelected() && !feedbackTextCurso.getText().isEmpty()) {
-            feedbacks.put("Curso", feedbackTextCurso.getText());
-        }
-        if (feedbackMotivacao.isSelected() && !feedbackTextMotivacao.getText().isEmpty()) {
-            feedbacks.put("Motivação", feedbackTextMotivacao.getText());
-        }
-        if (feedbackHistorico.isSelected() && !feedbackTextHistorico.getText().isEmpty()) {
-            feedbacks.put("Histórico", feedbackTextHistorico.getText());
-        }
-        if (feedbackGithub.isSelected() && !feedbackTextGithub.getText().isEmpty()) {
-            feedbacks.put("GitHub", feedbackTextGithub.getText());
-        }
-        if (feedbackLinkedin.isSelected() && !feedbackTextLinkedin.getText().isEmpty()) {
-            feedbacks.put("LinkedIn", feedbackTextLinkedin.getText());
-        }
-        if (feedbackConhecimentos.isSelected() && !feedbackTextConhecimentos.getText().isEmpty()) {
-            feedbacks.put("Conhecimentos", feedbackTextConhecimentos.getText());
-        }
+        try (Connection con = new Connector().getConnection();
+             PreparedStatement pst = con.prepareStatement(sql)) {
 
-        // Aqui você implementa a lógica para salvar os feedbacks
-        for (Map.Entry<String, String> feedback : feedbacks.entrySet()) {
-            System.out.println("Feedback para " + feedback.getKey() + ": " + feedback.getValue());
-        }
+            setNullableString(pst, 1, statusPorCampo.get("nome"));
+            setNullableString(pst, 2, textOrNull(feedbackTextNome));
+            setNullableString(pst, 3, statusPorCampo.get("idade"));
+            setNullableString(pst, 4, textOrNull(feedbackTextIdade));
+            setNullableString(pst, 5, statusPorCampo.get("curso"));
+            setNullableString(pst, 6, textOrNull(feedbackTextCurso));
+            setNullableString(pst, 7, statusPorCampo.get("motivacao"));
+            setNullableString(pst, 8, textOrNull(feedbackTextMotivacao));
+            setNullableString(pst, 9, statusPorCampo.get("historico"));
+            setNullableString(pst, 10, textOrNull(feedbackTextHistorico));
+            setNullableString(pst, 11, statusPorCampo.get("github"));
+            setNullableString(pst, 12, textOrNull(feedbackTextGithub));
+            setNullableString(pst, 13, statusPorCampo.get("linkedin"));
+            setNullableString(pst, 14, textOrNull(feedbackTextLinkedin));
+            setNullableString(pst, 15, statusPorCampo.get("conhecimentos"));
+            setNullableString(pst, 16, textOrNull(feedbackTextConhecimentos));
 
-        // Mostra mensagem de confirmação
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Sucesso");
-        alert.setHeaderText(null);
-        alert.setContentText("Feedbacks enviados com sucesso!");
-        alert.showAndWait();
+            pst.setString(17, alunoId);
+            pst.setInt(18, versaoId);
+
+            pst.executeUpdate();
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Sucesso");
+            alert.setHeaderText(null);
+            alert.setContentText("Feedbacks enviados com sucesso!");
+            alert.showAndWait();
+        } catch (SQLException e) {
+            mostrarErro("Erro ao enviar feedback", e);
+        }
+    }
+
+    private static void setNullableString(PreparedStatement pst, int index, String value) throws SQLException {
+        if (value == null || value.isBlank()) {
+            pst.setNull(index, Types.VARCHAR);
+        } else {
+            pst.setString(index, value);
+        }
+    }
+
+    private static String textOrNull(TextArea area) {
+        if (area == null) return null;
+        String v = area.getText();
+        return (v == null || v.isBlank()) ? null : v;
     }
 
     @FXML
@@ -261,18 +362,12 @@ public class TelaSecoesenviadasController {
         return !validacoes.isEmpty();
     }
 
-    public void setDadosDoAluno(Map<String, String> dados) {
-        if (dados != null) {
-            alunoTextNome.setText(dados.getOrDefault("nome", ""));
-            alunoTextIdade.setText(dados.getOrDefault("idade", ""));
-            alunoTextCurso.setText(dados.getOrDefault("curso", ""));
-            alunoTextMotivacao.setText(dados.getOrDefault("motivacao", ""));
-            alunoTextHistorico.setText(dados.getOrDefault("historico", ""));
-            alunoTextGithub.setText(dados.getOrDefault("github", ""));
-            alunoTextLinkedin.setText(dados.getOrDefault("linkedin", ""));
-            alunoTextConhecimentos.setText(dados.getOrDefault("conhecimentos", ""));
-        }
+    private void mostrarErro(String titulo, Exception e) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Erro");
+        alert.setHeaderText(titulo);
+        alert.setContentText(e.getMessage());
+        alert.showAndWait();
+        e.printStackTrace();
     }
-
-
 }

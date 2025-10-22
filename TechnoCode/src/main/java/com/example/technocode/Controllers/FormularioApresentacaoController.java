@@ -26,7 +26,13 @@ public class FormularioApresentacaoController {
     private ChoiceBox<String> choiceBoxCurso;
 
     @FXML
+    private void initialize(){
+        choiceBoxCurso.getItems().addAll("ADS","BD");
+    }
+
+    @FXML
     private void enviarApresentacao(ActionEvent event) {
+
         if (txtNome.getText().isEmpty() ||
                 datePickerIdade.getValue() == null ||
                 choiceBoxCurso.getValue() == null ||
@@ -40,9 +46,10 @@ public class FormularioApresentacaoController {
             return;
         }
 
-            Connector connector = new Connector();
-            connector.cadastrarApresentacao("joao.silva@fatec.sp.gov.br", txtNome.getText(), Date.valueOf(datePickerIdade.getValue()), choiceBoxCurso.getValue(), 1, txtMotivacao.getText(), txtHistorico.getText(), txtGithub.getText(), txtLinkedin.getText(), txtPrincipaisConhecimentos.getText());
-            System.out.println("Cadastrado com sucesso");
+        Connector connector = new Connector();
+        String emailAluno = LoginController.getEmailLogado();
+        connector.cadastrarApresentacao(emailAluno, txtNome.getText(), Date.valueOf(datePickerIdade.getValue()), choiceBoxCurso.getValue(),1, txtMotivacao.getText(),txtHistorico.getText(), txtGithub.getText(), txtLinkedin.getText(),txtPrincipaisConhecimentos.getText());
+        System.out.println("Cadastrado com sucesso");
     }
 
     public void voltar (ActionEvent event) throws IOException {

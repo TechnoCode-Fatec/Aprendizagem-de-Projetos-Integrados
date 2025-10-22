@@ -1,7 +1,11 @@
 package com.example.technocode.Controllers;
 
-import com.example.technocode.Objetos.Aluno;
-import com.example.technocode.Objetos.Seção;
+import com.example.technocode.dao.Connector;
+import javafx.beans.property.SimpleStringProperty;
+
+import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,9 +13,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import java.io.IOException;
 
 public class TelaEntregasDoAluno {
@@ -19,11 +21,7 @@ public class TelaEntregasDoAluno {
     @FXML
     private Label nomeAluno;
     @FXML
-    private Label raAluno;
-    @FXML
     private Label emailAluno;
-    @FXML
-    private Label emailFatecAluno;
     @FXML
     private Label cursoAluno;
     @FXML
@@ -33,12 +31,134 @@ public class TelaEntregasDoAluno {
     @FXML
     private Label statusSecao;
 
+    // GUARDA O E-MAIL DO ALUNO SELECIONADO
+    private String emailAlunoParaConsulta;
 
-    @FXML private TableView<Seção> tabelaSecao;
-    @FXML private TableColumn<Seção, String> colNomeSecao;
-    @FXML private TableColumn<Seção, String> colDescricao;
-    @FXML private TableColumn<Seção, String> colStatus;
-    @FXML private TableColumn<Seção, Void> colAnalisar;
+    public void setEmailAlunoParaConsulta(String email) {
+        this.emailAlunoParaConsulta = email;
+        // se initialize já rodou, podemos carregar os dados agora
+        carregarSecoesDoAluno();
+    }
+
+    @FXML private TableView<Map<String, String>> tabelaSecao;
+    @FXML private TableColumn<Map<String, String>, String> colNomeSecao; // "id"
+    @FXML private TableColumn<Map<String, String>, String> colDescricao; // "empresa"
+    @FXML private TableColumn<Map<String, String>, Void> colAnalisar;
+
+    @FXML
+    public void initialize() {
+        try {
+            colNomeSecao.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("id")));
+            colDescricao.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("empresa")));
+
+            tabelaSecao.setStyle("-fx-control-inner-background: #ffffff; -fx-text-background-color: black;");
+
+            addButtonToTable();
+
+            // só carrega dados se já tiver o e-mail (pode ser setado após o load)
+            carregarSecoesDoAluno();
+
+            tabelaSecao.refresh();
+        } catch (Exception e) {
+            System.err.println("Erro durante a inicialização: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void carregarSecoesDoAluno() {
+        if (emailAlunoParaConsulta == null || emailAlunoParaConsulta.isBlank()) {
+            // ainda não foi informado pelo controller anterior
+            return;
+        }
+        Connector connector = new Connector();
+        
+        // Carrega seções API
+        List<Map<String,String>> secoesApi = connector.secoesApi(emailAlunoParaConsulta);
+        
+        // Carrega seções de apresentação
+        List<Map<String,String>> secoesApresentacao = connector.secoesApresentacao(emailAlunoParaConsulta);
+        
+        // Combina as duas listas
+        List<Map<String,String>> todasSecoes = new ArrayList<>();
+        todasSecoes.addAll(secoesApi);
+        todasSecoes.addAll(secoesApresentacao);
+        
+        System.out.println("Carregando seções para: " + emailAlunoParaConsulta + " -> " + todasSecoes.size() + " itens (API: " + secoesApi.size() + ", Apresentação: " + secoesApresentacao.size() + ")");
+        tabelaSecao.getItems().setAll(todasSecoes);
+    }
+
+    private void addButtonToTable() {
+        colAnalisar.setCellFactory(col -> new TableCell<>() {
+            private final Button btn = new Button("analisar");
+            {
+                btn.setStyle("-fx-background-color: black; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 5;");
+                btn.setOnAction(event -> {
+                    Map<String, String> item = getTableView().getItems().get(getIndex());
+                    try {
+                        String tipo = item.getOrDefault("tipo", "api");
+                        
+                        if ("apresentacao".equals(tipo)) {
+                            // Abre tela de apresentação
+                            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-secoesenviadas.fxml"));
+                            Parent root = loader.load();
+
+                            TelaSecoesenviadasController controller = loader.getController();
+                            
+                            String versao = item.getOrDefault("versao", null);
+                            if (versao != null) {
+                                controller.setIdentificadorSecao(
+                                    emailAlunoParaConsulta,  // email do aluno
+                                    Integer.parseInt(versao) // versao
+                                );
+                            }
+                            
+                            Stage stage = (Stage) tabelaSecao.getScene().getWindow();
+                            Scene scene = new Scene(root);
+                            stage.setScene(scene);
+                            stage.show();
+                        } else {
+                            // Abre tela de API (comportamento original)
+                            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-secoesenviadasAPI.fxml"));
+                            Parent root = loader.load();
+
+                            TelaSecoesenviadasAPIController controller = loader.getController();
+                            
+                            String semestreCurso = item.getOrDefault("semestre_curso", null);
+                            String ano = item.getOrDefault("ano", null);
+                            String semestreAno = item.getOrDefault("semestre_ano", null);
+                            String versao = item.getOrDefault("versao", null);
+                            
+                            if (semestreCurso != null && ano != null && semestreAno != null && versao != null) {
+                                // Extrair apenas o ano da data (ex: "2024-01-01" -> "2024")
+                                String anoExtraido = ano.split("-")[0];
+                                
+                                controller.setIdentificadorSecao(
+                                    emailAlunoParaConsulta,  // email do aluno
+                                    semestreCurso,          // semestre_curso
+                                    Integer.parseInt(anoExtraido),   // ano extraído da data
+                                    semestreAno,            // semestre_ano
+                                    Integer.parseInt(versao) // versao
+                                );
+                            }
+                            
+                            Stage stage = (Stage) tabelaSecao.getScene().getWindow();
+                            Scene scene = new Scene(root);
+                            stage.setScene(scene);
+                            stage.show();
+                        }
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                });
+            }
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : btn);
+            }
+        });
+    }
+
 
     @FXML
     private void voltarTelaOrientador(ActionEvent event) throws IOException {
@@ -55,117 +175,20 @@ public class TelaEntregasDoAluno {
         }
     }
 
-    @FXML
-    public void initialize() {
-        try {
-            System.out.println("Iniciando inicialização da tabela...");
 
-            // Associa as colunas aos atributos da classe Aluno
-            colNomeSecao.setCellValueFactory(new PropertyValueFactory<>("nomeSecao"));
-            colDescricao.setCellValueFactory(new PropertyValueFactory<>("descricao"));
-            colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-            // Melhora a visualização da tabela
-            tabelaSecao.setStyle("-fx-control-inner-background: #ffffff; -fx-text-background-color: black;");
 
-            // Adiciona os dados antes dos botões
-            tabelaSecao.getItems().addAll(
-                    new Seção("Seção 1", "Apresentação", "Concluido"),
-                    new Seção("Seção 2", "API 1", "Em andamento"),
-                    new Seção("Seção 3", "API 2", "Bloqueada")
-            );
-
-            // Debug para verificar se os dados foram adicionados
-            System.out.println("Número de alunos na tabela: " + tabelaSecao.getItems().size());
-
-            // Adiciona os botões de "Analisar"
-            addButtonToTable();
-
-            // Força a atualização da tabela
-            tabelaSecao.refresh();
-
-            System.out.println("Inicialização concluída com sucesso");
-        } catch (Exception e) {
-            System.err.println("Erro durante a inicialização: " + e.getMessage());
-            e.printStackTrace();
+    public void setDadosAluno(String emailAluno) {
+        if (emailAluno != null && !emailAluno.isBlank()) {
+            Connector connector = new Connector();
+            Map<String, String> dadosAluno = connector.buscarDadosAluno(emailAluno);
+            
+            if (!dadosAluno.isEmpty()) {
+                nomeAluno.setText(dadosAluno.get("nome"));
+                this.emailAluno.setText(dadosAluno.get("email"));
+                cursoAluno.setText(dadosAluno.get("curso"));
+            }
         }
     }
 
-        private void addButtonToTable() {
-            Callback<TableColumn<Seção, Void>, TableCell<Seção, Void>> cellFactory = new Callback<>() {
-                @Override
-                public TableCell<Seção, Void> call(final TableColumn<Seção, Void> param) {
-                    return new TableCell<>() {
-
-                        private final Button btn = new Button("Analisar");
-
-                        {
-                            btn.setOnAction(event -> {
-                                Seção secao = getTableView().getItems().get(getIndex());
-                                abrirSecao(secao);
-                            });
-
-                            btn.setStyle("""
-                        -fx-background-color: #5e5555;
-                        -fx-text-fill: white;
-                        -fx-font-weight: bold;
-                        -fx-cursor: hand;
-                        -fx-background-radius: 5;
-                    """);
-                        }
-
-                        @Override
-                        protected void updateItem(Void item, boolean empty) {
-                            super.updateItem(item, empty);
-                            if (empty) {
-                                setGraphic(null);
-                            } else {
-                                setGraphic(btn);
-                            }
-                        }
-                    };
-                }
-            };
-            colAnalisar.setCellFactory(cellFactory);
-        }
-
-
-    private void abrirSecao(Seção secao) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-secoesenviadas.fxml"));
-            Parent root = loader.load();
-
-            TelaSecoesenviadasController controller = loader.getController(); // Mudança aqui
-            // Aqui você pode adicionar um método para passar os dados da seção
-            // controller.setDadosSecao(secao);
-
-            Stage stage = (Stage) tabelaSecao.getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Erro ao abrir tela de análise da seção: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-    }
-
-    public void setDadosSecao(Seção secao) {
-        if (secao != null) {
-            nomeSecao.setText(secao.getNomeSecao());
-            descricaoSecao.setText(secao.getDescricao());
-            statusSecao.setText(secao.getStatus());
-        }
-    }
-
-
-    public void setDadosAluno(Aluno aluno) {
-        if (aluno != null) {
-            nomeAluno.setText(aluno.getNome());
-            raAluno.setText(aluno.getRa());
-            emailAluno.setText(aluno.getEmail());
-            emailFatecAluno.setText(aluno.getEmailFatec());
-            cursoAluno.setText(aluno.getCurso());
-        }
-    }
 }

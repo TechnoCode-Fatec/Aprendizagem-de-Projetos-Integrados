@@ -1,290 +1,220 @@
 package com.example.technocode.Controllers;
 
-
-import com.example.technocode.Objetos.Seção;
+import com.example.technocode.dao.Connector;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
 
 public class TelaSecoesenviadasAPIController {
 
-    private Map<String, Boolean> validacoes = new HashMap<>();
+    // Identificador da seção
+    private String alunoId;
+    private String semestreCursoId;
+    private int anoId;
+    private String semestreAnoId;
+    private int versaoId;
 
-    @FXML private CheckBox validarSemestreCurso, validarAno, validarSemestre,
-            validarEmpresa, validarProblema, validarSolucao, validarRepositorio,
-            validarTecnologias, validarCP, validarHS, validarSS;
+    // Status por campo (Aprovado | Revisar | null)
+    private final Map<String, String> statusPorCampo = new HashMap<>();
 
-    @FXML private TextArea alunoTextSemestreCurso, alunoTextAno, alunoTextSemestre,
-            alunoTextEmpresa, alunoTextProblema, alunoTextSolucao, alunoTextRepositorio,
-            alunoTextTecnologias, alunoTextCP, alunoTextHS, alunoTextSS;
+    // TextAreas de conteúdo do aluno (coluna esquerda)
+    @FXML private TextArea alunoProblema;
+    @FXML private TextArea alunoSolucao;
+    @FXML private TextArea alunoTecnologias;
+    @FXML private TextArea alunoContribuicoes;
+    @FXML private TextArea alunoHardSkills;
+    @FXML private TextArea alunoSoftSkills;
 
-
-    @FXML private TextArea feedbackTextSemestreCurso, feedbackTextAno, feedbackTextSemestre,
-            feedbackTextEmpresa, feedbackTextProblema, feedbackTextSolucao, feedbackTextRepositorio,
-            feedbackTextTecnologias, feedbackTextCP, feedbackTextHS, feedbackTextSS;
-
-    @FXML private CheckBox feedbackSemestreCurso, feedbackAno, feedbackSemestre, feedbackEmpresa,
-            feedbackProblema, feedbackSolucao, feedbackRepositorio, feedbackTecnologias, feedbackCP,
-            feedbackHS, feedbackSS;
+    // TextAreas de feedback (coluna direita)
+    @FXML private TextArea feedbackProblema;
+    @FXML private TextArea feedbackSolucao;
+    @FXML private TextArea feedbackTecnologias;
+    @FXML private TextArea feedbackContribuicoes;
+    @FXML private TextArea feedbackHardSkills;
+    @FXML private TextArea feedbackSoftSkills;
 
     @FXML
     public void initialize() {
-        // Inicializa todas as TextAreas como invisíveis
-        feedbackTextSemestreCurso.setVisible(false);
-        feedbackTextAno.setVisible(false);
-        feedbackTextSemestre.setVisible(false);
-        feedbackTextEmpresa.setVisible(false);
-        feedbackTextProblema.setVisible(false);
-        feedbackTextSolucao.setVisible(false);
-        feedbackTextRepositorio.setVisible(false);
-        feedbackTextTecnologias.setVisible(false);
-        feedbackTextCP.setVisible(false);
-        feedbackTextHS.setVisible(false);
-        feedbackTextSS.setVisible(false);
+        // Todos feedbacks começam ocultos
+        if (feedbackProblema != null) feedbackProblema.setVisible(false);
+        if (feedbackSolucao != null) feedbackSolucao.setVisible(false);
+        if (feedbackTecnologias != null) feedbackTecnologias.setVisible(false);
+        if (feedbackContribuicoes != null) feedbackContribuicoes.setVisible(false);
+        if (feedbackHardSkills != null) feedbackHardSkills.setVisible(false);
+        if (feedbackSoftSkills != null) feedbackSoftSkills.setVisible(false);
     }
 
-    @FXML
-    private void voltarTelaOrientador(ActionEvent event) throws IOException {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-entregasDoAluno.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Erro ao voltar para tela do orientador: " + e.getMessage());
-            throw e;
-        }
+    // Recebe identificador da secao e carrega dados
+    public void setIdentificadorSecao(String aluno, String semestreCurso, int ano, String semestreAno, int versao) {
+        this.alunoId = aluno;
+        this.semestreCursoId = semestreCurso;
+        this.anoId = ano;
+        this.semestreAnoId = semestreAno;
+        this.versaoId = versao;
+        carregarSecaoAluno();
     }
 
-    @FXML
-    public void feedbackSecao(ActionEvent event) {
-        CheckBox checkBox = (CheckBox) event.getSource();
-        TextArea feedbackArea = null;
-
-
-        // Determina qual TextArea deve ser mostrada/escondida
-        if (checkBox == feedbackSemestreCurso) {
-            feedbackArea = feedbackTextSemestreCurso;
-        } else if (checkBox == feedbackAno) {
-            feedbackArea = feedbackTextAno;
-        } else if (checkBox == feedbackSemestre) {
-            feedbackArea = feedbackTextSemestre;
-        } else if (checkBox == feedbackEmpresa) {
-            feedbackArea = feedbackTextEmpresa;
-        } else if (checkBox == feedbackProblema) {
-            feedbackArea = feedbackTextProblema;
-        } else if (checkBox == feedbackSolucao) {
-            feedbackArea = feedbackTextSolucao;
-        } else if (checkBox == feedbackRepositorio) {
-            feedbackArea = feedbackTextRepositorio;
-        } else if (checkBox == feedbackTecnologias) {
-            feedbackArea = feedbackTextTecnologias;
-        } else if (checkBox == feedbackCP) {
-            feedbackArea = feedbackTextCP;
-        } else if (checkBox == feedbackHS) {
-            feedbackArea = feedbackTextSS;
-        } else if (checkBox == feedbackSS) {
-            feedbackArea = feedbackTextSS;
-        }
-
-        // Mostra ou esconde a área de feedback e limpa o texto quando esconde
-        if (feedbackArea != null) {
-            feedbackArea.setVisible(checkBox.isSelected());
-            if (!checkBox.isSelected()) {
-                feedbackArea.clear(); // Limpa o texto quando esconde
-            } else {
-                // Configura um texto padrão ou placeholder quando mostra
-                feedbackArea.setPromptText("Digite seu feedback aqui...");
-
-                // Ajusta o tamanho para um campo menor
-                feedbackArea.setPrefHeight(100); // Altura menor
-                feedbackArea.setWrapText(true); // Permite quebra de linha automática
+    // 1) Carrega dados da secao_api
+    public void carregarSecaoAluno() {
+        if (alunoId == null) return;
+        String sql = "SELECT problema, solucao, tecnologias, contribuicoes, hard_skills, soft_skills " +
+                "FROM secao_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
+        try (Connection con = new Connector().getConnection();
+             PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, alunoId);
+            pst.setString(2, semestreCursoId);
+            pst.setInt(3, anoId);
+            pst.setString(4, semestreAnoId);
+            pst.setInt(5, versaoId);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    if (alunoProblema != null) alunoProblema.setText(rs.getString("problema"));
+                    if (alunoSolucao != null) alunoSolucao.setText(rs.getString("solucao"));
+                    if (alunoTecnologias != null) alunoTecnologias.setText(rs.getString("tecnologias"));
+                    if (alunoContribuicoes != null) alunoContribuicoes.setText(rs.getString("contribuicoes"));
+                    if (alunoHardSkills != null) alunoHardSkills.setText(rs.getString("hard_skills"));
+                    if (alunoSoftSkills != null) alunoSoftSkills.setText(rs.getString("soft_skills"));
+                }
             }
+        } catch (SQLException e) {
+            mostrarErro("Erro ao carregar seção do aluno", e);
         }
     }
 
+    // 2) Aprovar/Revisar por campo (handlers dos botões)
+    @FXML private void aprovarProblema(ActionEvent e) { aprovarCampo("problema", feedbackProblema); }
+    @FXML private void revisarProblema(ActionEvent e) { revisarCampo("problema", feedbackProblema); }
+    @FXML private void aprovarSolucao(ActionEvent e) { aprovarCampo("solucao", feedbackSolucao); }
+    @FXML private void revisarSolucao(ActionEvent e) { revisarCampo("solucao", feedbackSolucao); }
+    @FXML private void aprovarTecnologias(ActionEvent e) { aprovarCampo("tecnologias", feedbackTecnologias); }
+    @FXML private void revisarTecnologias(ActionEvent e) { revisarCampo("tecnologias", feedbackTecnologias); }
+    @FXML private void aprovarContribuicoes(ActionEvent e) { aprovarCampo("contribuicoes", feedbackContribuicoes); }
+    @FXML private void revisarContribuicoes(ActionEvent e) { revisarCampo("contribuicoes", feedbackContribuicoes); }
+    @FXML private void aprovarHardSkills(ActionEvent e) { aprovarCampo("hard_skills", feedbackHardSkills); }
+    @FXML private void revisarHardSkills(ActionEvent e) { revisarCampo("hard_skills", feedbackHardSkills); }
+    @FXML private void aprovarSoftSkills(ActionEvent e) { aprovarCampo("soft_skills", feedbackSoftSkills); }
+    @FXML private void revisarSoftSkills(ActionEvent e) { revisarCampo("soft_skills", feedbackSoftSkills); }
+
+    public void aprovarCampo(String campo) {
+        // Mantido para compatibilidade se chamado diretamente; sem TextArea
+        statusPorCampo.put(campo, "Aprovado");
+    }
+
+    public void revisarCampo(String campo) {
+        statusPorCampo.put(campo, "Revisar");
+    }
+
+    private void aprovarCampo(String campo, TextArea areaFeedback) {
+        statusPorCampo.put(campo, "Aprovado");
+        if (areaFeedback != null) {
+            areaFeedback.setVisible(false);
+            areaFeedback.clear();
+        }
+    }
+
+    private void revisarCampo(String campo, TextArea areaFeedback) {
+        statusPorCampo.put(campo, "Revisar");
+        if (areaFeedback != null) {
+            areaFeedback.setVisible(true);
+            areaFeedback.setPromptText("Digite seu feedback aqui...");
+            areaFeedback.setPrefHeight(100);
+            areaFeedback.setWrapText(true);
+        }
+    }
+
+    // 3) Enviar feedbacks (INSERT único)
     @FXML
     public void enviarFeedback(ActionEvent event) {
-        // Coleta todos os feedbacks preenchidos
-        Map<String, String> feedbacks = new HashMap<>();
+        String sql = "INSERT INTO feedback_api (" +
+                "status_problema, feedback_problema, " +
+                "status_solucao, feedback_solucao, " +
+                "status_tecnologias, feedback_tecnologias, " +
+                "status_contribuicoes, feedback_contribuicoes, " +
+                "status_hard_skills, feedback_hard_skills, " +
+                "status_soft_skills, feedback_soft_skills, " +
+                "aluno, semestre_curso, ano, semestre_ano, versao) " +
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-        if (feedbackSemestreCurso.isSelected() && !feedbackTextSemestreCurso.getText().isEmpty()) {
-            feedbacks.put("Semestre do Curso ", feedbackTextSemestreCurso.getText());
-        }
-        if (feedbackAno.isSelected() && !feedbackTextAno.getText().isEmpty()) {
-            feedbacks.put("Ano do projeto", feedbackTextAno.getText());
-        }
-        if (feedbackSemestre.isSelected() && !feedbackTextSemestre.getText().isEmpty()) {
-            feedbacks.put("Semestre do ano (1,2)", feedbackTextSemestre.getText());
-        }
-        if (feedbackEmpresa.isSelected() && !feedbackTextEmpresa.getText().isEmpty()) {
-            feedbacks.put("Empresa parceira", feedbackTextEmpresa.getText());
-        }
-        if (feedbackProblema.isSelected() && !feedbackTextProblema.getText().isEmpty()) {
-            feedbacks.put("Problema", feedbackTextProblema.getText());
-        }
-        if (feedbackSolucao.isSelected() && !feedbackTextSolucao.getText().isEmpty()) {
-            feedbacks.put("Solução", feedbackTextSolucao.getText());
-        }
-        if (feedbackRepositorio.isSelected() && !feedbackTextRepositorio.getText().isEmpty()) {
-            feedbacks.put("Link Repositório", feedbackTextRepositorio.getText());
-        }
-        if (feedbackTecnologias.isSelected() && !feedbackTextTecnologias.getText().isEmpty()) {
-            feedbacks.put("Tecnologias Utilizadas", feedbackTextTecnologias.getText());
-        }
-        if (feedbackCP.isSelected() && !feedbackTextCP.getText().isEmpty()) {
-            feedbacks.put("Contribuições pessoais", feedbackTextCP.getText());
-        }
-        if (feedbackHS.isSelected() && !feedbackTextHS.getText().isEmpty()) {
-            feedbacks.put("Hard Skills", feedbackTextHS.getText());
-        }
-        if (feedbackSS.isSelected() && !feedbackTextSS.getText().isEmpty()) {
-            feedbacks.put("Soft Skills", feedbackTextSS.getText());
-        }
+        try (Connection con = new Connector().getConnection();
+             PreparedStatement pst = con.prepareStatement(sql)) {
 
-        // Aqui você implementa a lógica para salvar os feedbacks
-        for (Map.Entry<String, String> feedback : feedbacks.entrySet()) {
-            System.out.println("Feedback para " + feedback.getKey() + ": " + feedback.getValue());
-        }
+            setNullableString(pst, 1, statusPorCampo.get("problema"));
+            setNullableString(pst, 2, textOrNull(feedbackProblema));
+            setNullableString(pst, 3, statusPorCampo.get("solucao"));
+            setNullableString(pst, 4, textOrNull(feedbackSolucao));
+            setNullableString(pst, 5, statusPorCampo.get("tecnologias"));
+            setNullableString(pst, 6, textOrNull(feedbackTecnologias));
+            setNullableString(pst, 7, statusPorCampo.get("contribuicoes"));
+            setNullableString(pst, 8, textOrNull(feedbackContribuicoes));
+            setNullableString(pst, 9, statusPorCampo.get("hard_skills"));
+            setNullableString(pst, 10, textOrNull(feedbackHardSkills));
+            setNullableString(pst, 11, statusPorCampo.get("soft_skills"));
+            setNullableString(pst, 12, textOrNull(feedbackSoftSkills));
 
-        // Mostra mensagem de confirmação
+            pst.setString(13, alunoId);
+            pst.setString(14, semestreCursoId);
+            pst.setInt(15, anoId);
+            pst.setString(16, semestreAnoId);
+            pst.setInt(17, versaoId);
+
+            pst.executeUpdate();
+
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Sucesso");
         alert.setHeaderText(null);
         alert.setContentText("Feedbacks enviados com sucesso!");
         alert.showAndWait();
+        } catch (SQLException e) {
+            mostrarErro("Erro ao enviar feedback", e);
+        }
     }
 
+    private static void setNullableString(PreparedStatement pst, int index, String value) throws SQLException {
+        if (value == null || value.isBlank()) {
+            pst.setNull(index, Types.VARCHAR);
+        } else {
+            pst.setString(index, value);
+        }
+    }
+
+    private static String textOrNull(TextArea area) {
+        if (area == null) return null;
+        String v = area.getText();
+        return (v == null || v.isBlank()) ? null : v;
+    }
 
     @FXML
-    public void validarSecao(ActionEvent event) {
-        CheckBox checkBox = (CheckBox) event.getSource();
-        boolean isValidado = checkBox.isSelected();
-
-        String secaoValidada = "";
-        String mensagemAdicional = "";
-
-        // Identifica qual seção está sendo validada
-        if (checkBox == validarSemestreCurso) {
-            secaoValidada = "Semsetre do Curso";
-            validacoes.put("Semestre do Curso", isValidado);
-            mensagemAdicional = isValidado ? "Nome do aluno foi aprovado" : "Semestre do Curso precisa de revisão";
-        } else if (checkBox == validarAno) {
-            secaoValidada = "Ano do Projeto";
-            validacoes.put("Ano do Projeto", isValidado);
-            mensagemAdicional = isValidado ? "Idade foi confirmada" : "Ano do Projeto precisa ser verificada";
-        } else if (checkBox == validarSemestre) {
-            secaoValidada = "Semestre do Ano (1,2)";
-            validacoes.put("Semestre do Ano (1,2)", isValidado);
-            mensagemAdicional = isValidado ? "Informações do curso foram confirmadas" : "Semestre do Ano (1,2) precisam ser revisadas";
-        } else if (checkBox == validarEmpresa) {
-            secaoValidada = "Empresa Parceira";
-            validacoes.put("Empresa Parceira", isValidado);
-            mensagemAdicional = isValidado ? "Motivação foi aprovada" : "Empresa Parceira precisa ser melhorada";
-        } else if (checkBox == validarProblema) {
-            secaoValidada = "Problema do Projeto";
-            validacoes.put("Problema do Projeto", isValidado);
-            mensagemAdicional = isValidado ? "Histórico foi aprovado" : "Problema do Projeto precisa ser complementado";
-        } else if (checkBox == validarSolucao) {
-            secaoValidada = "Solução para o Problema";
-            validacoes.put("Solução para o Problema", isValidado);
-            mensagemAdicional = isValidado ? "Perfil do GitHub foi aprovado" : "Solução para o Problema precisa ser atualizado";
-        } else if (checkBox == validarRepositorio) {
-            secaoValidada = "Link do Repositorio";
-            validacoes.put("Link do Repositorio", isValidado);
-            mensagemAdicional = isValidado ? "Perfil do LinkedIn foi aprovado" : "Link do Repositorio precisa ser atualizado";
-        } else if (checkBox == validarTecnologias) {
-            secaoValidada = "Tecnologias Utilizadas";
-            validacoes.put("Tecnologias Utilizadas", isValidado);
-            mensagemAdicional = isValidado ? "Conhecimentos foram aprovados" : "Tecnologias Utilizadas precisam ser revisados";
-        } else if (checkBox == validarCP) {
-            secaoValidada = "Contribuições Pessoais";
-            validacoes.put("Contribuições Pessoais", isValidado);
-            mensagemAdicional = isValidado ? "Perfil do GitHub foi aprovado" : "Contribuições Pessoais precisa ser atualizado";
-        } else if (checkBox == validarHS) {
-            secaoValidada = "Hard Skills";
-            validacoes.put("Hard Skills", isValidado);
-            mensagemAdicional = isValidado ? "Perfil do LinkedIn foi aprovado" : "Hard Skills precisa ser atualizado";
-        } else if (checkBox == validarSS) {
-            secaoValidada = "Soft Skills";
-            validacoes.put("Soft Skills", isValidado);
-            mensagemAdicional = isValidado ? "Conhecimentos foram aprovados" : "Soft Skills precisam ser revisados";
-
-            // Exibe mensagem de confirmação com detalhes
-            if (!secaoValidada.isEmpty()) {
-                String status = isValidado ? "validada" : "invalidada";
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Status da Validação");
-                alert.setHeaderText("Seção: " + secaoValidada);
-                alert.setContentText(mensagemAdicional);
-                alert.showAndWait();
-
-                // Atualiza o status da seção no banco de dados ou sistema
-                atualizarStatusSecao(secaoValidada, isValidado);
-            }
-        }
+    private void voltarTelaOrientador(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-entregasDoAluno.fxml"));
+        Parent root = loader.load();
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
     }
 
-        private void atualizarStatusSecao (String secao,boolean status){
-            try {
-                // TODO: Implementar a lógica de atualização no banco de dados
-                System.out.println("Atualizando status da seção " + secao + ": " + status);
-
-                // Aqui você pode adicionar a lógica para salvar no banco de dados
-                // Exemplo de como poderia ser:
-                // String sql = "UPDATE secao_apresentacao SET status = ? WHERE secao = ? AND aluno = ?";
-                // PreparedStatement pst = connection.prepareStatement(sql);
-                // pst.setBoolean(1, status);
-                // pst.setString(2, secao);
-                // pst.setString(3, alunoAtual);
-                // pst.executeUpdate();
-
-            } catch (Exception e) {
+    private void mostrarErro(String titulo, Exception e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Erro");
-                alert.setHeaderText("Erro ao atualizar status");
-                alert.setContentText("Não foi possível atualizar o status da seção no banco de dados.");
+        alert.setHeaderText(titulo);
+        alert.setContentText(e.getMessage());
                 alert.showAndWait();
                 e.printStackTrace();
-            }
-        }
-
-        // Método para verificar se todas as seções foram validadas
-        public boolean todasSecoesValidadas () {
-            for (Boolean validado : validacoes.values()) {
-                if (!validado) {
-                    return false;
-                }
-            }
-            return !validacoes.isEmpty();
-        }
-
-
-
-        public void setDadosDoAluno (Map < String, String > dados){
-            if (dados != null) {
-                alunoTextSemestreCurso.setText(dados.getOrDefault("Semestre do Curso", ""));
-                alunoTextAno.setText(dados.getOrDefault("Ano do projeto", ""));
-                alunoTextSemestre.setText(dados.getOrDefault("Semestre do ano (1,2)", ""));
-                alunoTextEmpresa.setText(dados.getOrDefault("Empresa Parceira", ""));
-                alunoTextProblema.setText(dados.getOrDefault("Problema do Projeto", ""));
-                alunoTextSolucao.setText(dados.getOrDefault("Solução do Projeto", ""));
-                alunoTextRepositorio.setText(dados.getOrDefault("Link do Repositorio", ""));
-                alunoTextTecnologias.setText(dados.getOrDefault("Tecnologias Utilizadas", ""));
-                alunoTextCP.setText(dados.getOrDefault("Contribuições Pessoais", ""));
-                alunoTextHS.setText(dados.getOrDefault("Hard Skills", ""));
-                alunoTextSS.setText(dados.getOrDefault("Soft Skills", ""));
-            }
         }
     }

@@ -3,7 +3,9 @@ package com.example.technocode.dao;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class Connector {
@@ -11,8 +13,8 @@ public class Connector {
         return DriverManager.getConnection("jdbc:mysql://localhost:3306/technotg?useTimezone=true&serverTimezone=UTC", "technocode", "pass123");
     }
 
-    public void cadastrarAluno(String nome, String email, String senha, String orientador) {
-        String insertSql = "INSERT INTO aluno (nome, email, senha, orientador) VALUES (?, ?, ?, ?)";
+    public void cadastrarAluno(String nome, String email, String senha, String orientador, String curso) {
+        String insertSql = "INSERT INTO aluno (nome, email, senha, orientador, curso) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection con = getConnection();
              PreparedStatement pst = con.prepareStatement(insertSql)) {
@@ -21,6 +23,7 @@ public class Connector {
             pst.setString(2, email);
             pst.setString(3, senha);
             pst.setString(4, orientador);
+            pst.setString(5, curso);
             pst.executeUpdate();
 
         } catch (SQLException ex) {
@@ -46,33 +49,38 @@ public class Connector {
         }
     }
 
-    public List<String> alunos(String orientador) {
+    public List<Map<String,String>> alunos(String orientador) {
         Connection conn = null;
-        List<String> alunos = new ArrayList<>();
+        List<Map<String,String>> alunos = new ArrayList<>();
         try{
             conn = getConnection();
-            String selectAlunos = "SELECT * FROM aluno WHERE orientador = ?";
+            String selectAlunos = "SELECT nome, email, curso FROM aluno WHERE orientador = ?";
             PreparedStatement pst = conn.prepareStatement(selectAlunos);
             pst.setString(1, orientador);
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
-                alunos.add(rs.getString("nome"));
+                Map<String, String> aluno = new HashMap<>();
+                aluno.put("nome", rs.getString("nome"));
+                aluno.put("email", rs.getString("email"));
+                aluno.put("curso", rs.getString("curso"));
+                alunos.add(aluno);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return alunos;
     }
+
     public List<String> orientadores(){
         Connection con = null;
         List<String> nomes = new ArrayList<>();
         try{
             con = getConnection();
-            String selectSql = "SELECT nome FROM orientador";
+            String selectSql = "SELECT email FROM orientador";
             PreparedStatement pst = con.prepareStatement(selectSql);
             ResultSet rs = pst.executeQuery();
             while(rs.next()){
-                nomes.add(rs.getString("nome"));
+                nomes.add(rs.getString("email"));
             }
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao buscar orientadores", e);
@@ -151,7 +159,7 @@ public class Connector {
         Connection con = null;
         try{
             con = getConnection();
-            String insertSql = "insert into secao_apresentacao (aluno, nome, idade,curso" +
+            String insertSql = "insert into secao_apresentacao (aluno, nome, idade,curso," +
                     "versao, motivacao, historico, link_github, link_linkedin, principais_conhecimentos) " +
                     "values (?,?,?,?,?,?,?,?,?,?)";
             PreparedStatement pst = con.prepareStatement(insertSql);
@@ -178,5 +186,90 @@ public class Connector {
             }
         }
     }
+
+    public List<Map<String,String>> secoesApi(String emailAluno){
+        Connection conn = null;
+        List<Map<String,String>> secoesApi = new ArrayList<>();
+        try{
+            conn = getConnection();
+            String selectSecoesApi = "SELECT semestre_curso, ano, semestre_ano, versao, empresa FROM secao_api WHERE aluno = ?";
+            PreparedStatement pst = conn.prepareStatement(selectSecoesApi);
+            pst.setString(1, emailAluno);
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                String semestreCurso = rs.getString("semestre_curso");
+                String ano = rs.getString("ano");
+                String semestreAno = rs.getString("semestre_ano");
+                String versao = rs.getString("versao");
+                String empresa = rs.getString("empresa");
+
+                Map<String, String> secao = new HashMap<>();
+                secao.put("id", semestreCurso + " " + ano + "/" + semestreAno);
+                secao.put("empresa", empresa);
+                secao.put("semestre_curso", semestreCurso);
+                secao.put("ano", ano);
+                secao.put("semestre_ano", semestreAno);
+                secao.put("versao", versao);
+                secoesApi.add(secao);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return secoesApi;
+    }
+
+    public Map<String, String> buscarDadosAluno(String emailAluno) {
+        Connection conn = null;
+        Map<String, String> dadosAluno = new HashMap<>();
+        try {
+            conn = getConnection();
+            String selectAluno = "SELECT nome, email, curso FROM aluno WHERE email = ?";
+            PreparedStatement pst = conn.prepareStatement(selectAluno);
+            pst.setString(1, emailAluno);
+            ResultSet rs = pst.executeQuery();
+            
+            if (rs.next()) {
+                dadosAluno.put("nome", rs.getString("nome"));
+                dadosAluno.put("email", rs.getString("email"));
+                dadosAluno.put("curso", rs.getString("curso"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar dados do aluno", e);
+        } finally {
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return dadosAluno;
+    }
+
+    public List<Map<String,String>> secoesApresentacao(String emailAluno){
+        Connection conn = null;
+        List<Map<String,String>> secoesApresentacao = new ArrayList<>();
+        try{
+            conn = getConnection();
+            String selectSecoesApresentacao = "SELECT nome, versao FROM secao_apresentacao WHERE aluno = ?";
+            PreparedStatement pst = conn.prepareStatement(selectSecoesApresentacao);
+            pst.setString(1, emailAluno);
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                String nome = rs.getString("nome");
+                String versao = rs.getString("versao");
+
+                Map<String, String> secao = new HashMap<>();
+                secao.put("id", nome);
+                secao.put("empresa", "Apresentação");
+                secao.put("versao", versao);
+                secao.put("tipo", "apresentacao");
+                secoesApresentacao.add(secao);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return secoesApresentacao;
+    }
+
 
 }
