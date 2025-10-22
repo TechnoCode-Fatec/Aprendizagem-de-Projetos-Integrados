@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -30,6 +31,21 @@ public class FormularioApiController {
     }
     @FXML
     private void enviarSecaoApi(ActionEvent event) {
+        if ((choiceBoxSemestre.getValue() == null) ||
+                (choiceBoxSemestreDoCurso.getValue() == null) ||
+                txtAno.getText().isEmpty() ||
+                txtEmpresa.getText().isEmpty() ||
+                txtLinkRepositorio.getText().isEmpty() ||
+                txtProblema.getText().isEmpty() ||
+                txtSolucao.getText().isEmpty() ||
+                txtTecnologias.getText().isEmpty() ||
+                txtContribuicoes.getText().isEmpty() ||
+                txtHardSkills.getText().isEmpty() ||
+                txtSoftSkills.getText().isEmpty()) {
+
+            mostrarAlerta("Campos obrigatórios", "Por favor, preencha todos os campos antes de enviar.");
+            return;
+        }
         Connector connector = new Connector();
         String emailAluno = LoginController.getEmailLogado();
         connector.cadastrarSessaoApi(emailAluno, choiceBoxSemestreDoCurso.getValue(), Integer.parseInt(txtAno.getText()), choiceBoxSemestre.getValue(), 1,
@@ -37,6 +53,14 @@ public class FormularioApiController {
                 txtContribuicoes.getText(),txtHardSkills.getText(),txtSoftSkills.getText());
         System.out.println("Cadastrado com sucesso");
     }
+
+    public void mostrarAlerta (String titulo, String mensagem){
+        Alert alerta = new Alert(Alert.AlertType.WARNING);
+        alerta.setTitle(titulo);
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensagem);
+        alerta.showAndWait();    }
+
     public void voltar(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-inicial-aluno.fxml"));
         Parent root = loader.load();
