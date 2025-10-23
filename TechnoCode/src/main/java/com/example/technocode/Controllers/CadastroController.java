@@ -8,16 +8,19 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+
+import static java.sql.DriverManager.getConnection;
 
 public class CadastroController {
 
@@ -29,6 +32,8 @@ public class CadastroController {
     HBox hBoxOrientador, hBoxCurso;
     @FXML
     ComboBox<String> comboBoxOrientador, comboBoxCurso;
+    @FXML
+    private Button btnCadastrar;
 
     private ToggleGroup grupoUsuario;
 
@@ -94,16 +99,43 @@ public class CadastroController {
         }
 
         Connector conn = new Connector();
-        if (tipo.equals("Aluno")){
-            conn.cadastrarAluno(txtNome.getText(), txtEmail.getText(), txtSenha.getText(), comboBoxOrientador.getValue(), comboBoxCurso.getValue());
-        }else if (tipo.equals("Orientador")){
+
+        if (tipo.equals("Aluno")) {
+            // Busca o email do orientador a partir do nome selecionado
+            String nomeSelecionado = comboBoxOrientador.getValue();
+            String emailOrientador = conn.buscarEmailOrientadorPorNome(nomeSelecionado);
+
+            if (emailOrientador == null) {
+                mostrarAlertaErro("Orientador inválido", "Não foi possível encontrar o email do orientador selecionado.");
+                return;
+            }
+
+            conn.cadastrarAluno(
+                    txtNome.getText(),
+                    txtEmail.getText(),
+                    txtSenha.getText(),
+                    emailOrientador, // usa o email como FK
+                    comboBoxCurso.getValue()
+            );
+
+        } else if (tipo.equals("Orientador")) {
             conn.cadastrarOrientador(txtNome.getText(), txtEmail.getText(), txtSenha.getText());
+
+            // Recarrega a lista de orientadores após cadastrar um novo
+            try {
+                comboBoxOrientador.getItems().clear();
+                comboBoxOrientador.getItems().addAll(conn.buscarOrientadores().keySet());
+            } catch (Exception e) {
+                System.err.println("Erro ao recarregar comboBoxOrientador: " + e.getMessage());
+            }
         }
 
         mostrarAlertaSucesso("Cadastro realizado", "Usuário cadastrado com sucesso!");
-
-        System.out.println("Usuario cadastrado com sucesso!");
+        System.out.println("Usuário cadastrado com sucesso!");
     }
+
+
+
 
     private boolean validarEmail(String email) {
         String regex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";

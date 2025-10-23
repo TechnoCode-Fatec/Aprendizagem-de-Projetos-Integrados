@@ -2,10 +2,8 @@ package com.example.technocode.dao;
 
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.Date;
+import java.util.*;
 
 
 public class Connector {
@@ -412,6 +410,36 @@ public class Connector {
             }
         }
         return historico;
+    }
+
+    public Map<String, String> buscarOrientadores() {
+        Map<String, String> lista = new LinkedHashMap<>();
+        String sql = "SELECT email, nome FROM orientador ORDER BY nome";
+        try (Connection c = getConnection();
+             PreparedStatement ps = c.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                lista.put(rs.getString("nome"), rs.getString("email")); // chave = nome, valor = email
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
+    public String buscarEmailOrientadorPorNome(String nomeOrientador) {
+        String sql = "SELECT email FROM orientador WHERE nome = ?";
+        try (Connection c = getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, nomeOrientador);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("email");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 
