@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
 <VBox alignment="TOP_CENTER" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: C4C4C4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.TelaInicialAlunoController">
@@ -17,7 +16,7 @@
                <font>
                   <Font name="System Bold" size="26.0" />
                </font></Label>
-            <Button mnemonicParsing="false" prefHeight="30.0" prefWidth="113.0" style="-fx-background-color: #5E5555;" text="Nova Sessão" textFill="WHITE">
+            <Button fx:id="btnNovaSessao" mnemonicParsing="false" onAction="#mostrarOpcoesNovaSessao" prefHeight="30.0" prefWidth="113.0" style="-fx-background-color: #5E5555;" text="Nova Sessão" textFill="WHITE">
                <font>
                   <Font size="14.0" />
                </font></Button>
@@ -25,12 +24,23 @@
       </HBox>
       <VBox alignment="CENTER" prefHeight="350.0" prefWidth="600.0" style="-fx-spacing: 15;">
          <children>
-            <Button mnemonicParsing="false" onAction="#adicionarApresentacao" prefHeight="42.0" prefWidth="538.0" style="-fx-background-color: EAEAEA;" text="+ ADICIONAR APRESENTAÇÃO">
+            <!-- Container para seções de apresentação -->
+            <VBox fx:id="containerApresentacoes" alignment="CENTER" prefHeight="0.0" prefWidth="600.0" style="-fx-spacing: 10;">
+            </VBox>
+            
+            <!-- Botão para adicionar apresentação (visível apenas quando não há apresentações) -->
+            <Button fx:id="btnAdicionarApresentacao" mnemonicParsing="false" onAction="#adicionarApresentacao" prefHeight="42.0" prefWidth="538.0" style="-fx-background-color: EAEAEA;" text="+ ADICIONAR APRESENTAÇÃO">
                <font>
                   <Font size="22.0" />
                </font>
             </Button>
-             <Button mnemonicParsing="false" onAction="#adicionarApi" prefHeight="42.0" prefWidth="538.0" style="-fx-background-color: EAEAEA;" text="+ ADICIONAR API">
+            
+            <!-- Container para seções de API -->
+            <VBox fx:id="containerApis" alignment="CENTER" prefHeight="0.0" prefWidth="600.0" style="-fx-spacing: 10;">
+            </VBox>
+            
+            <!-- Botão para adicionar API (visível apenas quando não há APIs) -->
+            <Button fx:id="btnAdicionarApi" mnemonicParsing="false" onAction="#adicionarApi" prefHeight="42.0" prefWidth="538.0" style="-fx-background-color: EAEAEA;" text="+ ADICIONAR API">
                <font>
                   <Font size="22.0" />
                </font>
