@@ -14,6 +14,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import java.io.IOException;
 
 public class TelaEntregasDoAluno {
@@ -173,6 +174,7 @@ public class TelaEntregasDoAluno {
             System.err.println("Erro ao voltar para tela do orientador: " + e.getMessage());
             throw e;
         }
+
     }
 
 
