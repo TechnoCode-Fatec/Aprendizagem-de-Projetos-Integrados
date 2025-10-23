@@ -41,11 +41,11 @@ Entregar as principais funcionalidades que viabilizam a comunicação entre alun
 
 | Funcionalidade | User Story | Prioridade | Status |
 |:--|:--|:--:|:--:|
-| **Visualização e correção de seções** | Como orientador, quero visualizar as seções dos alunos e corrigi-las, para auxiliar os TGs dos alunos. | 🔺 Alta | 🚧 Em desenvolvimento |
+| **Visualização e correção de seções** | Como orientador, quero visualizar as seções dos alunos e corrigi-las, para auxiliar os TGs dos alunos. | 🔺 Alta | ✅ Finalizado |
 | **Controle dos alunos** | Como orientador, quero ter um controle com todos os alunos que estou orientando, para ver rapidamente quem está em atraso, em revisão ou finalizou seções. | 🔺 Alta | ⏳ Planejado |
-| **Envio de TGs** | Como aluno, quero enviar os TGs em seções e receber os feedbacks, para arrumar os TGs conforme o orientador recomendou. | 🔺 Alta | ⏳ Planejado |
-| **Análise de feedbacks** | Como aluno, quero analisar os feedbacks recebidos e corrigi-los, para alinhar com a opinião do orientador. | 🔺 Alta | ⏳ Planejado |
-| **Feedback do Orientador** | Como orientador, quero adicionar feedbacks de forma separada em cada seção e manter os feedbacks visíveis, para ter controle dos feedbacks que já foram feitos. |  🔸 Média | ⏳ Planejado |
+| **Envio de TGs** | Como aluno, quero enviar os TGs em seções e receber os feedbacks, para arrumar os TGs conforme o orientador recomendou. | 🔺 Alta | ✅ Finalizado |
+| **Análise de feedbacks** | Como aluno, quero analisar os feedbacks recebidos e corrigi-los, para alinhar com a opinião do orientador. | 🔺 Alta | 🧑‍💻 Em desenvolvimento |
+| **Feedback do Orientador** | Como orientador, quero adicionar feedbacks de forma separada em cada seção e manter os feedbacks visíveis, para ter controle dos feedbacks que já foram feitos. |  🔸 Média | ✅ Finalizado |
 
 
 ---
