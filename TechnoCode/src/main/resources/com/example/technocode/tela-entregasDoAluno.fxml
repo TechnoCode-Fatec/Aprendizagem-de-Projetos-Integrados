@@ -20,33 +20,23 @@
                 </Label>
             </children>
         </HBox>
-        <VBox alignment="CENTER" prefHeight="393.0" prefWidth="600.0" style="-fx-spacing: 15; -fx-padding: 20;">
+        <VBox alignment="CENTER" prefHeight="215.0" prefWidth="600.0" style="-fx-spacing: 15; -fx-padding: 20;">
             <children>
-                <VBox prefHeight="200.0" prefWidth="538.0" style="-fx-background-color: EAEAEA; -fx-padding: 20;">
+                <VBox prefHeight="115.0" prefWidth="560.0" style="-fx-background-color: EAEAEA; -fx-padding: 20;">
                     <children>
                         <Label text="Informações do Aluno">
                             <font>
                                 <Font name="System Bold" size="18.0" />
                             </font>
                         </Label>
-                        <VBox prefHeight="160.0" prefWidth="498.0" style="-fx-spacing: 10; -fx-padding: 10;">
+                        <VBox prefHeight="94.0" prefWidth="520.0" style="-fx-spacing: 10; -fx-padding: 10;">
                             <children>
                                 <Label fx:id="nomeAluno" text="Nome: ">
                                     <font>
                                         <Font size="14.0" />
                                     </font>
                                 </Label>
-                                <Label fx:id="raAluno" text="RA: ">
-                                    <font>
-                                        <Font size="14.0" />
-                                    </font>
-                                </Label>
                                 <Label fx:id="emailAluno" text="Email: ">
-                                    <font>
-                                        <Font size="14.0" />
-                                    </font>
-                                </Label>
-                                <Label fx:id="emailFatecAluno" text="Email Fatec: ">
                                     <font>
                                         <Font size="14.0" />
                                     </font>
@@ -62,11 +52,10 @@
                 </VBox>
             </children>
         </VBox>
-      <TableView fx:id="tabelaSecao" prefHeight="200.0" prefWidth="200.0">
+      <TableView fx:id="tabelaSecao" prefHeight="316.0" prefWidth="600.0">
         <columns>
             <TableColumn fx:id="colNomeSecao" prefWidth="72.20001375675201" text="Nome" />
             <TableColumn fx:id="colDescricao" minWidth="0.0" prefWidth="78.1999740600586" text="Descrição" />
-            <TableColumn fx:id="colStatus" prefWidth="75.0" text="Status" />
             <TableColumn fx:id="colAnalisar" prefWidth="120.0" text="Analisar Seção" />
         </columns>
          <columnResizePolicy>

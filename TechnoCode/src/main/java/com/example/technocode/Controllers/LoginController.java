@@ -17,6 +17,12 @@ public class LoginController {
     @FXML
     private TextField txtEmail, txtSenha;
 
+    private static String emailLogado;
+
+    public static String getEmailLogado() {
+        return emailLogado;
+    }
+
     public void login(ActionEvent event) throws IOException {
         if (txtEmail.getText().isEmpty() || txtSenha.getText().isEmpty()) {
             mostrarAlertaErro("Campos obrigatórios", "Por favor, preencha todos os campos.");
@@ -36,12 +42,13 @@ public class LoginController {
             return;
         }
 
+        else {
+            emailLogado = txtEmail.getText();
+        }
         if (tipo.equals("Aluno")){
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-inicial-aluno.fxml"));
             Parent root = loader.load();
-
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.show();
@@ -50,9 +57,7 @@ public class LoginController {
         if (tipo.equals("Orientador")){
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-inicial-orientador.fxml"));
             Parent root = loader.load();
-
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.show();
@@ -75,9 +80,7 @@ public class LoginController {
     public void cadastrarUsuario(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/cadastro.fxml"));
         Parent root = loader.load();
-
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
