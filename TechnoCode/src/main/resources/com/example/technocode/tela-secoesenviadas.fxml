@@ -57,8 +57,8 @@
                                 <children>
                                     <HBox spacing="10">
                                         <children>
-                                            <Button text="✔" onAction="#aprovarNome" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
-                                            <Button text="✖" onAction="#revisarNome" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
+                                            <Button fx:id="aprovarNome" text="✔" onAction="#aprovarNome" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
+                                            <Button fx:id="revisarNome" text="✖" onAction="#revisarNome" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
                                         </children>
                                     </HBox>
                                     <TextArea fx:id="feedbackTextNome" promptText="Digite seu feedback..." wrapText="true" visible="false" prefHeight="100.0" />
@@ -80,8 +80,8 @@
                                 <children>
                                     <HBox spacing="10">
                                         <children>
-                                            <Button text="✔" onAction="#aprovarIdade" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
-                                            <Button text="✖" onAction="#revisarIdade" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
+                                            <Button fx:id="aprovarIdade" text="✔" onAction="#aprovarIdade" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
+                                            <Button fx:id="revisarIdade" text="✖" onAction="#revisarIdade" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
                                         </children>
                                     </HBox>
                                     <TextArea fx:id="feedbackTextIdade" promptText="Digite seu feedback..." wrapText="true" visible="false" prefHeight="100.0" />
@@ -103,8 +103,8 @@
                                 <children>
                                     <HBox spacing="10">
                                         <children>
-                                            <Button text="✔" onAction="#aprovarCurso" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
-                                            <Button text="✖" onAction="#revisarCurso" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
+                                            <Button fx:id="aprovarCurso" text="✔" onAction="#aprovarCurso" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
+                                            <Button fx:id="revisarCurso" text="✖" onAction="#revisarCurso" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
                                         </children>
                                     </HBox>
                                     <TextArea fx:id="feedbackTextCurso" promptText="Digite seu feedback..." wrapText="true" visible="false" prefHeight="100.0" />
@@ -126,8 +126,8 @@
                                 <children>
                                     <HBox spacing="10">
                                         <children>
-                                            <Button text="✔" onAction="#aprovarMotivacao" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
-                                            <Button text="✖" onAction="#revisarMotivacao" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
+                                            <Button fx:id="aprovarMotivacao" text="✔" onAction="#aprovarMotivacao" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
+                                            <Button fx:id="revisarMotivacao" text="✖" onAction="#revisarMotivacao" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
                                         </children>
                                     </HBox>
                                     <TextArea fx:id="feedbackTextMotivacao" promptText="Digite seu feedback..." wrapText="true" visible="false" prefHeight="100.0" />
@@ -149,8 +149,8 @@
                                 <children>
                                     <HBox spacing="10">
                                         <children>
-                                            <Button text="✔" onAction="#aprovarHistorico" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
-                                            <Button text="✖" onAction="#revisarHistorico" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
+                                            <Button fx:id="aprovarHistorico" text="✔" onAction="#aprovarHistorico" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
+                                            <Button fx:id="revisarHistorico" text="✖" onAction="#revisarHistorico" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
                                         </children>
                                     </HBox>
                                     <TextArea fx:id="feedbackTextHistorico" promptText="Digite seu feedback..." wrapText="true" visible="false" prefHeight="100.0" />
@@ -172,8 +172,8 @@
                                 <children>
                                     <HBox spacing="10">
                                         <children>
-                                            <Button text="✔" onAction="#aprovarGithub" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
-                                            <Button text="✖" onAction="#revisarGithub" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
+                                            <Button fx:id="aprovarGithub" text="✔" onAction="#aprovarGithub" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
+                                            <Button fx:id="revisarGithub" text="✖" onAction="#revisarGithub" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
                                         </children>
                                     </HBox>
                                     <TextArea fx:id="feedbackTextGithub" promptText="Digite seu feedback..." wrapText="true" visible="false" prefHeight="100.0" />
@@ -195,8 +195,8 @@
                                 <children>
                                     <HBox spacing="10">
                                         <children>
-                                            <Button text="✔" onAction="#aprovarLinkedin" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
-                                            <Button text="✖" onAction="#revisarLinkedin" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
+                                            <Button fx:id="aprovarLinkedin" text="✔" onAction="#aprovarLinkedin" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
+                                            <Button fx:id="revisarLinkedin" text="✖" onAction="#revisarLinkedin" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
                                         </children>
                                     </HBox>
                                     <TextArea fx:id="feedbackTextLinkedin" promptText="Digite seu feedback..." wrapText="true" visible="false" prefHeight="100.0" />
@@ -218,8 +218,8 @@
                                 <children>
                                     <HBox spacing="10">
                                         <children>
-                                            <Button text="✔" onAction="#aprovarConhecimentos" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
-                                            <Button text="✖" onAction="#revisarConhecimentos" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
+                                            <Button fx:id="aprovarConhecimentos" text="✔" onAction="#aprovarConhecimentos" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
+                                            <Button fx:id="revisarConhecimentos" text="✖" onAction="#revisarConhecimentos" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" />
                                         </children>
                                     </HBox>
                                     <TextArea fx:id="feedbackTextConhecimentos" promptText="Digite seu feedback..." wrapText="true" visible="false" prefHeight="100.0" />

@@ -1,6 +1,7 @@
 package com.example.technocode.Controllers;
 
 import com.example.technocode.dao.Connector;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -95,6 +96,65 @@ public class TelaSecoesenviadasAPIController {
         } catch (SQLException e) {
             mostrarErro("Erro ao carregar seção do aluno", e);
         }
+        
+        // Carrega feedback existente se houver
+        carregarFeedbackExistente();
+    }
+    
+    // Carrega feedback existente do orientador
+    private void carregarFeedbackExistente() {
+        if (alunoId == null) return;
+        String sql = "SELECT status_problema, feedback_problema, " +
+                "status_solucao, feedback_solucao, " +
+                "status_tecnologias, feedback_tecnologias, " +
+                "status_contribuicoes, feedback_contribuicoes, " +
+                "status_hard_skills, feedback_hard_skills, " +
+                "status_soft_skills, feedback_soft_skills " +
+                "FROM feedback_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
+        try (Connection con = new Connector().getConnection();
+             PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, alunoId);
+            pst.setString(2, semestreCursoId);
+            pst.setInt(3, anoId);
+            pst.setString(4, semestreAnoId);
+            pst.setInt(5, versaoId);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    carregarCampoFeedbackExistente("problema", rs, feedbackProblema);
+                    carregarCampoFeedbackExistente("solucao", rs, feedbackSolucao);
+                    carregarCampoFeedbackExistente("tecnologias", rs, feedbackTecnologias);
+                    carregarCampoFeedbackExistente("contribuicoes", rs, feedbackContribuicoes);
+                    carregarCampoFeedbackExistente("hard_skills", rs, feedbackHardSkills);
+                    carregarCampoFeedbackExistente("soft_skills", rs, feedbackSoftSkills);
+                }
+            }
+        } catch (SQLException e) {
+            // Não é erro crítico se não houver feedback existente
+            System.out.println("Nenhum feedback existente encontrado para esta seção");
+        }
+    }
+    
+    private void carregarCampoFeedbackExistente(String campo, ResultSet rs, TextArea feedbackArea) throws SQLException {
+        String status = rs.getString("status_" + campo);
+        String feedback = rs.getString("feedback_" + campo);
+        
+        if (status != null) {
+            statusPorCampo.put(campo, status);
+            
+            if ("Revisar".equals(status) && feedback != null && !feedback.trim().isEmpty()) {
+                // Se foi marcado para revisar e tem feedback, mostra o campo
+                if (feedbackArea != null) {
+                    feedbackArea.setVisible(true);
+                    feedbackArea.setText(feedback);
+                    feedbackArea.setPrefHeight(100);
+                    feedbackArea.setWrapText(true);
+                }
+            }
+            
+            // Atualiza as cores dos botões baseado no status carregado
+            // Usa Platform.runLater para garantir que a cena esteja carregada
+            Platform.runLater(() -> atualizarCorBotoes(campo, status));
+        }
     }
 
     // 2) Aprovar/Revisar por campo (handlers dos botões)
@@ -126,6 +186,7 @@ public class TelaSecoesenviadasAPIController {
             areaFeedback.setVisible(false);
             areaFeedback.clear();
         }
+        atualizarCorBotoes(campo, "Aprovado");
     }
 
     private void revisarCampo(String campo, TextArea areaFeedback) {
@@ -136,20 +197,81 @@ public class TelaSecoesenviadasAPIController {
             areaFeedback.setPrefHeight(100);
             areaFeedback.setWrapText(true);
         }
+        atualizarCorBotoes(campo, "Revisar");
+    }
+    
+    private void atualizarCorBotoes(String campo, String status) {
+        // Mapeia campos para seus respectivos botões
+        Button btnAprovar = null;
+        Button btnRevisar = null;
+        
+        switch (campo) {
+            case "problema":
+                btnAprovar = (Button) alunoProblema.getScene().lookup("#aprovarProblema");
+                btnRevisar = (Button) alunoProblema.getScene().lookup("#revisarProblema");
+                break;
+            case "solucao":
+                btnAprovar = (Button) alunoSolucao.getScene().lookup("#aprovarSolucao");
+                btnRevisar = (Button) alunoSolucao.getScene().lookup("#revisarSolucao");
+                break;
+            case "tecnologias":
+                btnAprovar = (Button) alunoTecnologias.getScene().lookup("#aprovarTecnologias");
+                btnRevisar = (Button) alunoTecnologias.getScene().lookup("#revisarTecnologias");
+                break;
+            case "contribuicoes":
+                btnAprovar = (Button) alunoContribuicoes.getScene().lookup("#aprovarContribuicoes");
+                btnRevisar = (Button) alunoContribuicoes.getScene().lookup("#revisarContribuicoes");
+                break;
+            case "hard_skills":
+                btnAprovar = (Button) alunoHardSkills.getScene().lookup("#aprovarHardSkills");
+                btnRevisar = (Button) alunoHardSkills.getScene().lookup("#revisarHardSkills");
+                break;
+            case "soft_skills":
+                btnAprovar = (Button) alunoSoftSkills.getScene().lookup("#aprovarSoftSkills");
+                btnRevisar = (Button) alunoSoftSkills.getScene().lookup("#revisarSoftSkills");
+                break;
+        }
+        
+        if (btnAprovar != null && btnRevisar != null) {
+            if ("Aprovado".equals(status)) {
+                btnAprovar.setStyle("-fx-background-color: #00AA00; -fx-text-fill: white;");
+                btnRevisar.setStyle("-fx-background-color: #5E5555; -fx-text-fill: white;");
+            } else if ("Revisar".equals(status)) {
+                btnAprovar.setStyle("-fx-background-color: #5E5555; -fx-text-fill: white;");
+                btnRevisar.setStyle("-fx-background-color: #AA0000; -fx-text-fill: white;");
+            }
+        }
     }
 
-    // 3) Enviar feedbacks (INSERT único)
+    // 3) Enviar feedbacks (INSERT ou UPDATE)
     @FXML
     public void enviarFeedback(ActionEvent event) {
-        String sql = "INSERT INTO feedback_api (" +
-                "status_problema, feedback_problema, " +
-                "status_solucao, feedback_solucao, " +
-                "status_tecnologias, feedback_tecnologias, " +
-                "status_contribuicoes, feedback_contribuicoes, " +
-                "status_hard_skills, feedback_hard_skills, " +
-                "status_soft_skills, feedback_soft_skills, " +
-                "aluno, semestre_curso, ano, semestre_ano, versao) " +
-                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        // Verifica se já existe feedback para esta seção
+        boolean feedbackExiste = verificarFeedbackExistente();
+        
+        String sql;
+        if (feedbackExiste) {
+            // UPDATE se já existe
+            sql = "UPDATE feedback_api SET " +
+                    "status_problema = ?, feedback_problema = ?, " +
+                    "status_solucao = ?, feedback_solucao = ?, " +
+                    "status_tecnologias = ?, feedback_tecnologias = ?, " +
+                    "status_contribuicoes = ?, feedback_contribuicoes = ?, " +
+                    "status_hard_skills = ?, feedback_hard_skills = ?, " +
+                    "status_soft_skills = ?, feedback_soft_skills = ? " +
+                    "WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
+        } else {
+            // INSERT se não existe
+            sql = "INSERT INTO feedback_api (" +
+                    "status_problema, feedback_problema, " +
+                    "status_solucao, feedback_solucao, " +
+                    "status_tecnologias, feedback_tecnologias, " +
+                    "status_contribuicoes, feedback_contribuicoes, " +
+                    "status_hard_skills, feedback_hard_skills, " +
+                    "status_soft_skills, feedback_soft_skills, " +
+                    "aluno, semestre_curso, ano, semestre_ano, versao) " +
+                    "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        }
 
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
@@ -167,22 +289,52 @@ public class TelaSecoesenviadasAPIController {
             setNullableString(pst, 11, statusPorCampo.get("soft_skills"));
             setNullableString(pst, 12, textOrNull(feedbackSoftSkills));
 
-            pst.setString(13, alunoId);
-            pst.setString(14, semestreCursoId);
-            pst.setInt(15, anoId);
-            pst.setString(16, semestreAnoId);
-            pst.setInt(17, versaoId);
+            if (feedbackExiste) {
+                // Para UPDATE, adiciona WHERE
+                pst.setString(13, alunoId);
+                pst.setString(14, semestreCursoId);
+                pst.setInt(15, anoId);
+                pst.setString(16, semestreAnoId);
+                pst.setInt(17, versaoId);
+            } else {
+                // Para INSERT, adiciona aluno e versao
+                pst.setString(13, alunoId);
+                pst.setString(14, semestreCursoId);
+                pst.setInt(15, anoId);
+                pst.setString(16, semestreAnoId);
+                pst.setInt(17, versaoId);
+            }
 
             pst.executeUpdate();
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Sucesso");
-        alert.setHeaderText(null);
-        alert.setContentText("Feedbacks enviados com sucesso!");
-        alert.showAndWait();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Sucesso");
+            alert.setHeaderText(null);
+            alert.setContentText(feedbackExiste ? "Feedbacks atualizados com sucesso!" : "Feedbacks enviados com sucesso!");
+            alert.showAndWait();
         } catch (SQLException e) {
             mostrarErro("Erro ao enviar feedback", e);
         }
+    }
+    
+    private boolean verificarFeedbackExistente() {
+        String sql = "SELECT COUNT(*) FROM feedback_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
+        try (Connection con = new Connector().getConnection();
+             PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, alunoId);
+            pst.setString(2, semestreCursoId);
+            pst.setInt(3, anoId);
+            pst.setString(4, semestreAnoId);
+            pst.setInt(5, versaoId);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao verificar feedback existente: " + e.getMessage());
+        }
+        return false;
     }
 
     private static void setNullableString(PreparedStatement pst, int index, String value) throws SQLException {

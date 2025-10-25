@@ -1,6 +1,7 @@
 package com.example.technocode.Controllers;
 
 import com.example.technocode.dao.Connector;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -112,6 +113,69 @@ public class TelaSecoesenviadasController {
         } catch (SQLException e) {
             mostrarErro("Erro ao carregar seção do aluno", e);
         }
+        
+        // Carrega feedback existente se houver
+        carregarFeedbackExistente();
+    }
+    
+    // Carrega feedback existente do orientador
+    private void carregarFeedbackExistente() {
+        if (alunoId == null) return;
+        String sql = "SELECT status_nome, feedback_nome, " +
+                "status_idade, feedback_idade, " +
+                "status_curso, feedback_curso, " +
+                "status_motivacao, feedback_motivacao, " +
+                "status_historico, feedback_historico, " +
+                "status_github, feedback_github, " +
+                "status_linkedin, feedback_linkedin, " +
+                "status_conhecimentos, feedback_conhecimentos " +
+                "FROM feedback_apresentacao WHERE aluno = ? AND versao = ?";
+        try (Connection con = new Connector().getConnection();
+             PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, alunoId);
+            pst.setInt(2, versaoId);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    carregarCampoFeedbackExistente("nome", rs, feedbackTextNome, feedbackNome);
+                    carregarCampoFeedbackExistente("idade", rs, feedbackTextIdade, feedbackIdade);
+                    carregarCampoFeedbackExistente("curso", rs, feedbackTextCurso, feedbackCurso);
+                    carregarCampoFeedbackExistente("motivacao", rs, feedbackTextMotivacao, feedbackMotivacao);
+                    carregarCampoFeedbackExistente("historico", rs, feedbackTextHistorico, feedbackHistorico);
+                    carregarCampoFeedbackExistente("github", rs, feedbackTextGithub, feedbackGithub);
+                    carregarCampoFeedbackExistente("linkedin", rs, feedbackTextLinkedin, feedbackLinkedin);
+                    carregarCampoFeedbackExistente("conhecimentos", rs, feedbackTextConhecimentos, feedbackConhecimentos);
+                }
+            }
+        } catch (SQLException e) {
+            // Não é erro crítico se não houver feedback existente
+            System.out.println("Nenhum feedback existente encontrado para esta seção");
+        }
+    }
+    
+    private void carregarCampoFeedbackExistente(String campo, ResultSet rs, TextArea feedbackArea, CheckBox feedbackCheckBox) throws SQLException {
+        String status = rs.getString("status_" + campo);
+        String feedback = rs.getString("feedback_" + campo);
+        
+        if (status != null) {
+            statusPorCampo.put(campo, status);
+            
+            if ("Revisar".equals(status) && feedback != null && !feedback.trim().isEmpty()) {
+                // Se foi marcado para revisar e tem feedback, mostra o campo
+                if (feedbackCheckBox != null) {
+                    feedbackCheckBox.setSelected(true);
+                }
+                if (feedbackArea != null) {
+                    feedbackArea.setVisible(true);
+                    feedbackArea.setText(feedback);
+                    feedbackArea.setPrefHeight(100);
+                    feedbackArea.setWrapText(true);
+                }
+            }
+            
+            // Atualiza as cores dos botões baseado no status carregado
+            // Usa Platform.runLater para garantir que a cena esteja carregada
+            Platform.runLater(() -> atualizarCorBotoes(campo, status));
+        }
     }
 
     @FXML
@@ -195,6 +259,7 @@ public class TelaSecoesenviadasController {
             areaFeedback.setVisible(false);
             areaFeedback.clear();
         }
+        atualizarCorBotoes(campo, "Aprovado");
     }
 
     private void revisarCampo(String campo, TextArea areaFeedback) {
@@ -205,22 +270,93 @@ public class TelaSecoesenviadasController {
             areaFeedback.setPrefHeight(100);
             areaFeedback.setWrapText(true);
         }
+        atualizarCorBotoes(campo, "Revisar");
+    }
+    
+    private void atualizarCorBotoes(String campo, String status) {
+        // Mapeia campos para seus respectivos botões
+        Button btnAprovar = null;
+        Button btnRevisar = null;
+        
+        switch (campo) {
+            case "nome":
+                btnAprovar = (Button) alunoTextNome.getScene().lookup("#aprovarNome");
+                btnRevisar = (Button) alunoTextNome.getScene().lookup("#revisarNome");
+                break;
+            case "idade":
+                btnAprovar = (Button) alunoTextIdade.getScene().lookup("#aprovarIdade");
+                btnRevisar = (Button) alunoTextIdade.getScene().lookup("#revisarIdade");
+                break;
+            case "curso":
+                btnAprovar = (Button) alunoTextCurso.getScene().lookup("#aprovarCurso");
+                btnRevisar = (Button) alunoTextCurso.getScene().lookup("#revisarCurso");
+                break;
+            case "motivacao":
+                btnAprovar = (Button) alunoTextMotivacao.getScene().lookup("#aprovarMotivacao");
+                btnRevisar = (Button) alunoTextMotivacao.getScene().lookup("#revisarMotivacao");
+                break;
+            case "historico":
+                btnAprovar = (Button) alunoTextHistorico.getScene().lookup("#aprovarHistorico");
+                btnRevisar = (Button) alunoTextHistorico.getScene().lookup("#revisarHistorico");
+                break;
+            case "github":
+                btnAprovar = (Button) alunoTextGithub.getScene().lookup("#aprovarGithub");
+                btnRevisar = (Button) alunoTextGithub.getScene().lookup("#revisarGithub");
+                break;
+            case "linkedin":
+                btnAprovar = (Button) alunoTextLinkedin.getScene().lookup("#aprovarLinkedin");
+                btnRevisar = (Button) alunoTextLinkedin.getScene().lookup("#revisarLinkedin");
+                break;
+            case "conhecimentos":
+                btnAprovar = (Button) alunoTextConhecimentos.getScene().lookup("#aprovarConhecimentos");
+                btnRevisar = (Button) alunoTextConhecimentos.getScene().lookup("#revisarConhecimentos");
+                break;
+        }
+        
+        if (btnAprovar != null && btnRevisar != null) {
+            if ("Aprovado".equals(status)) {
+                btnAprovar.setStyle("-fx-background-color: #00AA00; -fx-text-fill: white;");
+                btnRevisar.setStyle("-fx-background-color: #5E5555; -fx-text-fill: white;");
+            } else if ("Revisar".equals(status)) {
+                btnAprovar.setStyle("-fx-background-color: #5E5555; -fx-text-fill: white;");
+                btnRevisar.setStyle("-fx-background-color: #AA0000; -fx-text-fill: white;");
+            }
+        }
     }
 
-    // 3) Enviar feedbacks (INSERT único)
+    // 3) Enviar feedbacks (INSERT ou UPDATE)
     @FXML
     public void enviarFeedback(ActionEvent event) {
-        String sql = "INSERT INTO feedback_apresentacao (" +
-                "status_nome, feedback_nome, " +
-                "status_idade, feedback_idade, " +
-                "status_curso, feedback_curso, " +
-                "status_motivacao, feedback_motivacao, " +
-                "status_historico, feedback_historico, " +
-                "status_github, feedback_github, " +
-                "status_linkedin, feedback_linkedin, " +
-                "status_conhecimentos, feedback_conhecimentos, " +
-                "aluno, versao) " +
-                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        // Verifica se já existe feedback para esta seção
+        boolean feedbackExiste = verificarFeedbackExistente();
+        
+        String sql;
+        if (feedbackExiste) {
+            // UPDATE se já existe
+            sql = "UPDATE feedback_apresentacao SET " +
+                    "status_nome = ?, feedback_nome = ?, " +
+                    "status_idade = ?, feedback_idade = ?, " +
+                    "status_curso = ?, feedback_curso = ?, " +
+                    "status_motivacao = ?, feedback_motivacao = ?, " +
+                    "status_historico = ?, feedback_historico = ?, " +
+                    "status_github = ?, feedback_github = ?, " +
+                    "status_linkedin = ?, feedback_linkedin = ?, " +
+                    "status_conhecimentos = ?, feedback_conhecimentos = ? " +
+                    "WHERE aluno = ? AND versao = ?";
+        } else {
+            // INSERT se não existe
+            sql = "INSERT INTO feedback_apresentacao (" +
+                    "status_nome, feedback_nome, " +
+                    "status_idade, feedback_idade, " +
+                    "status_curso, feedback_curso, " +
+                    "status_motivacao, feedback_motivacao, " +
+                    "status_historico, feedback_historico, " +
+                    "status_github, feedback_github, " +
+                    "status_linkedin, feedback_linkedin, " +
+                    "status_conhecimentos, feedback_conhecimentos, " +
+                    "aluno, versao) " +
+                    "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        }
 
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
@@ -242,19 +378,43 @@ public class TelaSecoesenviadasController {
             setNullableString(pst, 15, statusPorCampo.get("conhecimentos"));
             setNullableString(pst, 16, textOrNull(feedbackTextConhecimentos));
 
-            pst.setString(17, alunoId);
-            pst.setInt(18, versaoId);
+            if (feedbackExiste) {
+                // Para UPDATE, adiciona WHERE
+                pst.setString(17, alunoId);
+                pst.setInt(18, versaoId);
+            } else {
+                // Para INSERT, adiciona aluno e versao
+                pst.setString(17, alunoId);
+                pst.setInt(18, versaoId);
+            }
 
             pst.executeUpdate();
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Sucesso");
             alert.setHeaderText(null);
-            alert.setContentText("Feedbacks enviados com sucesso!");
+            alert.setContentText(feedbackExiste ? "Feedbacks atualizados com sucesso!" : "Feedbacks enviados com sucesso!");
             alert.showAndWait();
         } catch (SQLException e) {
             mostrarErro("Erro ao enviar feedback", e);
         }
+    }
+    
+    private boolean verificarFeedbackExistente() {
+        String sql = "SELECT COUNT(*) FROM feedback_apresentacao WHERE aluno = ? AND versao = ?";
+        try (Connection con = new Connector().getConnection();
+             PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, alunoId);
+            pst.setInt(2, versaoId);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao verificar feedback existente: " + e.getMessage());
+        }
+        return false;
     }
 
     private static void setNullableString(PreparedStatement pst, int index, String value) throws SQLException {
