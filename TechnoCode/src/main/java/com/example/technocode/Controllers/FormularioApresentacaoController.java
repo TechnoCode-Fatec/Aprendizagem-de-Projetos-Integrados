@@ -12,7 +12,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.Date;
-import java.time.LocalDate;
 
 public class FormularioApresentacaoController {
 
@@ -48,15 +47,35 @@ public class FormularioApresentacaoController {
 
         Connector connector = new Connector();
         String emailAluno = LoginController.getEmailLogado();
-        connector.cadastrarApresentacao(emailAluno, txtNome.getText(), Date.valueOf(datePickerIdade.getValue()), choiceBoxCurso.getValue(),1, txtMotivacao.getText(),txtHistorico.getText(), txtGithub.getText(), txtLinkedin.getText(),txtPrincipaisConhecimentos.getText());
-        System.out.println("Cadastrado com sucesso");
+        
+        // Busca a próxima versão disponível automaticamente
+        int proximaVersao = connector.getProximaVersaoApresentacao(emailAluno);
+        
+        connector.cadastrarApresentacao(emailAluno, txtNome.getText(), Date.valueOf(datePickerIdade.getValue()), choiceBoxCurso.getValue(), proximaVersao, txtMotivacao.getText(),txtHistorico.getText(), txtGithub.getText(), txtLinkedin.getText(),txtPrincipaisConhecimentos.getText());
+        System.out.println("Cadastrado com sucesso - Versão: " + proximaVersao);
+        
+        // Volta para a tela inicial e recarrega as seções
+        try {
+            voltar(null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void voltar (ActionEvent event) throws IOException {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-inicial-aluno.fxml"));
             Parent root = loader.load();
+            
+            TelaInicialAlunoController controller = loader.getController();
+            controller.recarregarSecoes();
 
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Stage stage;
+            if (event != null && event.getSource() != null) {
+                stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            } else {
+                // Se chamado programaticamente, pega a janela atual
+                stage = (Stage) txtNome.getScene().getWindow();
+            }
 
             Scene scene = new Scene(root);
             stage.setScene(scene);

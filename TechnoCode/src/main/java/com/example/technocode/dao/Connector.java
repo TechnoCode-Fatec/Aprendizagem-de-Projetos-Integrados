@@ -2,10 +2,8 @@ package com.example.technocode.dao;
 
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.Date;
+import java.util.*;
 
 
 public class Connector {
@@ -192,7 +190,17 @@ public class Connector {
         List<Map<String,String>> secoesApi = new ArrayList<>();
         try{
             conn = getConnection();
-            String selectSecoesApi = "SELECT semestre_curso, ano, semestre_ano, versao, empresa FROM secao_api WHERE aluno = ?";
+            // Busca apenas a versão mais recente de cada seção API
+            String selectSecoesApi = "SELECT semestre_curso, ano, semestre_ano, versao, empresa " +
+                    "FROM secao_api s1 " +
+                    "WHERE aluno = ? AND versao = (" +
+                    "    SELECT MAX(versao) " +
+                    "    FROM secao_api s2 " +
+                    "    WHERE s2.aluno = s1.aluno " +
+                    "    AND s2.semestre_curso = s1.semestre_curso " +
+                    "    AND s2.ano = s1.ano " +
+                    "    AND s2.semestre_ano = s1.semestre_ano" +
+                    ")";
             PreparedStatement pst = conn.prepareStatement(selectSecoesApi);
             pst.setString(1, emailAluno);
             ResultSet rs = pst.executeQuery();
@@ -250,7 +258,14 @@ public class Connector {
         List<Map<String,String>> secoesApresentacao = new ArrayList<>();
         try{
             conn = getConnection();
-            String selectSecoesApresentacao = "SELECT nome, versao FROM secao_apresentacao WHERE aluno = ?";
+            // Busca apenas a versão mais recente de cada seção de apresentação
+            String selectSecoesApresentacao = "SELECT nome, versao " +
+                    "FROM secao_apresentacao s1 " +
+                    "WHERE aluno = ? AND versao = (" +
+                    "    SELECT MAX(versao) " +
+                    "    FROM secao_apresentacao s2 " +
+                    "    WHERE s2.aluno = s1.aluno" +
+                    ")";
             PreparedStatement pst = conn.prepareStatement(selectSecoesApresentacao);
             pst.setString(1, emailAluno);
             ResultSet rs = pst.executeQuery();
@@ -269,6 +284,162 @@ public class Connector {
             throw new RuntimeException(e);
         }
         return secoesApresentacao;
+    }
+
+    /**
+     * Busca a próxima versão disponível para uma seção de apresentação do aluno
+     */
+    public int getProximaVersaoApresentacao(String emailAluno) {
+        Connection conn = null;
+        try {
+            conn = getConnection();
+            String sql = "SELECT MAX(versao) as max_versao FROM secao_apresentacao WHERE aluno = ?";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, emailAluno);
+            ResultSet rs = pst.executeQuery();
+            
+            if (rs.next()) {
+                int maxVersao = rs.getInt("max_versao");
+                return maxVersao + 1;
+            }
+            return 1; // Primeira versão
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar próxima versão de apresentação", e);
+        } finally {
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Busca a próxima versão disponível para uma seção de API do aluno
+     */
+    public int getProximaVersaoApi(String emailAluno, String semestreCurso, int ano, String semestreAno) {
+        Connection conn = null;
+        try {
+            conn = getConnection();
+            String sql = "SELECT MAX(versao) as max_versao FROM secao_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ?";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, emailAluno);
+            pst.setString(2, semestreCurso);
+            pst.setInt(3, ano);
+            pst.setString(4, semestreAno);
+            ResultSet rs = pst.executeQuery();
+            
+            if (rs.next()) {
+                int maxVersao = rs.getInt("max_versao");
+                return maxVersao + 1;
+            }
+            return 1; // Primeira versão
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar próxima versão de API", e);
+        } finally {
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Busca o histórico de versões de apresentação do aluno
+     */
+    public List<Map<String,String>> historicoVersoesApresentacao(String emailAluno) {
+        Connection conn = null;
+        List<Map<String,String>> historico = new ArrayList<>();
+        try {
+            conn = getConnection();
+            String sql = "SELECT nome, versao FROM secao_apresentacao WHERE aluno = ? ORDER BY versao DESC";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, emailAluno);
+            ResultSet rs = pst.executeQuery();
+            
+            while (rs.next()) {
+                Map<String, String> versao = new HashMap<>();
+                versao.put("nome", rs.getString("nome"));
+                versao.put("versao", rs.getString("versao"));
+                versao.put("tipo", "apresentacao");
+                historico.add(versao);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar histórico de apresentações", e);
+        } finally {
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return historico;
+    }
+
+    /**
+     * Busca o histórico de versões de API do aluno
+     */
+    public List<Map<String,String>> historicoVersoesApi(String emailAluno) {
+        Connection conn = null;
+        List<Map<String,String>> historico = new ArrayList<>();
+        try {
+            conn = getConnection();
+            String sql = "SELECT semestre_curso, ano, semestre_ano, versao, empresa FROM secao_api WHERE aluno = ? ORDER BY versao DESC";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, emailAluno);
+            ResultSet rs = pst.executeQuery();
+            
+            while (rs.next()) {
+                Map<String, String> versao = new HashMap<>();
+                versao.put("semestre_curso", rs.getString("semestre_curso"));
+                versao.put("ano", rs.getString("ano"));
+                versao.put("semestre_ano", rs.getString("semestre_ano"));
+                versao.put("versao", rs.getString("versao"));
+                versao.put("empresa", rs.getString("empresa"));
+                versao.put("tipo", "api");
+                historico.add(versao);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar histórico de APIs", e);
+        } finally {
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return historico;
+    }
+
+    public Map<String, String> buscarOrientadores() {
+        Map<String, String> lista = new LinkedHashMap<>();
+        String sql = "SELECT email, nome FROM orientador ORDER BY nome";
+        try (Connection c = getConnection();
+             PreparedStatement ps = c.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                lista.put(rs.getString("nome"), rs.getString("email")); // chave = nome, valor = email
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
+    public String buscarEmailOrientadorPorNome(String nomeOrientador) {
+        String sql = "SELECT email FROM orientador WHERE nome = ?";
+        try (Connection c = getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, nomeOrientador);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("email");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 

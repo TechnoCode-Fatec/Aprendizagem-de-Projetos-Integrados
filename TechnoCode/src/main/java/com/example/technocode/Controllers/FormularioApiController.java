@@ -14,7 +14,6 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.sql.SQLOutput;
 
 public class FormularioApiController {
     @FXML
@@ -48,10 +47,21 @@ public class FormularioApiController {
         }
         Connector connector = new Connector();
         String emailAluno = LoginController.getEmailLogado();
-        connector.cadastrarSessaoApi(emailAluno, choiceBoxSemestreDoCurso.getValue(), Integer.parseInt(txtAno.getText()), choiceBoxSemestre.getValue(), 1,
+        
+        // Busca a próxima versão disponível automaticamente
+        int proximaVersao = connector.getProximaVersaoApi(emailAluno, choiceBoxSemestreDoCurso.getValue(), Integer.parseInt(txtAno.getText()), choiceBoxSemestre.getValue());
+        
+        connector.cadastrarSessaoApi(emailAluno, choiceBoxSemestreDoCurso.getValue(), Integer.parseInt(txtAno.getText()), choiceBoxSemestre.getValue(), proximaVersao,
                 txtEmpresa.getText(), txtProblema.getText(), txtSolucao.getText(),txtLinkRepositorio.getText(),txtTecnologias.getText(),
                 txtContribuicoes.getText(),txtHardSkills.getText(),txtSoftSkills.getText());
-        System.out.println("Cadastrado com sucesso");
+        System.out.println("Cadastrado com sucesso - Versão: " + proximaVersao);
+        
+        // Volta para a tela inicial e recarrega as seções
+        try {
+            voltar(null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void mostrarAlerta (String titulo, String mensagem){
@@ -64,8 +74,17 @@ public class FormularioApiController {
     public void voltar(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-inicial-aluno.fxml"));
         Parent root = loader.load();
+        
+        TelaInicialAlunoController controller = loader.getController();
+        controller.recarregarSecoes();
 
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Stage stage;
+        if (event != null && event.getSource() != null) {
+            stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        } else {
+            // Se chamado programaticamente, pega a janela atual
+            stage = (Stage) txtEmpresa.getScene().getWindow();
+        }
 
         Scene scene = new Scene(root);
         stage.setScene(scene);
