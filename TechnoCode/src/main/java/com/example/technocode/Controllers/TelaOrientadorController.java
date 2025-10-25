@@ -9,7 +9,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import java.io.IOException;
@@ -122,6 +121,22 @@ public class TelaOrientadorController {
             stage.show();
         } catch (IOException e) {
             System.err.println("Erro ao abrir tela de análise do aluno: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // Método público para recarregar a tabela de alunos
+    public void recarregarTabelaAlunos() {
+        try {
+            Connector con = new Connector();
+            List<Map<String, String>> alunos = con.alunos(LoginController.getEmailLogado());
+
+            tabelaAlunos.getItems().setAll(alunos);
+            tabelaAlunos.refresh();
+
+            System.out.println("Tabela de alunos recarregada com " + alunos.size() + " alunos");
+        } catch (Exception e) {
+            System.err.println("Erro ao recarregar tabela de alunos: " + e.getMessage());
             e.printStackTrace();
         }
     }

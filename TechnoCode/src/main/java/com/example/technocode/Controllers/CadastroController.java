@@ -19,6 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static java.sql.DriverManager.getConnection;
 
@@ -36,6 +37,7 @@ public class CadastroController {
     private Button btnCadastrar;
 
     private ToggleGroup grupoUsuario;
+    private Map<String, String> orientadoresMap;
 
     @FXML
     private void initialize() {
@@ -47,8 +49,8 @@ public class CadastroController {
         hBoxOrientador.setVisible(false);
         hBoxCurso.setVisible(false);
         Connector con =  new Connector();
-        List<String> orientadores = con.orientadores();
-        comboBoxOrientador.getItems().addAll(orientadores);
+        orientadoresMap = con.buscarOrientadores();
+        comboBoxOrientador.getItems().addAll(orientadoresMap.keySet());
         comboBoxCurso.getItems().addAll("TG1", "TG2", "TG1/TG2");
 
     }

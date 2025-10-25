@@ -14,7 +14,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import java.io.IOException;
 
 public class TelaEntregasDoAluno {
@@ -166,6 +165,13 @@ public class TelaEntregasDoAluno {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-inicial-orientador.fxml"));
             Parent root = loader.load();
+            
+            // Obtém o controlador da tela de destino
+            TelaOrientadorController controller = loader.getController();
+            
+            // Recarrega a tabela de alunos com os dados atualizados
+            controller.recarregarTabelaAlunos();
+            
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
             stage.setScene(scene);
@@ -190,6 +196,14 @@ public class TelaEntregasDoAluno {
                 this.emailAluno.setText(dadosAluno.get("email"));
                 cursoAluno.setText(dadosAluno.get("curso"));
             }
+        }
+    }
+
+    // Método público para recarregar os dados da tabela
+    public void recarregarDados() {
+        if (emailAlunoParaConsulta != null && !emailAlunoParaConsulta.isBlank()) {
+            carregarSecoesDoAluno();
+            tabelaSecao.refresh();
         }
     }
 
