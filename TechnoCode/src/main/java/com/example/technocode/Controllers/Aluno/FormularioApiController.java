@@ -27,7 +27,7 @@ public class FormularioApiController {
     @FXML
     private void initialize(){
         choiceBoxSemestre.getItems().addAll("1","2");
-        choiceBoxSemestreDoCurso.getItems().addAll("Primeiro semestre","Segundo semestre","Terceiro semestre","Quarto semestre","Quinto semestre","Sexto semestre");
+        choiceBoxSemestreDoCurso.getItems().addAll("1º Semestre","2º Semestre","3º Semestre","4º Semestre","5º Semestre","6º Semestre");
     }
     @FXML
     private void enviarSecaoApi(ActionEvent event) {
