@@ -149,4 +149,69 @@ public class TelaVisualizarSecaoAlunoController {
         System.err.println(titulo + ": " + e.getMessage());
         e.printStackTrace();
     }
+
+    /**
+     * Carrega os dados da versão atual de apresentação e abre o formulário preenchido
+     * para criar uma nova versão baseada na anterior
+     */
+    @FXML
+    private void carregarVersaoAnteriorApresentacao(ActionEvent event) {
+        if (alunoId == null) return;
+
+        String sql = "SELECT nome, idade, curso, motivacao, historico, link_github, link_linkedin, principais_conhecimentos " +
+                     "FROM secao_apresentacao WHERE aluno = ? AND versao = ?";
+
+        try (Connection con = new Connector().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setString(1, alunoId);
+            ps.setInt(2, versaoId);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    // Obtém todos os dados da versão atual
+                    String nome = rs.getString("nome");
+                    String dataNascimento = rs.getString("idade"); // Armazena como data no banco
+                    String curso = rs.getString("curso");
+                    String motivacao = rs.getString("motivacao");
+                    String historico = rs.getString("historico");
+                    String github = rs.getString("link_github");
+                    String linkedin = rs.getString("link_linkedin");
+                    String conhecimentos = rs.getString("principais_conhecimentos");
+                    
+                    // Carrega o formulário
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/formulario-apresentacao.fxml"));
+                    Parent root = loader.load();
+                    
+                    // Obtém o controller e preenche os dados
+                    FormularioApresentacaoController controller = loader.getController();
+                    controller.setDadosVersaoAnterior(
+                        nome, 
+                        dataNascimento, 
+                        curso, 
+                        motivacao, 
+                        historico, 
+                        github, 
+                        linkedin, 
+                        conhecimentos
+                    );
+                    
+                    // Abre a tela do formulário
+                    Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                    Scene scene = new Scene(root);
+                    stage.setScene(scene);
+                    stage.show();
+                    
+                } else {
+                    System.err.println("Seção de apresentação não encontrada para criar nova versão");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar dados da versão anterior de apresentação: " + e.getMessage());
+            e.printStackTrace();
+        } catch (IOException e) {
+            System.err.println("Erro ao carregar formulário de apresentação: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }

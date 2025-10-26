@@ -150,4 +150,77 @@ public class TelaVisualizarSecaoApiAlunoController {
             return false;
         }
     }
+
+    /**
+     * Carrega os dados da versão atual e abre o formulário preenchido
+     * para criar uma nova versão baseada na anterior
+     */
+    public void carregarVersaoAnterior(ActionEvent event) {
+        if (alunoId == null) return;
+
+        String sql = "SELECT semestre_curso, ano, semestre_ano, empresa, link_repositorio, problema, solucao, tecnologias, contribuicoes, hard_skills, soft_skills " +
+                     "FROM secao_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
+
+        try (Connection con = new Connector().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setString(1, alunoId);
+            ps.setString(2, semestreCursoId);
+            ps.setInt(3, anoId);
+            ps.setString(4, semestreAnoId);
+            ps.setInt(5, versaoId);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    // Obtém todos os dados da versão atual
+                    String semestreCurso = rs.getString("semestre_curso");
+                    int ano = rs.getInt("ano");
+                    String semestreAno = rs.getString("semestre_ano");
+                    String empresa = rs.getString("empresa");
+                    String repositorio = rs.getString("link_repositorio");
+                    String problema = rs.getString("problema");
+                    String solucao = rs.getString("solucao");
+                    String tecnologias = rs.getString("tecnologias");
+                    String contribuicoes = rs.getString("contribuicoes");
+                    String hardSkills = rs.getString("hard_skills");
+                    String softSkills = rs.getString("soft_skills");
+                    
+                    // Carrega o formulário
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/formulario-api.fxml"));
+                    Parent root = loader.load();
+                    
+                    // Obtém o controller e preenche os dados
+                    FormularioApiController controller = loader.getController();
+                    controller.setDadosVersaoAnterior(
+                        semestreCurso, 
+                        String.valueOf(ano), 
+                        semestreAno,
+                            empresa,
+                            repositorio,
+                        problema, 
+                        solucao, 
+                        tecnologias, 
+                        contribuicoes, 
+                        hardSkills, 
+                        softSkills
+                    );
+                    
+                    // Abre a tela do formulário
+                    Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                    Scene scene = new Scene(root);
+                    stage.setScene(scene);
+                    stage.show();
+                    
+                } else {
+                    System.err.println("Seção não encontrada para criar nova versão");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar dados da versão anterior: " + e.getMessage());
+            e.printStackTrace();
+        } catch (IOException e) {
+            System.err.println("Erro ao carregar formulário: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }
