@@ -13,7 +13,7 @@
                         <Font size="14.0" />
                     </font>
                 </Button>
-                <Label fx:id="labelTitulo" alignment="CENTER" prefHeight="47.0" prefWidth="400.0" text="MINHA SEÇÃO">
+                <Label fx:id="labelTitulo" alignment="CENTER" prefHeight="39.0" prefWidth="227.0" text="MINHA SEÇÃO">
                     <font>
                         <Font name="System Bold" size="24.0" />
                     </font>
@@ -24,6 +24,11 @@
                     </font>
                 </Button>
                 <Button mnemonicParsing="false" onAction="#verHistorico" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #5E5555;" text="Histórico" textFill="WHITE">
+                    <font>
+                        <Font size="16.0" />
+                    </font>
+                </Button>
+                <Button mnemonicParsing="false" onAction="#carregarVersaoAnteriorApresentacao" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #5E5555;" text="Nova versão" textFill="WHITE">
                     <font>
                         <Font size="16.0" />
                     </font>

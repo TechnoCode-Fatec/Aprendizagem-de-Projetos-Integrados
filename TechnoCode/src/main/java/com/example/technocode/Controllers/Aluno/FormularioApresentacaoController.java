@@ -30,6 +30,53 @@ public class FormularioApresentacaoController {
         choiceBoxCurso.getItems().addAll("ADS","BD");
     }
 
+    /**
+     * Preenche os campos do formulário com os dados de uma versão anterior
+     * para criar uma nova versão baseada na anterior
+     */
+    public void setDadosVersaoAnterior(String nome, String dataNascimento, String curso, 
+                                        String motivacao, String historico, 
+                                        String github, String linkedin, String conhecimentos) {
+        // Preenche o TextField de nome
+        if (nome != null && !nome.isEmpty()) {
+            txtNome.setText(nome);
+        }
+        
+        // Preenche o DatePicker com a data de nascimento
+        if (dataNascimento != null && !dataNascimento.isEmpty()) {
+            try {
+                java.time.LocalDate data = java.time.LocalDate.parse(dataNascimento);
+                datePickerIdade.setValue(data);
+            } catch (Exception e) {
+                System.err.println("Erro ao converter data: " + e.getMessage());
+            }
+        }
+        
+        // Preenche o ChoiceBox de curso
+        if (curso != null && !curso.isEmpty()) {
+            choiceBoxCurso.setValue(curso);
+        }
+        
+        // Preenche os TextFields de links
+        if (github != null && !github.isEmpty()) {
+            txtGithub.setText(github);
+        }
+        if (linkedin != null && !linkedin.isEmpty()) {
+            txtLinkedin.setText(linkedin);
+        }
+        
+        // Preenche os TextAreas
+        if (motivacao != null && !motivacao.isEmpty()) {
+            txtMotivacao.setText(motivacao);
+        }
+        if (historico != null && !historico.isEmpty()) {
+            txtHistorico.setText(historico);
+        }
+        if (conhecimentos != null && !conhecimentos.isEmpty()) {
+            txtPrincipaisConhecimentos.setText(conhecimentos);
+        }
+    }
+
     @FXML
     private void enviarApresentacao(ActionEvent event) {
 
