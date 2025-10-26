@@ -6,7 +6,7 @@
 
 <VBox alignment="TOP_CENTER" prefHeight="601.0" prefWidth="600.0" style="-fx-background-color: C4C4C4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.Orientador.TelaEntregasDoAluno">
     <children>
-        <HBox alignment="CENTER" prefHeight="44.0" prefWidth="600.0" style="-fx-spacing: 25;">
+        <HBox alignment="CENTER" prefHeight="44.0" prefWidth="600.0" style="-fx-spacing: 15;">
             <children>
                 <Button mnemonicParsing="false" onAction="#voltarTelaOrientador" prefHeight="30.0" prefWidth="113.0" style="-fx-background-color: #5E5555;" text="Voltar" textFill="WHITE">
                     <font>
@@ -18,6 +18,11 @@
                         <Font name="System Bold" size="26.0" />
                     </font>
                 </Label>
+                <Button mnemonicParsing="false" onAction="#abrirHistorico" prefHeight="30.0" prefWidth="113.0" style="-fx-background-color: #5E5555;" text="Histórico" textFill="WHITE">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Button>
             </children>
         </HBox>
         <VBox alignment="CENTER" prefHeight="215.0" prefWidth="600.0" style="-fx-spacing: 15; -fx-padding: 20;">

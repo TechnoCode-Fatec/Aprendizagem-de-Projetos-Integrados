@@ -22,14 +22,11 @@
 
         <TableView fx:id="tabelaAlunos" prefHeight="327.0" prefWidth="600.0">
             <columns>
-                <TableColumn fx:id="colNome" prefWidth="100.0" text="Nome" />
-                <TableColumn fx:id="colEmail" prefWidth="80.0" text="Email" />
-                <TableColumn fx:id="colMatriculado" prefWidth="110.0" text="Matéria" />
-                <TableColumn fx:id="colAnalisar" prefWidth="120.0" text="Analisar Aluno" />
+                <TableColumn fx:id="colNome" prefWidth="132.00002133846283" text="Nome" />
+                <TableColumn fx:id="colEmail" prefWidth="152.0" text="Email" />
+                <TableColumn fx:id="colMatriculado" minWidth="6.399993896484375" prefWidth="149.0" text="Matéria" />
+                <TableColumn fx:id="colAnalisar" minWidth="3.000030517578125" prefWidth="116.80001831054688" text="Analisar Aluno" />
             </columns>
-         <columnResizePolicy>
-            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-         </columnResizePolicy>
         </TableView>
     </children>
 </VBox>

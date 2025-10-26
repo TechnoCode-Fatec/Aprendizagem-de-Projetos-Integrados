@@ -226,6 +226,29 @@ public class TelaEntregasDoAluno {
 
     }
 
+    /**
+     * Abre a tela de histórico de versões do aluno
+     */
+    @FXML
+    private void abrirHistorico(ActionEvent event) throws IOException {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Orientador/tela-historico-orientador.fxml"));
+            Parent root = loader.load();
+            
+            // Obtém o controller e passa o email do aluno
+            TelaHistoricoOrientadorController controller = loader.getController();
+            controller.setEmailAluno(emailAlunoParaConsulta);
+            
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            System.err.println("Erro ao abrir histórico: " + e.getMessage());
+            throw e;
+        }
+    }
+
 
 
 
