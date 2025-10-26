@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox alignment="TOP_CENTER" prefHeight="700.0" prefWidth="800.0" style="-fx-background-color: C4C4C4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.TelaFeedbackApiAlunoController">
+<VBox alignment="TOP_CENTER" prefHeight="700.0" prefWidth="800.0" style="-fx-background-color: C4C4C4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.Aluno.TelaFeedbackApresentacaoAlunoController">
     <children>
         <HBox alignment="CENTER" prefHeight="60.0" prefWidth="800.0" style="-fx-spacing: 25; -fx-padding: 10 20 10 20;">
             <children>
@@ -14,7 +14,7 @@
                         <Font size="14.0" />
                     </font>
                 </Button>
-                <Label fx:id="labelTitulo" alignment="CENTER" prefHeight="47.0" prefWidth="400.0" text="FEEDBACK - API">
+                <Label fx:id="labelTitulo" alignment="CENTER" prefHeight="47.0" prefWidth="400.0" text="FEEDBACK - APRESENTAÇÃO">
                     <font>
                         <Font name="System Bold" size="24.0" />
                     </font>
@@ -37,131 +37,175 @@
                                 <RowConstraints valignment="TOP" vgrow="NEVER" />
                                 <RowConstraints valignment="TOP" vgrow="NEVER" />
                                 <RowConstraints valignment="TOP" vgrow="NEVER" />
+                                <RowConstraints valignment="TOP" vgrow="NEVER" />
+                                <RowConstraints valignment="TOP" vgrow="NEVER" />
                             </rowConstraints>
 
-                            <!-- Problema -->
+                            <!-- Nome Completo -->
                             <VBox GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-spacing: 8;">
                                 <children>
                                     <HBox spacing="10">
                                         <children>
-                                            <Label text="Problema">
+                                            <Label text="Nome Completo">
                                                 <font>
                                                     <Font name="System Bold" size="16.0" />
                                                 </font>
                                             </Label>
-                                            <Label fx:id="statusProblema" text="Status" style="-fx-font-weight: bold;">
+                                            <Label fx:id="statusNome" text="Status" style="-fx-font-weight: bold;">
                                                 <font>
                                                     <Font size="14.0" />
                                                 </font>
                                             </Label>
                                         </children>
                                     </HBox>
-                                    <TextArea fx:id="feedbackProblema" editable="false" wrapText="true" prefHeight="100.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" />
+                                    <TextArea fx:id="feedbackNome" editable="false" wrapText="true" prefHeight="100.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" />
                                 </children>
                             </VBox>
 
-                            <!-- Solução -->
+                            <!-- Idade -->
                             <VBox GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-spacing: 8;">
                                 <children>
                                     <HBox spacing="10">
                                         <children>
-                                            <Label text="Solução">
+                                            <Label text="Idade">
                                                 <font>
                                                     <Font name="System Bold" size="16.0" />
                                                 </font>
                                             </Label>
-                                            <Label fx:id="statusSolucao" text="Status" style="-fx-font-weight: bold;">
+                                            <Label fx:id="statusIdade" text="Status" style="-fx-font-weight: bold;">
                                                 <font>
                                                     <Font size="14.0" />
                                                 </font>
                                             </Label>
                                         </children>
                                     </HBox>
-                                    <TextArea fx:id="feedbackSolucao" editable="false" wrapText="true" prefHeight="100.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" />
+                                    <TextArea fx:id="feedbackIdade" editable="false" wrapText="true" prefHeight="100.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" />
                                 </children>
                             </VBox>
 
-                            <!-- Tecnologias -->
+                            <!-- Curso -->
                             <VBox GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-spacing: 8;">
                                 <children>
                                     <HBox spacing="10">
                                         <children>
-                                            <Label text="Tecnologias Utilizadas">
+                                            <Label text="Curso">
                                                 <font>
                                                     <Font name="System Bold" size="16.0" />
                                                 </font>
                                             </Label>
-                                            <Label fx:id="statusTecnologias" text="Status" style="-fx-font-weight: bold;">
+                                            <Label fx:id="statusCurso" text="Status" style="-fx-font-weight: bold;">
                                                 <font>
                                                     <Font size="14.0" />
                                                 </font>
                                             </Label>
                                         </children>
                                     </HBox>
-                                    <TextArea fx:id="feedbackTecnologias" editable="false" wrapText="true" prefHeight="100.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" />
+                                    <TextArea fx:id="feedbackCurso" editable="false" wrapText="true" prefHeight="100.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" />
                                 </children>
                             </VBox>
 
-                            <!-- Contribuições -->
+                            <!-- Motivação -->
                             <VBox GridPane.rowIndex="3" GridPane.columnIndex="0" style="-fx-spacing: 8;">
                                 <children>
                                     <HBox spacing="10">
                                         <children>
-                                            <Label text="Contribuições Pessoais">
+                                            <Label text="Motivação para entrar na Fatec">
                                                 <font>
                                                     <Font name="System Bold" size="16.0" />
                                                 </font>
                                             </Label>
-                                            <Label fx:id="statusContribuicoes" text="Status" style="-fx-font-weight: bold;">
+                                            <Label fx:id="statusMotivacao" text="Status" style="-fx-font-weight: bold;">
                                                 <font>
                                                     <Font size="14.0" />
                                                 </font>
                                             </Label>
                                         </children>
                                     </HBox>
-                                    <TextArea fx:id="feedbackContribuicoes" editable="false" wrapText="true" prefHeight="100.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" />
+                                    <TextArea fx:id="feedbackMotivacao" editable="false" wrapText="true" prefHeight="100.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" />
                                 </children>
                             </VBox>
 
-                            <!-- Hard Skills -->
+                            <!-- Histórico Acadêmico -->
                             <VBox GridPane.rowIndex="4" GridPane.columnIndex="0" style="-fx-spacing: 8;">
                                 <children>
                                     <HBox spacing="10">
                                         <children>
-                                            <Label text="Hard Skills">
+                                            <Label text="Histórico Acadêmico">
                                                 <font>
                                                     <Font name="System Bold" size="16.0" />
                                                 </font>
                                             </Label>
-                                            <Label fx:id="statusHardSkills" text="Status" style="-fx-font-weight: bold;">
+                                            <Label fx:id="statusHistorico" text="Status" style="-fx-font-weight: bold;">
                                                 <font>
                                                     <Font size="14.0" />
                                                 </font>
                                             </Label>
                                         </children>
                                     </HBox>
-                                    <TextArea fx:id="feedbackHardSkills" editable="false" wrapText="true" prefHeight="100.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" />
+                                    <TextArea fx:id="feedbackHistorico" editable="false" wrapText="true" prefHeight="100.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" />
                                 </children>
                             </VBox>
 
-                            <!-- Soft Skills -->
+                            <!-- GitHub -->
                             <VBox GridPane.rowIndex="5" GridPane.columnIndex="0" style="-fx-spacing: 8;">
                                 <children>
                                     <HBox spacing="10">
                                         <children>
-                                            <Label text="Soft Skills">
+                                            <Label text="GitHub">
                                                 <font>
                                                     <Font name="System Bold" size="16.0" />
                                                 </font>
                                             </Label>
-                                            <Label fx:id="statusSoftSkills" text="Status" style="-fx-font-weight: bold;">
+                                            <Label fx:id="statusGithub" text="Status" style="-fx-font-weight: bold;">
                                                 <font>
                                                     <Font size="14.0" />
                                                 </font>
                                             </Label>
                                         </children>
                                     </HBox>
-                                    <TextArea fx:id="feedbackSoftSkills" editable="false" wrapText="true" prefHeight="100.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" />
+                                    <TextArea fx:id="feedbackGithub" editable="false" wrapText="true" prefHeight="100.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" />
+                                </children>
+                            </VBox>
+
+                            <!-- LinkedIn -->
+                            <VBox GridPane.rowIndex="6" GridPane.columnIndex="0" style="-fx-spacing: 8;">
+                                <children>
+                                    <HBox spacing="10">
+                                        <children>
+                                            <Label text="LinkedIn">
+                                                <font>
+                                                    <Font name="System Bold" size="16.0" />
+                                                </font>
+                                            </Label>
+                                            <Label fx:id="statusLinkedin" text="Status" style="-fx-font-weight: bold;">
+                                                <font>
+                                                    <Font size="14.0" />
+                                                </font>
+                                            </Label>
+                                        </children>
+                                    </HBox>
+                                    <TextArea fx:id="feedbackLinkedin" editable="false" wrapText="true" prefHeight="100.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" />
+                                </children>
+                            </VBox>
+
+                            <!-- Principais Conhecimentos -->
+                            <VBox GridPane.rowIndex="7" GridPane.columnIndex="0" style="-fx-spacing: 8;">
+                                <children>
+                                    <HBox spacing="10">
+                                        <children>
+                                            <Label text="Principais Conhecimentos">
+                                                <font>
+                                                    <Font name="System Bold" size="16.0" />
+                                                </font>
+                                            </Label>
+                                            <Label fx:id="statusConhecimentos" text="Status" style="-fx-font-weight: bold;">
+                                                <font>
+                                                    <Font size="14.0" />
+                                                </font>
+                                            </Label>
+                                        </children>
+                                    </HBox>
+                                    <TextArea fx:id="feedbackConhecimentos" editable="false" wrapText="true" prefHeight="100.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" />
                                 </children>
                             </VBox>
                         </GridPane>

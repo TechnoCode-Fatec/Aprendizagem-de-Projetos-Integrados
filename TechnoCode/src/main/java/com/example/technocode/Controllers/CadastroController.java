@@ -1,6 +1,5 @@
 package com.example.technocode.Controllers;
 
-import com.example.technocode.Objetos.Aluno;
 import com.example.technocode.dao.Connector;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

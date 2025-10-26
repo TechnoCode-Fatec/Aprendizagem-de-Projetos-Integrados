@@ -1,5 +1,6 @@
-package com.example.technocode.Controllers;
+package com.example.technocode.Controllers.Aluno;
 
+import com.example.technocode.Controllers.LoginController;
 import com.example.technocode.dao.Connector;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -26,7 +27,7 @@ public class FormularioApiController {
     @FXML
     private void initialize(){
         choiceBoxSemestre.getItems().addAll("1","2");
-        choiceBoxSemestreDoCurso.getItems().addAll("Primeiro semestre","Segundo semestre","Terceiro semestre","Quarto semestre","Quinto semestre","Sexto semestre");
+        choiceBoxSemestreDoCurso.getItems().addAll("1º Semestre","2º Semestre","3º Semestre","4º Semestre","5º Semestre","6º Semestre");
     }
     @FXML
     private void enviarSecaoApi(ActionEvent event) {
@@ -72,7 +73,7 @@ public class FormularioApiController {
         alerta.showAndWait();    }
 
     public void voltar(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-inicial-aluno.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-inicial-aluno.fxml"));
         Parent root = loader.load();
         
         TelaInicialAlunoController controller = loader.getController();

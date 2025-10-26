@@ -1,4 +1,4 @@
-package com.example.technocode.Controllers;
+package com.example.technocode.Controllers.Orientador;
 
 import com.example.technocode.dao.Connector;
 import javafx.application.Platform;
@@ -181,7 +181,7 @@ public class TelaSecoesenviadasController {
     @FXML
     private void voltarTelaOrientador(ActionEvent event) throws IOException {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-entregasDoAluno.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Orientador/tela-entregasDoAluno.fxml"));
             Parent root = loader.load();
             
             // Obtém o controlador da tela de destino

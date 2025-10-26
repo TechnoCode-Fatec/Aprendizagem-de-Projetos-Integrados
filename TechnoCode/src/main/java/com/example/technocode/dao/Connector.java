@@ -212,7 +212,7 @@ public class Connector {
                 String empresa = rs.getString("empresa");
 
                 Map<String, String> secao = new HashMap<>();
-                secao.put("id", semestreCurso + " " + ano + "/" + semestreAno);
+                secao.put("id", semestreCurso + " " + ano.substring(0,4) + "/" + semestreAno);
                 secao.put("empresa", empresa);
                 secao.put("semestre_curso", semestreCurso);
                 secao.put("ano", ano);
@@ -440,6 +440,56 @@ public class Connector {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * Verifica se existe feedback para uma seção de apresentação
+     * @param emailAluno Email do aluno
+     * @param versao Versão da apresentação
+     * @return true se existe feedback, false caso contrário
+     */
+    public boolean verificarFeedbackApresentacao(String emailAluno, int versao) {
+        String sql = "SELECT COUNT(*) as count FROM feedback_apresentacao WHERE aluno = ? AND versao = ?";
+        try (Connection c = getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, emailAluno);
+            ps.setInt(2, versao);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("count") > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Verifica se existe feedback para uma seção de API
+     * @param emailAluno Email do aluno
+     * @param semestreCurso Semestre do curso
+     * @param ano Ano
+     * @param semestreAno Semestre do ano
+     * @param versao Versão da API
+     * @return true se existe feedback, false caso contrário
+     */
+    public boolean verificarFeedbackApi(String emailAluno, String semestreCurso, int ano, String semestreAno, int versao) {
+        String sql = "SELECT COUNT(*) as count FROM feedback_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
+        try (Connection c = getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, emailAluno);
+            ps.setString(2, semestreCurso);
+            ps.setInt(3, ano);
+            ps.setString(4, semestreAno);
+            ps.setInt(5, versao);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("count") > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 

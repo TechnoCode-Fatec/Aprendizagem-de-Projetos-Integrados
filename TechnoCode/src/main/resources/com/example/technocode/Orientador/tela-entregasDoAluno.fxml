@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox alignment="TOP_CENTER" prefHeight="601.0" prefWidth="600.0" style="-fx-background-color: C4C4C4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.TelaEntregasDoAluno">
+<VBox alignment="TOP_CENTER" prefHeight="601.0" prefWidth="600.0" style="-fx-background-color: C4C4C4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.Orientador.TelaEntregasDoAluno">
     <children>
         <HBox alignment="CENTER" prefHeight="44.0" prefWidth="600.0" style="-fx-spacing: 25;">
             <children>
@@ -56,7 +56,8 @@
         <columns>
             <TableColumn fx:id="colNomeSecao" prefWidth="72.20001375675201" text="Nome" />
             <TableColumn fx:id="colDescricao" minWidth="0.0" prefWidth="78.1999740600586" text="Descrição" />
-            <TableColumn fx:id="colAnalisar" prefWidth="120.0" text="Analisar Seção" />
+            <TableColumn fx:id="colStatusFeedback" prefWidth="216.0" text="Status" />
+            <TableColumn fx:id="colAnalisar" prefWidth="88.0" text="Analisar Seção" />
         </columns>
          <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
