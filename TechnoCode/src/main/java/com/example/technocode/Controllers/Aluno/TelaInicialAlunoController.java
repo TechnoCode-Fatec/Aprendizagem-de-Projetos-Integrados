@@ -19,6 +19,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -41,9 +45,10 @@ public class TelaInicialAlunoController {
     public void initialize() {
         carregarSecoesDoAluno();
     }
+
+    String emailAluno = LoginController.getEmailLogado();
     
     private void carregarSecoesDoAluno() {
-        String emailAluno = LoginController.getEmailLogado();
         if (emailAluno == null || emailAluno.isBlank()) {
             return;
         }
@@ -66,6 +71,7 @@ public class TelaInicialAlunoController {
             btnAdicionarApresentacao.setVisible(true);
         } else {
             btnAdicionarApresentacao.setVisible(false);
+            btnAdicionarApresentacao.setManaged(false);
             
             for (Map<String, String> secao : secoes) {
                 VBox secaoCard = criarCardSecao(secao, "apresentacao");
@@ -81,6 +87,7 @@ public class TelaInicialAlunoController {
             btnAdicionarApi.setVisible(true);
         } else {
             btnAdicionarApi.setVisible(false);
+            btnAdicionarApi.setManaged(false);
             
             for (Map<String, String> secao : secoes) {
                 VBox secaoCard = criarCardSecao(secao, "api");
@@ -132,14 +139,34 @@ public class TelaInicialAlunoController {
         btnFeedback.setStyle("-fx-background-color: #5E5555; -fx-text-fill: white; -fx-background-radius: 5;");
         btnFeedback.setText("Ver Feedback");
         btnFeedback.setFont(new javafx.scene.text.Font(12.0));
-        
+
+        // Desativa por padrão
+        btnFeedback.setDisable(true);
+
+// Verifica se existe feedback para esta seção
+        if ("apresentacao".equals(tipo)) {
+            int versao = Integer.parseInt(secao.get("versao"));
+            if (existeFeedbackApresentacao(emailAluno, versao)) { // retorna boolean
+                btnFeedback.setDisable(false);
+            }
+        } else {
+            String semestreCurso = secao.get("semestre_curso");
+            String ano = secao.get("ano");
+            String semestreAno = secao.get("semestre_ano");
+            int versao = Integer.parseInt(secao.get("versao"));
+            if (existeFeedbackApi(emailAluno, semestreCurso, ano, semestreAno, versao)) { // retorna boolean
+                btnFeedback.setDisable(false);
+            }
+        }
+
+
         // Evento do botão de feedback
         btnFeedback.setOnAction(event -> {
             try {
                 if ("apresentacao".equals(tipo)) {
-                    verFeedbackApresentacao(event);
+                    verFeedbackApresentacao(event, secao);
                 } else {
-                    verFeedbackApi(event);
+                    verFeedbackApi(event, secao);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -166,8 +193,7 @@ public class TelaInicialAlunoController {
         
         return card;
     }
-    
-    
+
     private void abrirVisualizacaoSecao(Map<String, String> secao, String tipo) throws IOException {
         String emailAluno = LoginController.getEmailLogado();
         
@@ -266,50 +292,40 @@ public class TelaInicialAlunoController {
         carregarSecoesDoAluno();
     }
     
-    private void verFeedbackApresentacao(ActionEvent event) throws IOException {
+    private void verFeedbackApresentacao(ActionEvent event, Map<String, String> secao) throws IOException {
         String emailAluno = LoginController.getEmailLogado();
         if (emailAluno == null || emailAluno.isBlank()) {
             return;
         }
-        
-        Connector connector = new Connector();
-        List<Map<String, String>> secoes = connector.secoesApresentacao(emailAluno);
-        
-        if (!secoes.isEmpty()) {
-            // Pega a primeira seção (versão mais recente)
-            Map<String, String> secao = secoes.get(0);
-            int versao = Integer.parseInt(secao.get("versao"));
-            
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-feedback-apresentacao-aluno.fxml"));
-            Parent root = loader.load();
-            
-            TelaFeedbackApresentacaoAlunoController controller = loader.getController();
-            controller.setIdentificadorSecao(emailAluno, versao);
-            
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        }
+
+        int versao = Integer.parseInt(secao.get("versao"));
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-feedback-apresentacao-aluno.fxml"));
+        Parent root = loader.load();
+
+        TelaFeedbackApresentacaoAlunoController controller = loader.getController();
+        controller.setIdentificadorSecao(emailAluno, versao);
+
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+
     }
 
-    private void verFeedbackApi(ActionEvent event) throws IOException {
+    private void verFeedbackApi(ActionEvent event, Map<String, String> secao) throws IOException {
         String emailAluno = LoginController.getEmailLogado();
+        String idSecao = secao.get("id");
+        System.out.println("Abrindo feedback da seção: " + idSecao);
         if (emailAluno == null || emailAluno.isBlank()) {
             return;
         }
-        
-        Connector connector = new Connector();
-        List<Map<String, String>> secoes = connector.secoesApi(emailAluno);
-        
-        if (!secoes.isEmpty()) {
-            // Pega a primeira seção (versão mais recente)
-            Map<String, String> secao = secoes.get(0);
-            String semestreCurso = secao.get("semestre_curso");
-            String ano = secao.get("ano");
-            String semestreAno = secao.get("semestre_ano");
-            String versao = secao.get("versao");
-            
+
+        String semestreCurso = secao.get("semestre_curso");
+        String ano = secao.get("ano");
+        String semestreAno = secao.get("semestre_ano");
+        String versao = secao.get("versao");
+
             if (semestreCurso != null && ano != null && semestreAno != null && versao != null) {
                 // Extrair apenas o ano da data (ex: "2024-01-01" -> "2024")
                 String anoExtraido = ano.split("-")[0];
@@ -331,7 +347,6 @@ public class TelaInicialAlunoController {
                 stage.setScene(scene);
                 stage.show();
             }
-        }
     }
 
     @FXML
@@ -358,5 +373,38 @@ public class TelaInicialAlunoController {
                 e.printStackTrace();
             }
         });
+    }
+
+    public boolean existeFeedbackApi(String aluno, String semestreCurso, String ano, String semestreAno, int versao) {
+        String sql = "SELECT 1 FROM feedback_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ? LIMIT 1";
+        try(Connection con = new Connector().getConnection()) {
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, aluno);
+            ps.setString(2, semestreCurso);
+            ps.setString(3, ano);
+            ps.setString(4, semestreAno);
+            ps.setInt(5, versao);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    private boolean existeFeedbackApresentacao(String aluno, int versao) {
+        String sql = "SELECT 1 FROM feedback_apresentacao WHERE aluno = ? AND versao = ? LIMIT 1";
+        try(Connection con = new Connector().getConnection()) {
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, aluno);
+            ps.setInt(2, versao);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
     }
 }

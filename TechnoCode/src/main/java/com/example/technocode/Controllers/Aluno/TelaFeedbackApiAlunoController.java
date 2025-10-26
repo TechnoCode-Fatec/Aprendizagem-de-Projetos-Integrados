@@ -90,6 +90,8 @@ public class TelaFeedbackApiAlunoController {
             statusLabel.setText(status);
             if ("Aprovado".equals(status)) {
                 statusLabel.setStyle("-fx-text-fill: #00AA00; -fx-font-weight: bold;");
+                textArea.setVisible(false);
+                textArea.setManaged(false);
             } else if ("Revisar".equals(status)) {
                 statusLabel.setStyle("-fx-text-fill: #AA0000; -fx-font-weight: bold;");
             }
