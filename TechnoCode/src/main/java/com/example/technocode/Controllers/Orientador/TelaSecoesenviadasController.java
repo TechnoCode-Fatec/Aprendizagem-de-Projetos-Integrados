@@ -17,6 +17,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -101,7 +103,15 @@ public class TelaSecoesenviadasController {
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     if (alunoTextNome != null) alunoTextNome.setText(rs.getString("nome"));
-                    if (alunoTextIdade != null) alunoTextIdade.setText(rs.getString("idade"));
+                    if (alunoTextIdade != null) {
+                        String dataNascimentoStr = rs.getString("idade");
+                        if (dataNascimentoStr != null && !dataNascimentoStr.isBlank()) {
+                            LocalDate dataNascimento = LocalDate.parse(dataNascimentoStr);
+                            LocalDate hoje = LocalDate.now();
+                            int idade = Period.between(dataNascimento, hoje).getYears();
+                            alunoTextIdade.setText(String.valueOf(idade));
+                        }
+                    }
                     if (alunoTextCurso != null) alunoTextCurso.setText(rs.getString("curso"));
                     if (alunoTextMotivacao != null) alunoTextMotivacao.setText(rs.getString("motivacao"));
                     if (alunoTextHistorico != null) alunoTextHistorico.setText(rs.getString("historico"));
