@@ -109,7 +109,7 @@ public class TelaFeedbackApiAlunoController {
     }
 
     @FXML
-    private void voltarTelaSecao(ActionEvent event) throws IOException {
+    private void visualizarSecao(ActionEvent event) throws IOException {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-visualizar-secao-api-aluno.fxml"));
             Parent root = loader.load();
@@ -123,6 +123,21 @@ public class TelaFeedbackApiAlunoController {
             stage.show();
         } catch (IOException e) {
             System.err.println("Erro ao voltar para tela de seção: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    @FXML
+    private void voltarTelaInicial(ActionEvent event) throws IOException {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-inicial-aluno.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            System.err.println("Erro ao voltar para tela inicial: " + e.getMessage());
             throw e;
         }
     }
