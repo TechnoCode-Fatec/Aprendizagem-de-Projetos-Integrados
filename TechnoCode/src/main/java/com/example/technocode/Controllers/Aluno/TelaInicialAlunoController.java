@@ -99,7 +99,7 @@ public class TelaInicialAlunoController {
     private VBox criarCardSecao(Map<String, String> secao, String tipo) {
         // Container principal do card
         VBox card = new VBox();
-        card.setPrefHeight(60.0);
+        card.setPrefHeight(80.0); // Aumentado para acomodar a linha do horário
         card.setPrefWidth(600.0);
         card.setStyle("-fx-background-color: #EAEAEA; -fx-background-radius: 5; -fx-padding: 10; -fx-cursor: hand;");
         
@@ -127,6 +127,26 @@ public class TelaInicialAlunoController {
         subtitulo.setStyle("-fx-font-size: 14px; -fx-text-fill: #666;");
         
         textBox.getChildren().addAll(titulo, subtitulo);
+        
+        // Busca e adiciona informação do horário do feedback (se existir)
+        String horarioFeedback = null;
+        if ("apresentacao".equals(tipo)) {
+            int versao = Integer.parseInt(secao.get("versao"));
+            horarioFeedback = buscarHorarioFeedbackApresentacao(emailAluno, versao);
+        } else {
+            String semestreCurso = secao.get("semestre_curso");
+            String ano = secao.get("ano");
+            String semestreAno = secao.get("semestre_ano");
+            int versao = Integer.parseInt(secao.get("versao"));
+            horarioFeedback = buscarHorarioFeedbackApi(emailAluno, semestreCurso, ano, semestreAno, versao);
+        }
+        
+        // Se existe feedback, adiciona label com o horário
+        if (horarioFeedback != null) {
+            Label labelHorario = new Label("Feedback enviado em: " + horarioFeedback);
+            labelHorario.setStyle("-fx-font-size: 11px; -fx-text-fill: #3e3e3e; -fx-font-style: italic;");
+            textBox.getChildren().add(labelHorario);
+        }
         
         // Region para empurrar o botão para a direita
         Region spacer = new Region();
@@ -406,5 +426,52 @@ public class TelaInicialAlunoController {
             return false;
         }
 
+    }
+
+    /**
+     * Busca o horário do feedback para uma seção de API
+     * @return String formatada com data e hora, ou null se não existir feedback
+     */
+    private String buscarHorarioFeedbackApi(String aluno, String semestreCurso, String ano, String semestreAno, int versao) {
+        String sql = "SELECT DATE_FORMAT(horario, '%d/%m/%Y às %H:%i') as horario_formatado " +
+                     "FROM feedback_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ? LIMIT 1";
+        try (Connection con = new Connector().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, aluno);
+            ps.setString(2, semestreCurso);
+            ps.setString(3, ano);
+            ps.setString(4, semestreAno);
+            ps.setInt(5, versao);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("horario_formatado");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Busca o horário do feedback para uma seção de apresentação
+     * @return String formatada com data e hora, ou null se não existir feedback
+     */
+    private String buscarHorarioFeedbackApresentacao(String aluno, int versao) {
+        String sql = "SELECT DATE_FORMAT(horario, '%d/%m/%Y às %H:%i') as horario_formatado " +
+                     "FROM feedback_apresentacao WHERE aluno = ? AND versao = ? LIMIT 1";
+        try (Connection con = new Connector().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, aluno);
+            ps.setInt(2, versao);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("horario_formatado");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
