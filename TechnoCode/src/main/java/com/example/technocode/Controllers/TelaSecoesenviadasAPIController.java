@@ -355,6 +355,16 @@ public class TelaSecoesenviadasAPIController {
     private void voltarTelaOrientador(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-entregasDoAluno.fxml"));
         Parent root = loader.load();
+        
+        // Obtém o controlador da tela de destino
+        TelaEntregasDoAluno controller = loader.getController();
+        
+        // Define o email do aluno para consulta
+        controller.setEmailAlunoParaConsulta(alunoId);
+        
+        // Recarrega os dados da tabela
+        controller.recarregarDados();
+        
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
         stage.setScene(scene);
