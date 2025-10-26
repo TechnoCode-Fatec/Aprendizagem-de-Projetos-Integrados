@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
@@ -15,6 +16,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.Period;
 
 public class TelaVisualizarSecaoAlunoController {
 
@@ -30,12 +33,17 @@ public class TelaVisualizarSecaoAlunoController {
     @FXML private TextArea alunoTextGithub;
     @FXML private TextArea alunoTextLinkedin;
     @FXML private TextArea alunoTextConhecimentos;
+    @FXML private Button btnFeedback;
 
     // Recebe identificador da secao e carrega dados
     public void setIdentificadorSecao(String aluno, int versao) {
         this.alunoId = aluno;
         this.versaoId = versao;
         carregarSecaoAluno();
+        if (btnFeedback != null) {
+            boolean existe = existeFeedbackApresentacao(alunoId, versaoId);
+            btnFeedback.setDisable(!existe);
+        }
     }
 
     // Carrega dados da secao_apresentacao
@@ -50,7 +58,15 @@ public class TelaVisualizarSecaoAlunoController {
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     if (alunoTextNome != null) alunoTextNome.setText(rs.getString("nome"));
-                    if (alunoTextIdade != null) alunoTextIdade.setText(rs.getString("idade"));
+                    if (alunoTextIdade != null) {
+                        String dataNascimentoStr = rs.getString("idade"); // ex: "2002-05-10"
+                        if (dataNascimentoStr != null && !dataNascimentoStr.isBlank()) {
+                            LocalDate dataNascimento = LocalDate.parse(dataNascimentoStr);
+                            LocalDate hoje = LocalDate.now();
+                            int idade = Period.between(dataNascimento, hoje).getYears();
+                            alunoTextIdade.setText(String.valueOf(idade));
+                        }
+                    }
                     if (alunoTextCurso != null) alunoTextCurso.setText(rs.getString("curso"));
                     if (alunoTextMotivacao != null) alunoTextMotivacao.setText(rs.getString("motivacao"));
                     if (alunoTextHistorico != null) alunoTextHistorico.setText(rs.getString("historico"));
@@ -112,6 +128,21 @@ public class TelaVisualizarSecaoAlunoController {
             System.err.println("Erro ao voltar para tela inicial: " + e.getMessage());
             throw e;
         }
+    }
+    private boolean existeFeedbackApresentacao(String aluno, int versao) {
+        String sql = "SELECT 1 FROM feedback_apresentacao WHERE aluno = ? AND versao = ? LIMIT 1";
+        try(Connection con = new Connector().getConnection()) {
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, aluno);
+            ps.setInt(2, versao);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
     }
 
     private void mostrarErro(String titulo, Exception e) {

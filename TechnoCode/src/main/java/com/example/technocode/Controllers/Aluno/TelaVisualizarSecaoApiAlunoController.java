@@ -1,5 +1,6 @@
 package com.example.technocode.Controllers.Aluno;
 
+import com.example.technocode.Controllers.LoginController;
 import com.example.technocode.dao.Connector;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -7,6 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
@@ -24,6 +26,7 @@ public class TelaVisualizarSecaoApiAlunoController {
     private int anoId;
     private String semestreAnoId;
     private int versaoId;
+    private String emailAluno = LoginController.getEmailLogado();
 
     @FXML private TextArea alunoProblema;
     @FXML private TextArea alunoSolucao;
@@ -31,6 +34,8 @@ public class TelaVisualizarSecaoApiAlunoController {
     @FXML private TextArea alunoContribuicoes;
     @FXML private TextArea alunoHardSkills;
     @FXML private TextArea alunoSoftSkills;
+    @FXML private Button btnFeedback;
+
 
     // Recebe identificador da secao e carrega dados
     public void setIdentificadorSecao(String aluno, String semestreCurso, int ano, String semestreAno, int versao) {
@@ -40,6 +45,10 @@ public class TelaVisualizarSecaoApiAlunoController {
         this.semestreAnoId = semestreAno;
         this.versaoId = versao;
         carregarSecaoAluno();
+        if (btnFeedback != null) {
+            boolean existe = existeFeedbackApi(alunoId, semestreCursoId, String.valueOf(anoId), semestreAnoId, versaoId);
+            btnFeedback.setDisable(!existe);
+        }
     }
 
     // Carrega dados da secao_api
@@ -122,5 +131,23 @@ public class TelaVisualizarSecaoApiAlunoController {
     private void mostrarErro(String titulo, Exception e) {
         System.err.println(titulo + ": " + e.getMessage());
         e.printStackTrace();
+    }
+
+    public boolean existeFeedbackApi(String aluno, String semestreCurso, String ano, String semestreAno, int versao) {
+        String sql = "SELECT 1 FROM feedback_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ? LIMIT 1";
+        try (Connection con = new Connector().getConnection()) {
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, aluno);
+            ps.setString(2, semestreCurso);
+            ps.setString(3, ano);
+            ps.setString(4, semestreAno);
+            ps.setInt(5, versao);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
