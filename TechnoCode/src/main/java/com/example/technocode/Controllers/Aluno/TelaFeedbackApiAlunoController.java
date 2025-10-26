@@ -1,4 +1,4 @@
-package com.example.technocode.Controllers;
+package com.example.technocode.Controllers.Aluno;
 
 import com.example.technocode.dao.Connector;
 import javafx.event.ActionEvent;
@@ -109,7 +109,7 @@ public class TelaFeedbackApiAlunoController {
     @FXML
     private void voltarTelaSecao(ActionEvent event) throws IOException {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-visualizar-secao-api-aluno.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-visualizar-secao-api-aluno.fxml"));
             Parent root = loader.load();
             
             TelaVisualizarSecaoApiAlunoController controller = loader.getController();

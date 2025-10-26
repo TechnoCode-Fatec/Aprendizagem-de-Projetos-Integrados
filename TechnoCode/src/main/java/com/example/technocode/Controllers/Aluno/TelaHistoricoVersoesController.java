@@ -1,5 +1,6 @@
-package com.example.technocode.Controllers;
+package com.example.technocode.Controllers.Aluno;
 
+import com.example.technocode.Controllers.LoginController;
 import com.example.technocode.dao.Connector;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -128,7 +129,7 @@ public class TelaHistoricoVersoesController {
         String emailAluno = LoginController.getEmailLogado();
         
         if ("apresentacao".equals(tipo)) {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-visualizar-secao-aluno.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-visualizar-secao-aluno.fxml"));
             Parent root = loader.load();
             
             TelaVisualizarSecaoAlunoController controller = loader.getController();
@@ -139,7 +140,7 @@ public class TelaHistoricoVersoesController {
             stage.setScene(scene);
             stage.show();
         } else {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-visualizar-secao-api-aluno.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-visualizar-secao-api-aluno.fxml"));
             Parent root = loader.load();
             
             TelaVisualizarSecaoApiAlunoController controller = loader.getController();
@@ -172,7 +173,7 @@ public class TelaHistoricoVersoesController {
     @FXML
     private void voltarTelaInicial(ActionEvent event) throws IOException {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-inicial-aluno.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-inicial-aluno.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);

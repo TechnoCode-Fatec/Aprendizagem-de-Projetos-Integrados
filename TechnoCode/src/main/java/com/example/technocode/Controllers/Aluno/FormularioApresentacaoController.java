@@ -1,5 +1,6 @@
-package com.example.technocode.Controllers;
+package com.example.technocode.Controllers.Aluno;
 
+import com.example.technocode.Controllers.LoginController;
 import com.example.technocode.dao.Connector;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -63,7 +64,7 @@ public class FormularioApresentacaoController {
     }
 
     public void voltar (ActionEvent event) throws IOException {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-inicial-aluno.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-inicial-aluno.fxml"));
             Parent root = loader.load();
             
             TelaInicialAlunoController controller = loader.getController();

@@ -1,4 +1,4 @@
-package com.example.technocode.Controllers;
+package com.example.technocode.Controllers.Orientador;
 
 import com.example.technocode.dao.Connector;
 import javafx.beans.property.SimpleStringProperty;
@@ -99,7 +99,7 @@ public class TelaEntregasDoAluno {
                         
                         if ("apresentacao".equals(tipo)) {
                             // Abre tela de apresentação
-                            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-secoesenviadas.fxml"));
+                            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Orientador/tela-secoesenviadas.fxml"));
                             Parent root = loader.load();
 
                             TelaSecoesenviadasController controller = loader.getController();
@@ -118,7 +118,7 @@ public class TelaEntregasDoAluno {
                             stage.show();
                         } else {
                             // Abre tela de API (comportamento original)
-                            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-secoesenviadasAPI.fxml"));
+                            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Orientador/tela-secoesenviadasAPI.fxml"));
                             Parent root = loader.load();
 
                             TelaSecoesenviadasAPIController controller = loader.getController();
@@ -163,7 +163,7 @@ public class TelaEntregasDoAluno {
     @FXML
     private void voltarTelaOrientador(ActionEvent event) throws IOException {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-inicial-orientador.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Orientador/tela-inicial-orientador.fxml"));
             Parent root = loader.load();
             
             // Obtém o controlador da tela de destino

@@ -1,5 +1,6 @@
-package com.example.technocode.Controllers;
+package com.example.technocode.Controllers.Orientador;
 
+import com.example.technocode.Controllers.LoginController;
 import com.example.technocode.dao.Connector;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
@@ -107,7 +108,7 @@ public class TelaOrientadorController {
     
     private void abrirTelaAluno(String emailAluno) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-entregasDoAluno.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Orientador/tela-entregasDoAluno.fxml"));
             Parent root = loader.load();
 
             TelaEntregasDoAluno controller = loader.getController();

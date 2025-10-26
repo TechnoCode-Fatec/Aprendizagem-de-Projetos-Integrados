@@ -1,5 +1,6 @@
-package com.example.technocode.Controllers;
+package com.example.technocode.Controllers.Aluno;
 
+import com.example.technocode.Controllers.*;
 import com.example.technocode.dao.Connector;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -171,7 +172,7 @@ public class TelaInicialAlunoController {
         String emailAluno = LoginController.getEmailLogado();
         
         if ("apresentacao".equals(tipo)) {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-visualizar-secao-aluno.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-visualizar-secao-aluno.fxml"));
             Parent root = loader.load();
             
             TelaVisualizarSecaoAlunoController controller = loader.getController();
@@ -182,7 +183,7 @@ public class TelaInicialAlunoController {
             stage.setScene(scene);
             stage.show();
         } else {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-visualizar-secao-api-aluno.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-visualizar-secao-api-aluno.fxml"));
             Parent root = loader.load();
             
             TelaVisualizarSecaoApiAlunoController controller = loader.getController();
@@ -226,7 +227,7 @@ public class TelaInicialAlunoController {
 
     @FXML
     private void adicionarApresentacao(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/formulario-apresentacao.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/formulario-apresentacao.fxml"));
         Parent root = loader.load();
         
         Stage stage;
@@ -244,7 +245,7 @@ public class TelaInicialAlunoController {
 
     @FXML
     private void adicionarApi(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/formulario-api.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/formulario-api.fxml"));
         Parent root = loader.load();
         
         Stage stage;
@@ -279,7 +280,7 @@ public class TelaInicialAlunoController {
             Map<String, String> secao = secoes.get(0);
             int versao = Integer.parseInt(secao.get("versao"));
             
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-feedback-apresentacao-aluno.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-feedback-apresentacao-aluno.fxml"));
             Parent root = loader.load();
             
             TelaFeedbackApresentacaoAlunoController controller = loader.getController();
@@ -313,7 +314,7 @@ public class TelaInicialAlunoController {
                 // Extrair apenas o ano da data (ex: "2024-01-01" -> "2024")
                 String anoExtraido = ano.split("-")[0];
                 
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/tela-feedback-api-aluno.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-feedback-api-aluno.fxml"));
                 Parent root = loader.load();
                 
                 TelaFeedbackApiAlunoController controller = loader.getController();
