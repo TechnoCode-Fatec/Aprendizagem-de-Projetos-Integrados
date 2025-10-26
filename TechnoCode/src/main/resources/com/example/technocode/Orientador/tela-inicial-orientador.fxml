@@ -15,9 +15,6 @@
                 <Label alignment="CENTER" prefHeight="47.0" prefWidth="295.0" text="INTERFACE ORIENTADOR">
                     <font><Font name="System Bold" size="24.0" /></font>
                 </Label>
-                <Button mnemonicParsing="false" prefHeight="30.0" prefWidth="113.0" style="-fx-background-color: #5E5555;" text="Perfil" textFill="WHITE">
-                    <font><Font size="14.0" /></font>
-                </Button>
             </children>
         </HBox>
 
