@@ -9,16 +9,21 @@
     <children>
         <HBox alignment="CENTER" prefHeight="60.0" prefWidth="800.0" style="-fx-spacing: 25; -fx-padding: 10 20 10 20;">
             <children>
-                <Button mnemonicParsing="false" onAction="#voltarTelaSecao" prefHeight="34.0" prefWidth="130.0" style="-fx-background-color: #5E5555;" text="Voltar" textFill="WHITE">
+                <Button mnemonicParsing="false" onAction="#voltarTelaInicial" prefHeight="34.0" prefWidth="130.0" style="-fx-background-color: #5E5555;" text="Voltar" textFill="WHITE">
                     <font>
                         <Font size="14.0" />
                     </font>
                 </Button>
-                <Label fx:id="labelTitulo" alignment="CENTER" prefHeight="47.0" prefWidth="400.0" text="FEEDBACK - APRESENTAÇÃO">
+                <Label fx:id="labelTitulo" alignment="CENTER" prefHeight="47.0" prefWidth="400.0" text="FEEDBACK - Apresentação">
                     <font>
                         <Font name="System Bold" size="24.0" />
                     </font>
                 </Label>
+                <Button mnemonicParsing="false" onAction="#visualizarSecao" prefHeight="34.0" prefWidth="130.0" style="-fx-background-color: #5E5555;" text="Visualizar Seção" textFill="WHITE">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Button>
             </children>
         </HBox>
 

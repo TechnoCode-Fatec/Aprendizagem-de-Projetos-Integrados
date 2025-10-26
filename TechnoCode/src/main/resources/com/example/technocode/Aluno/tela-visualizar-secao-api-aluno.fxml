@@ -19,6 +19,16 @@
                         <Font name="System Bold" size="24.0" />
                     </font>
                 </Label>
+                <Button mnemonicParsing="false" onAction="#verFeedback" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #5E5555;" text="Feedback" textFill="WHITE">
+                    <font>
+                        <Font size="16.0" />
+                    </font>
+                </Button>
+                <Button mnemonicParsing="false" onAction="#verHistorico" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #5E5555;" text="Histórico" textFill="WHITE">
+                    <font>
+                        <Font size="16.0" />
+                    </font>
+                </Button>
             </children>
         </HBox>
 
@@ -111,21 +121,6 @@
                                 </children>
                             </VBox>
                         </GridPane>
-
-                        <HBox alignment="CENTER" style="-fx-padding: 20; -fx-spacing: 20;">
-                            <children>
-                                <Button mnemonicParsing="false" onAction="#verFeedback" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #5E5555;" text="Ver Feedback" textFill="WHITE">
-                                    <font>
-                                        <Font size="16.0" />
-                                    </font>
-                                </Button>
-                                <Button mnemonicParsing="false" onAction="#verHistorico" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #5E5555;" text="Ver Histórico" textFill="WHITE">
-                                    <font>
-                                        <Font size="16.0" />
-                                    </font>
-                                </Button>
-                            </children>
-                        </HBox>
                     </children>
                 </VBox>
             </content>
