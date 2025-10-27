@@ -251,14 +251,15 @@ public class TelaSecoesenviadasAPIController {
         
         String sql;
         if (feedbackExiste) {
-            // UPDATE se já existe
+            // UPDATE se já existe - atualiza horário para o momento atual
             sql = "UPDATE feedback_api SET " +
                     "status_problema = ?, feedback_problema = ?, " +
                     "status_solucao = ?, feedback_solucao = ?, " +
                     "status_tecnologias = ?, feedback_tecnologias = ?, " +
                     "status_contribuicoes = ?, feedback_contribuicoes = ?, " +
                     "status_hard_skills = ?, feedback_hard_skills = ?, " +
-                    "status_soft_skills = ?, feedback_soft_skills = ? " +
+                    "status_soft_skills = ?, feedback_soft_skills = ?, " +
+                    "horario = CURRENT_TIMESTAMP " +
                     "WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
         } else {
             // INSERT se não existe
@@ -361,6 +362,9 @@ public class TelaSecoesenviadasAPIController {
         
         // Define o email do aluno para consulta
         controller.setEmailAlunoParaConsulta(alunoId);
+        
+        // Carrega os dados do aluno (nome, email, curso)
+        controller.setDadosAluno(alunoId);
         
         // Recarrega os dados da tabela
         controller.recarregarDados();
