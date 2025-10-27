@@ -132,7 +132,6 @@ public class CadastroController {
         }
 
         mostrarAlertaSucesso("Cadastro realizado", "Usuário cadastrado com sucesso!");
-        System.out.println("Usuário cadastrado com sucesso!");
     }
 
 

@@ -158,7 +158,6 @@ public class TelaSecoesenviadasController {
             }
         } catch (SQLException e) {
             // Não é erro crítico se não houver feedback existente
-            System.out.println("Nenhum feedback existente encontrado para esta seção");
         }
     }
     
@@ -515,8 +514,6 @@ public class TelaSecoesenviadasController {
     private void atualizarStatusSecao(String secao, boolean status) {
         try {
             // TODO: Implementar a lógica de atualização no banco de dados
-            System.out.println("Atualizando status da seção " + secao + ": " + status);
-
             // Aqui você pode adicionar a lógica para salvar no banco de dados
             // Exemplo de como poderia ser:
             // String sql = "UPDATE secao_apresentacao SET status = ? WHERE secao = ? AND aluno = ?";

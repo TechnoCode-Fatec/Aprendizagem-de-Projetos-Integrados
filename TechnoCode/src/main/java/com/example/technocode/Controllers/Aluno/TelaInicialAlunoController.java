@@ -335,8 +335,6 @@ public class TelaInicialAlunoController {
 
     private void verFeedbackApi(ActionEvent event, Map<String, String> secao) throws IOException {
         String emailAluno = LoginController.getEmailLogado();
-        String idSecao = secao.get("id");
-        System.out.println("Abrindo feedback da seção: " + idSecao);
         if (emailAluno == null || emailAluno.isBlank()) {
             return;
         }

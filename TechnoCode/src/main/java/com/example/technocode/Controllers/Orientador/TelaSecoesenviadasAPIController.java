@@ -130,7 +130,6 @@ public class TelaSecoesenviadasAPIController {
             }
         } catch (SQLException e) {
             // Não é erro crítico se não houver feedback existente
-            System.out.println("Nenhum feedback existente encontrado para esta seção");
         }
     }
     

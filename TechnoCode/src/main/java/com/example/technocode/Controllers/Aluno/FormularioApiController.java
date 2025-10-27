@@ -104,7 +104,6 @@ public class FormularioApiController {
         connector.cadastrarSessaoApi(emailAluno, choiceBoxSemestreDoCurso.getValue(), Integer.parseInt(txtAno.getText()), choiceBoxSemestre.getValue(), proximaVersao,
                 txtEmpresa.getText(), txtProblema.getText(), txtSolucao.getText(),txtLinkRepositorio.getText(),txtTecnologias.getText(),
                 txtContribuicoes.getText(),txtHardSkills.getText(),txtSoftSkills.getText());
-        System.out.println("Cadastrado com sucesso - Versão: " + proximaVersao);
         
         // Volta para a tela inicial e recarrega as seções
         try {

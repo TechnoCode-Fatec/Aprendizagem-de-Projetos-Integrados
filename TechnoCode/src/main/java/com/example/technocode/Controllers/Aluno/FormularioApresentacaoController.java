@@ -100,7 +100,6 @@ public class FormularioApresentacaoController {
         int proximaVersao = connector.getProximaVersaoApresentacao(emailAluno);
         
         connector.cadastrarApresentacao(emailAluno, txtNome.getText(), Date.valueOf(datePickerIdade.getValue()), choiceBoxCurso.getValue(), proximaVersao, txtMotivacao.getText(),txtHistorico.getText(), txtGithub.getText(), txtLinkedin.getText(),txtPrincipaisConhecimentos.getText());
-        System.out.println("Cadastrado com sucesso - Versão: " + proximaVersao);
         
         // Volta para a tela inicial e recarrega as seções
         try {

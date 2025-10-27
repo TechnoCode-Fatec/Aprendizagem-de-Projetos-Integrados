@@ -59,17 +59,11 @@ public class TelaOrientadorController {
             // Melhora a visualização da tabela
             tabelaAlunos.setStyle("-fx-control-inner-background: #ffffff; -fx-text-background-color: black;");
 
-
-            // Debug para verificar se os dados foram adicionados
-            System.out.println("Número de alunos na tabela: " + tabelaAlunos.getItems().size());
-
             // Adiciona os botões de "Analisar"
             addButtonToTable();
 
             // Força a atualização da tabela
             tabelaAlunos.refresh();
-
-            System.out.println("Inicialização concluída com sucesso");
         } catch (Exception e) {
             System.err.println("Erro durante a inicialização: " + e.getMessage());
             e.printStackTrace();
@@ -134,8 +128,6 @@ public class TelaOrientadorController {
 
             tabelaAlunos.getItems().setAll(alunos);
             tabelaAlunos.refresh();
-
-            System.out.println("Tabela de alunos recarregada com " + alunos.size() + " alunos");
         } catch (Exception e) {
             System.err.println("Erro ao recarregar tabela de alunos: " + e.getMessage());
             e.printStackTrace();

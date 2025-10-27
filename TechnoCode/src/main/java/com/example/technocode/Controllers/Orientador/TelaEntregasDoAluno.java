@@ -115,7 +115,6 @@ public class TelaEntregasDoAluno {
             secao.put("status_feedback", statusFeedback);
         }
         
-        System.out.println("Carregando seções para: " + emailAlunoParaConsulta + " -> " + todasSecoes.size() + " itens (API: " + secoesApi.size() + ", Apresentação: " + secoesApresentacao.size() + ")");
         tabelaSecao.getItems().setAll(todasSecoes);
     }
 
