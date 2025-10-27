@@ -53,6 +53,30 @@ public class TelaEntregasDoAluno {
             colDescricao.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("empresa")));
             colStatusFeedback.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("status_feedback")));
 
+            // Aplica estilo customizado na coluna de status
+            colStatusFeedback.setCellFactory(col -> new TableCell<Map<String, String>, String>() {
+                @Override
+                protected void updateItem(String status, boolean empty) {
+                    super.updateItem(status, empty);
+                    
+                    if (empty || status == null) {
+                        setText(null);
+                        setStyle("");
+                    } else {
+                        setText(status);
+                        
+                        // Aplica cor baseada no status
+                        if ("Respondida".equals(status)) {
+                            setStyle("-fx-text-fill: #2E7D32; -fx-font-weight: bold;"); // Verde escuro
+                        } else if ("Á responder".equals(status)) {
+                            setStyle("-fx-text-fill: #C62828; -fx-font-weight: bold;"); // Vermelho escuro
+                        } else {
+                            setStyle(""); // Padrão
+                        }
+                    }
+                }
+            });
+
             tabelaSecao.setStyle("-fx-control-inner-background: #ffffff; -fx-text-background-color: black;");
 
             addButtonToTable();

@@ -200,6 +200,9 @@ public class TelaSecoesenviadasController {
             // Define o email do aluno para consulta
             controller.setEmailAlunoParaConsulta(alunoId);
             
+            // Carrega os dados do aluno (nome, email, curso)
+            controller.setDadosAluno(alunoId);
+            
             // Recarrega os dados da tabela
             controller.recarregarDados();
             
@@ -352,7 +355,7 @@ public class TelaSecoesenviadasController {
         
         String sql;
         if (feedbackExiste) {
-            // UPDATE se já existe
+            // UPDATE se já existe - atualiza horário para o momento atual
             sql = "UPDATE feedback_apresentacao SET " +
                     "status_nome = ?, feedback_nome = ?, " +
                     "status_idade = ?, feedback_idade = ?, " +
@@ -361,7 +364,8 @@ public class TelaSecoesenviadasController {
                     "status_historico = ?, feedback_historico = ?, " +
                     "status_github = ?, feedback_github = ?, " +
                     "status_linkedin = ?, feedback_linkedin = ?, " +
-                    "status_conhecimentos = ?, feedback_conhecimentos = ? " +
+                    "status_conhecimentos = ?, feedback_conhecimentos = ?, " +
+                    "horario = CURRENT_TIMESTAMP " +
                     "WHERE aluno = ? AND versao = ?";
         } else {
             // INSERT se não existe

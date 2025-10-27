@@ -143,7 +143,7 @@ public class TelaInicialAlunoController {
         
         // Se existe feedback, adiciona label com o horário
         if (horarioFeedback != null) {
-            Label labelHorario = new Label("Feedback enviado em: " + horarioFeedback);
+            Label labelHorario = new Label("Feedback recebido em: " + horarioFeedback);
             labelHorario.setStyle("-fx-font-size: 11px; -fx-text-fill: #3e3e3e; -fx-font-style: italic;");
             textBox.getChildren().add(labelHorario);
         }
