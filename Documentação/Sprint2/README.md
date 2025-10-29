@@ -20,8 +20,7 @@ Entregar as principais funcionalidades que viabilizam a comunicação entre alun
 | **Feedback do Orientador** | Como orientador, quero adicionar feedbacks de forma separada em cada seção e manter os feedbacks visíveis, para ter controle dos feedbacks que já foram feitos. |  🔸 Média | ✅ Finalizado |
 
 ---
-## Diagrama de Entidade-Relacionamento (DER)![imagem](https://github.com/user-attachments/assets/ce2e2fd6-80fd-4123-ae21-5711e1acaec7)
 
 
- 
----
+
+
