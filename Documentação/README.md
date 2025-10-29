@@ -349,8 +349,8 @@ A finalidade do DoD, é definir de forma formal e compartilhada os critérios de
 
 # Diagrama de Entidade-Relacionamento (DER)
 
-<img width="75%" alt="imagem (4)" src="https://github.com/user-attachments/assets/c9857d51-5c0a-44e9-8abf-5ad490e06596"/>
 
+![imagem](https://github.com/user-attachments/assets/30892905-ef1f-473c-b5a4-38d428050cb3)
 
 ---
 
