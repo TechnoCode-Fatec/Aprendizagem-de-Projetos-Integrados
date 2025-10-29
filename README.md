@@ -41,7 +41,7 @@ Nosso projeto busca propor uma solução em **Java Desktop**, com persistência 
 | Sprint | Início | Fim | Documentação | Status|
 |:------:|:------:|:---:|:------------:|:-----:|
 |🔖 Sprint 1|08/09|28/09|[Sprint 1](./Documentação/Sprint1/README.md)|✅|
-|🔖 Sprint 2|06/10|26/10|[Sprint 2](./Documentação/Sprint2/README.md)|⌛|
+|🔖 Sprint 2|06/10|26/10|[Sprint 2](./Documentação/Sprint2/README.md)|✅|
 |🔖 Sprint 3|03/11|23/11|[Sprint 3](./Documentação/Sprint3/README.md)|⬜|
 
 ---
