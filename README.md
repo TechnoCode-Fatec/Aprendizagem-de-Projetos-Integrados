@@ -31,6 +31,8 @@ Nosso projeto busca propor uma solução em **Java Desktop**, com persistência 
 | Histórico do Orientador | Como orientador, quero acessar o histórico de versões das seções do TG de cada aluno, para acompanhar a evolução e manter controle das correções | Média | Planejado
 | Aprovação de Seções | Como orientador, quero aprovar as seções para controlar o progresso, assim evidenciando ao aluno quando seu TG estiver pronto para continuar | Média | Planejado |
 | Visualização de Portfólios | Como orientador, quero visualizar os portfólios completos e suas seções separadamente, para ter facilidade em corrigi-los | Média | Planejado |
+| Formato MD | Como aluno, quero exportar meu TG em formato MD (MarkDown), quando estiver finalizado, conforme foi pedido pela instituição | Baixa | Planejado |
+| Agendamento de TG | Como professor de TG, quero agendar um dia e uma sala para encontrar o aluno e fazer e defesa do TG, para que o aluno comprove a sua aptidão e domínio sobre o tema estudado | Baixa | Planejado |
 
 ---
 
