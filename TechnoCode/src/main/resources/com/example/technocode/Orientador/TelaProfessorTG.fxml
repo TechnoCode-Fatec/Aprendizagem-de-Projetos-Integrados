@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.Orientador.TelaProfessorTGController" spacing="12.0" stylesheets="">
+    <padding>
+        <Insets topRightBottomLeft="16"/>
+    </padding>
+
+    <!-- Título -->
+    <Label text="Dashboard - Professor de TG" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+    <!-- Cards Resumo -->
+    <GridPane hgap="12" vgap="12">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="25"/>
+            <ColumnConstraints percentWidth="25"/>
+            <ColumnConstraints percentWidth="25"/>
+            <ColumnConstraints percentWidth="25"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints vgrow="NEVER"/>
+        </rowConstraints>
+
+        <children>
+            <VBox spacing="6" style="-fx-background-color: #EAEAEA; -fx-background-radius: 8; -fx-padding: 12;">
+                <Label text="Total de Alunos" style="-fx-text-fill: #555;"/>
+                <Label fx:id="lblTotalAlunos" text="0" style="-fx-font-size: 26px; -fx-font-weight: bold;"/>
+            </VBox>
+            <VBox spacing="6" GridPane.columnIndex="1" style="-fx-background-color: #EAEAEA; -fx-background-radius: 8; -fx-padding: 12;">
+                <Label text="Total de Orientadores" style="-fx-text-fill: #555;"/>
+                <Label fx:id="lblTotalOrientadores" text="0" style="-fx-font-size: 26px; -fx-font-weight: bold;"/>
+            </VBox>
+            <VBox spacing="6" GridPane.columnIndex="2" style="-fx-background-color: #EAEAEA; -fx-background-radius: 8; -fx-padding: 12;">
+                <Label text="Projetos Aprovados" style="-fx-text-fill: #555;"/>
+                <Label fx:id="lblProjetosAprovados" text="0" style="-fx-font-size: 26px; -fx-font-weight: bold;"/>
+            </VBox>
+            <VBox spacing="6" GridPane.columnIndex="3" style="-fx-background-color: #EAEAEA; -fx-background-radius: 8; -fx-padding: 12;">
+                <Label text="Projetos a Revisar" style="-fx-text-fill: #555;"/>
+                <Label fx:id="lblProjetosRevisar" text="0" style="-fx-font-size: 26px; -fx-font-weight: bold;"/>
+            </VBox>
+        </children>
+    </GridPane>
+
+    <!-- Filtros -->
+    <HBox spacing="8">
+        <ComboBox fx:id="filtroCurso" promptText="Curso"/>
+        <ComboBox fx:id="filtroOrientador" promptText="Orientador"/>
+        <ComboBox fx:id="filtroStatus" promptText="Status"/>
+        <TextField fx:id="buscaTexto" promptText="Buscar por nome, email..."/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Atualizar dados" onAction="#acaoAtualizar" style="-fx-background-color: #5E5555; -fx-text-fill: white; -fx-background-radius: 5;"/>
+        <Button text="Voltar" onAction="#acaoVoltar" style="-fx-background-color: black; -fx-text-fill: white; -fx-background-radius: 5;"/>
+    </HBox>
+
+    <!-- Tabelas -->
+    <SplitPane dividerPositions="0.45">
+        <items>
+            <!-- Orientadores -->
+            <VBox spacing="8">
+                <Label text="Orientadores" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                <TableView fx:id="tabelaOrientadores">
+                    <columns>
+                        <TableColumn fx:id="colOrientadorNome" text="Nome" prefWidth="180"/>
+                        <TableColumn fx:id="colOrientadorEmail" text="Email" prefWidth="220"/>
+                        <TableColumn fx:id="colQtdAlunos" text="Nº de alunos" prefWidth="120"/>
+                    </columns>
+                </TableView>
+            </VBox>
+
+            <!-- Alunos -->
+            <VBox spacing="8">
+                <Label text="Alunos" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                <TableView fx:id="tabelaAlunos">
+                    <columns>
+                        <TableColumn fx:id="colAlunoNome" text="Nome" prefWidth="180"/>
+                        <TableColumn fx:id="colAlunoEmail" text="Email" prefWidth="220"/>
+                        <TableColumn fx:id="colAlunoCurso" text="Curso" prefWidth="100"/>
+                        <TableColumn fx:id="colAlunoOrientador" text="Orientador" prefWidth="180"/>
+                        <TableColumn fx:id="colAlunoAndamento" text="Andamento" prefWidth="120"/>
+                    </columns>
+                </TableView>
+            </VBox>
+        </items>
+    </SplitPane>
+
+</VBox>
+
+
