@@ -1,6 +1,7 @@
 package com.example.technocode.Controllers.Aluno;
 
 import com.example.technocode.dao.Connector;
+import com.example.technocode.model.SecaoApresentacao;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,9 +20,8 @@ import java.sql.SQLException;
 
 public class TelaFeedbackApresentacaoAlunoController {
 
-    // Identificador da seção
-    private String alunoId;
-    private int versaoId;
+    // Identificador da seção usando classe modelo
+    private SecaoApresentacao secaoApresentacao;
 
     @FXML private TextArea feedbackNome;
     @FXML private TextArea feedbackIdade;
@@ -43,14 +43,14 @@ public class TelaFeedbackApresentacaoAlunoController {
 
     // Recebe identificador da secao e carrega dados
     public void setIdentificadorSecao(String aluno, int versao) {
-        this.alunoId = aluno;
-        this.versaoId = versao;
+        // Cria objeto SecaoApresentacao para identificar a seção
+        this.secaoApresentacao = new SecaoApresentacao(aluno, versao);
         carregarFeedback();
     }
 
     // Carrega dados do feedback_apresentacao
     public void carregarFeedback() {
-        if (alunoId == null) return;
+        if (secaoApresentacao == null || secaoApresentacao.getEmailAluno() == null) return;
         String sql = "SELECT status_nome, feedback_nome, " +
                 "status_idade, feedback_idade, " +
                 "status_curso, feedback_curso, " +
@@ -62,8 +62,8 @@ public class TelaFeedbackApresentacaoAlunoController {
                 "FROM feedback_apresentacao WHERE aluno = ? AND versao = ?";
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, alunoId);
-            pst.setInt(2, versaoId);
+            pst.setString(1, secaoApresentacao.getEmailAluno());
+            pst.setInt(2, secaoApresentacao.getVersao());
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     carregarCampoFeedback("nome", rs, feedbackNome, statusNome);
@@ -114,7 +114,9 @@ public class TelaFeedbackApresentacaoAlunoController {
             Parent root = loader.load();
             
             TelaVisualizarSecaoAlunoController controller = loader.getController();
-            controller.setIdentificadorSecao(alunoId, versaoId);
+            if (secaoApresentacao != null) {
+                controller.setIdentificadorSecao(secaoApresentacao.getEmailAluno(), secaoApresentacao.getVersao());
+            }
             
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);

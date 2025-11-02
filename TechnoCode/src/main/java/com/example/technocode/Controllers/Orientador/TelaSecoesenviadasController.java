@@ -1,6 +1,7 @@
 package com.example.technocode.Controllers.Orientador;
 
 import com.example.technocode.dao.Connector;
+import com.example.technocode.model.SecaoApresentacao;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -24,9 +25,8 @@ import java.util.Map;
 
 public class TelaSecoesenviadasController {
 
-    // Identificador da seção
-    private String alunoId;
-    private int versaoId;
+    // Identificador da seção usando classe modelo
+    private SecaoApresentacao secaoApresentacao;
 
     // Status por campo (Aprovado | Revisar | null)
     private final Map<String, String> statusPorCampo = new HashMap<>();
@@ -86,20 +86,20 @@ public class TelaSecoesenviadasController {
 
     // Recebe identificador da secao e carrega dados
     public void setIdentificadorSecao(String aluno, int versao) {
-        this.alunoId = aluno;
-        this.versaoId = versao;
+        // Cria objeto SecaoApresentacao para identificar a seção
+        this.secaoApresentacao = new SecaoApresentacao(aluno, versao);
         carregarSecaoAluno();
     }
 
     // 1) Carrega dados da secao_apresentacao
     public void carregarSecaoAluno() {
-        if (alunoId == null) return;
+        if (secaoApresentacao == null || secaoApresentacao.getEmailAluno() == null) return;
         String sql = "SELECT nome, idade, curso, motivacao, historico, link_github, link_linkedin, principais_conhecimentos " +
                 "FROM secao_apresentacao WHERE aluno = ? AND versao = ?";
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, alunoId);
-            pst.setInt(2, versaoId);
+            pst.setString(1, secaoApresentacao.getEmailAluno());
+            pst.setInt(2, secaoApresentacao.getVersao());
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     if (alunoTextNome != null) alunoTextNome.setText(rs.getString("nome"));
@@ -130,7 +130,7 @@ public class TelaSecoesenviadasController {
     
     // Carrega feedback existente do orientador
     private void carregarFeedbackExistente() {
-        if (alunoId == null) return;
+        if (secaoApresentacao == null || secaoApresentacao.getEmailAluno() == null) return;
         String sql = "SELECT status_nome, feedback_nome, " +
                 "status_idade, feedback_idade, " +
                 "status_curso, feedback_curso, " +
@@ -142,8 +142,8 @@ public class TelaSecoesenviadasController {
                 "FROM feedback_apresentacao WHERE aluno = ? AND versao = ?";
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, alunoId);
-            pst.setInt(2, versaoId);
+            pst.setString(1, secaoApresentacao.getEmailAluno());
+            pst.setInt(2, secaoApresentacao.getVersao());
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     carregarCampoFeedbackExistente("nome", rs, feedbackTextNome, feedbackNome);
@@ -197,10 +197,10 @@ public class TelaSecoesenviadasController {
             TelaEntregasDoAluno controller = loader.getController();
             
             // Define o email do aluno para consulta
-            controller.setEmailAlunoParaConsulta(alunoId);
+            controller.setEmailAlunoParaConsulta(secaoApresentacao != null ? secaoApresentacao.getEmailAluno() : null);
             
             // Carrega os dados do aluno (nome, email, curso)
-            controller.setDadosAluno(alunoId);
+            controller.setDadosAluno(secaoApresentacao != null ? secaoApresentacao.getEmailAluno() : null);
             
             // Recarrega os dados da tabela
             controller.recarregarDados();
@@ -403,12 +403,12 @@ public class TelaSecoesenviadasController {
 
             if (feedbackExiste) {
                 // Para UPDATE, adiciona WHERE
-                pst.setString(17, alunoId);
-                pst.setInt(18, versaoId);
+                pst.setString(17, secaoApresentacao.getEmailAluno());
+                pst.setInt(18, secaoApresentacao.getVersao());
             } else {
                 // Para INSERT, adiciona aluno e versao
-                pst.setString(17, alunoId);
-                pst.setInt(18, versaoId);
+                pst.setString(17, secaoApresentacao.getEmailAluno());
+                pst.setInt(18, secaoApresentacao.getVersao());
             }
 
             pst.executeUpdate();
@@ -424,11 +424,12 @@ public class TelaSecoesenviadasController {
     }
     
     private boolean verificarFeedbackExistente() {
+        if (secaoApresentacao == null || secaoApresentacao.getEmailAluno() == null) return false;
         String sql = "SELECT COUNT(*) FROM feedback_apresentacao WHERE aluno = ? AND versao = ?";
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, alunoId);
-            pst.setInt(2, versaoId);
+            pst.setString(1, secaoApresentacao.getEmailAluno());
+            pst.setInt(2, secaoApresentacao.getVersao());
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1) > 0;

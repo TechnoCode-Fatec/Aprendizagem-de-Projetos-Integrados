@@ -1,6 +1,7 @@
 package com.example.technocode.Controllers.Aluno;
 
 import com.example.technocode.dao.Connector;
+import com.example.technocode.model.SecaoApresentacao;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,9 +22,8 @@ import java.time.Period;
 
 public class TelaVisualizarSecaoAlunoController {
 
-    // Identificador da seção
-    private String alunoId;
-    private int versaoId;
+    // Identificador da seção usando classe modelo
+    private SecaoApresentacao secaoApresentacao;
 
     @FXML private TextArea alunoTextNome;
     @FXML private TextArea alunoTextIdade;
@@ -37,24 +37,24 @@ public class TelaVisualizarSecaoAlunoController {
 
     // Recebe identificador da secao e carrega dados
     public void setIdentificadorSecao(String aluno, int versao) {
-        this.alunoId = aluno;
-        this.versaoId = versao;
+        // Cria objeto SecaoApresentacao para identificar a seção
+        this.secaoApresentacao = new SecaoApresentacao(aluno, versao);
         carregarSecaoAluno();
-        if (btnFeedback != null) {
-            boolean existe = existeFeedbackApresentacao(alunoId, versaoId);
+        if (btnFeedback != null && secaoApresentacao != null) {
+            boolean existe = existeFeedbackApresentacao(secaoApresentacao.getEmailAluno(), secaoApresentacao.getVersao());
             btnFeedback.setDisable(!existe);
         }
     }
 
     // Carrega dados da secao_apresentacao
     public void carregarSecaoAluno() {
-        if (alunoId == null) return;
+        if (secaoApresentacao == null || secaoApresentacao.getEmailAluno() == null) return;
         String sql = "SELECT nome, idade, curso, motivacao, historico, link_github, link_linkedin, principais_conhecimentos " +
                 "FROM secao_apresentacao WHERE aluno = ? AND versao = ?";
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, alunoId);
-            pst.setInt(2, versaoId);
+            pst.setString(1, secaoApresentacao.getEmailAluno());
+            pst.setInt(2, secaoApresentacao.getVersao());
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     if (alunoTextNome != null) alunoTextNome.setText(rs.getString("nome"));
@@ -87,7 +87,9 @@ public class TelaVisualizarSecaoAlunoController {
             Parent root = loader.load();
             
             TelaFeedbackApresentacaoAlunoController controller = loader.getController();
-            controller.setIdentificadorSecao(alunoId, versaoId);
+            if (secaoApresentacao != null) {
+                controller.setIdentificadorSecao(secaoApresentacao.getEmailAluno(), secaoApresentacao.getVersao());
+            }
             
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
@@ -156,7 +158,7 @@ public class TelaVisualizarSecaoAlunoController {
      */
     @FXML
     private void carregarVersaoAnteriorApresentacao(ActionEvent event) {
-        if (alunoId == null) return;
+        if (secaoApresentacao == null || secaoApresentacao.getEmailAluno() == null) return;
 
         String sql = "SELECT nome, idade, curso, motivacao, historico, link_github, link_linkedin, principais_conhecimentos " +
                      "FROM secao_apresentacao WHERE aluno = ? AND versao = ?";
@@ -164,8 +166,8 @@ public class TelaVisualizarSecaoAlunoController {
         try (Connection con = new Connector().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             
-            ps.setString(1, alunoId);
-            ps.setInt(2, versaoId);
+            ps.setString(1, secaoApresentacao.getEmailAluno());
+            ps.setInt(2, secaoApresentacao.getVersao());
             
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {

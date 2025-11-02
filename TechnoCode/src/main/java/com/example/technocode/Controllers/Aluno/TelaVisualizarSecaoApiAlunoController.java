@@ -2,6 +2,7 @@ package com.example.technocode.Controllers.Aluno;
 
 import com.example.technocode.Controllers.LoginController;
 import com.example.technocode.dao.Connector;
+import com.example.technocode.model.SecaoApi;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,12 +21,8 @@ import java.sql.SQLException;
 
 public class TelaVisualizarSecaoApiAlunoController {
 
-    // Identificador da seção
-    private String alunoId;
-    private String semestreCursoId;
-    private int anoId;
-    private String semestreAnoId;
-    private int versaoId;
+    // Identificador da seção usando classe modelo
+    private SecaoApi secaoApi;
     private String emailAluno = LoginController.getEmailLogado();
 
     @FXML private TextArea alunoProblema;
@@ -39,30 +36,28 @@ public class TelaVisualizarSecaoApiAlunoController {
 
     // Recebe identificador da secao e carrega dados
     public void setIdentificadorSecao(String aluno, String semestreCurso, int ano, String semestreAno, int versao) {
-        this.alunoId = aluno;
-        this.semestreCursoId = semestreCurso;
-        this.anoId = ano;
-        this.semestreAnoId = semestreAno;
-        this.versaoId = versao;
+        // Cria objeto SecaoApi para identificar a seção
+        this.secaoApi = new SecaoApi(aluno, semestreCurso, ano, semestreAno, versao);
         carregarSecaoAluno();
-        if (btnFeedback != null) {
-            boolean existe = existeFeedbackApi(alunoId, semestreCursoId, String.valueOf(anoId), semestreAnoId, versaoId);
+        if (btnFeedback != null && secaoApi != null) {
+            boolean existe = existeFeedbackApi(secaoApi.getEmailAluno(), secaoApi.getSemestreCurso(), 
+                    String.valueOf(secaoApi.getAno()), secaoApi.getSemestreAno(), secaoApi.getVersao());
             btnFeedback.setDisable(!existe);
         }
     }
 
     // Carrega dados da secao_api
     public void carregarSecaoAluno() {
-        if (alunoId == null) return;
+        if (secaoApi == null || secaoApi.getEmailAluno() == null) return;
         String sql = "SELECT problema, solucao, tecnologias, contribuicoes, hard_skills, soft_skills " +
                 "FROM secao_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, alunoId);
-            pst.setString(2, semestreCursoId);
-            pst.setInt(3, anoId);
-            pst.setString(4, semestreAnoId);
-            pst.setInt(5, versaoId);
+            pst.setString(1, secaoApi.getEmailAluno());
+            pst.setString(2, secaoApi.getSemestreCurso());
+            pst.setInt(3, secaoApi.getAno());
+            pst.setString(4, secaoApi.getSemestreAno());
+            pst.setInt(5, secaoApi.getVersao());
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     if (alunoProblema != null) alunoProblema.setText(rs.getString("problema"));
@@ -85,7 +80,10 @@ public class TelaVisualizarSecaoApiAlunoController {
             Parent root = loader.load();
             
             TelaFeedbackApiAlunoController controller = loader.getController();
-            controller.setIdentificadorSecao(alunoId, semestreCursoId, anoId, semestreAnoId, versaoId);
+            if (secaoApi != null) {
+                controller.setIdentificadorSecao(secaoApi.getEmailAluno(), secaoApi.getSemestreCurso(), 
+                        secaoApi.getAno(), secaoApi.getSemestreAno(), secaoApi.getVersao());
+            }
             
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
@@ -156,7 +154,7 @@ public class TelaVisualizarSecaoApiAlunoController {
      * para criar uma nova versão baseada na anterior
      */
     public void carregarVersaoAnterior(ActionEvent event) {
-        if (alunoId == null) return;
+        if (secaoApi == null || secaoApi.getEmailAluno() == null) return;
 
         String sql = "SELECT semestre_curso, ano, semestre_ano, empresa, link_repositorio, problema, solucao, tecnologias, contribuicoes, hard_skills, soft_skills " +
                      "FROM secao_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
@@ -164,11 +162,11 @@ public class TelaVisualizarSecaoApiAlunoController {
         try (Connection con = new Connector().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             
-            ps.setString(1, alunoId);
-            ps.setString(2, semestreCursoId);
-            ps.setInt(3, anoId);
-            ps.setString(4, semestreAnoId);
-            ps.setInt(5, versaoId);
+            ps.setString(1, secaoApi.getEmailAluno());
+            ps.setString(2, secaoApi.getSemestreCurso());
+            ps.setInt(3, secaoApi.getAno());
+            ps.setString(4, secaoApi.getSemestreAno());
+            ps.setInt(5, secaoApi.getVersao());
             
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {

@@ -1,6 +1,8 @@
 package com.example.technocode.Controllers;
 
 import com.example.technocode.dao.Connector;
+import com.example.technocode.model.Aluno;
+import com.example.technocode.model.Orientador;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -111,16 +113,38 @@ public class CadastroController {
                 return;
             }
 
-            conn.cadastrarAluno(
+            // Cria objeto Aluno
+            Aluno aluno = new Aluno(
                     txtNome.getText(),
                     txtEmail.getText(),
                     txtSenha.getText(),
-                    emailOrientador, // usa o email como FK
+                    emailOrientador,
                     comboBoxCurso.getValue()
             );
 
+            // Mantém compatibilidade com o método existente
+            conn.cadastrarAluno(
+                    aluno.getNome(),
+                    aluno.getEmail(),
+                    aluno.getSenha(),
+                    aluno.getOrientador(),
+                    aluno.getCurso()
+            );
+
         } else if (tipo.equals("Orientador")) {
-            conn.cadastrarOrientador(txtNome.getText(), txtEmail.getText(), txtSenha.getText());
+            // Cria objeto Orientador
+            Orientador orientador = new Orientador(
+                    txtNome.getText(),
+                    txtEmail.getText(),
+                    txtSenha.getText()
+            );
+
+            // Mantém compatibilidade com o método existente
+            conn.cadastrarOrientador(
+                    orientador.getNome(),
+                    orientador.getEmail(),
+                    orientador.getSenha()
+            );
 
             // Recarrega a lista de orientadores após cadastrar um novo
             try {

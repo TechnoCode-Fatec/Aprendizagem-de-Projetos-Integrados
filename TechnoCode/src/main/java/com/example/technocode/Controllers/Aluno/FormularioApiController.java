@@ -2,6 +2,7 @@ package com.example.technocode.Controllers.Aluno;
 
 import com.example.technocode.Controllers.LoginController;
 import com.example.technocode.dao.Connector;
+import com.example.technocode.model.SecaoApi;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -101,9 +102,39 @@ public class FormularioApiController {
         // Busca a próxima versão disponível automaticamente
         int proximaVersao = connector.getProximaVersaoApi(emailAluno, choiceBoxSemestreDoCurso.getValue(), Integer.parseInt(txtAno.getText()), choiceBoxSemestre.getValue());
         
-        connector.cadastrarSessaoApi(emailAluno, choiceBoxSemestreDoCurso.getValue(), Integer.parseInt(txtAno.getText()), choiceBoxSemestre.getValue(), proximaVersao,
-                txtEmpresa.getText(), txtProblema.getText(), txtSolucao.getText(),txtLinkRepositorio.getText(),txtTecnologias.getText(),
-                txtContribuicoes.getText(),txtHardSkills.getText(),txtSoftSkills.getText());
+        // Cria objeto SecaoApi
+        SecaoApi secaoApi = new SecaoApi(
+                emailAluno,
+                choiceBoxSemestreDoCurso.getValue(),
+                Integer.parseInt(txtAno.getText()),
+                choiceBoxSemestre.getValue(),
+                proximaVersao,
+                txtEmpresa.getText(),
+                txtProblema.getText(),
+                txtSolucao.getText(),
+                txtLinkRepositorio.getText(),
+                txtTecnologias.getText(),
+                txtContribuicoes.getText(),
+                txtHardSkills.getText(),
+                txtSoftSkills.getText()
+        );
+        
+        // Mantém compatibilidade com o método existente
+        connector.cadastrarSessaoApi(
+                secaoApi.getEmailAluno(),
+                secaoApi.getSemestreCurso(),
+                secaoApi.getAno(),
+                secaoApi.getSemestreAno(),
+                secaoApi.getVersao(),
+                secaoApi.getEmpresa(),
+                secaoApi.getProblema(),
+                secaoApi.getSolucao(),
+                secaoApi.getLinkRepositorio(),
+                secaoApi.getTecnologias(),
+                secaoApi.getContribuicoes(),
+                secaoApi.getHardSkills(),
+                secaoApi.getSoftSkills()
+        );
         
         // Volta para a tela inicial e recarrega as seções
         try {

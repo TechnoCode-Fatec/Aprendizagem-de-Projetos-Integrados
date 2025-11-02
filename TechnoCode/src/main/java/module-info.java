@@ -15,4 +15,5 @@ module com.example.technocode {
     opens com.example.technocode.Controllers.Aluno to javafx.fxml;
     exports com.example.technocode.Controllers.Orientador;
     opens com.example.technocode.Controllers.Orientador to javafx.fxml;
+    exports com.example.technocode.model;
 }
