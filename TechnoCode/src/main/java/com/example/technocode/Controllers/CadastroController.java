@@ -1,15 +1,12 @@
 package com.example.technocode.Controllers;
 
-import com.example.technocode.dao.Connector;
+import com.example.technocode.Services.NavigationService;
+import com.example.technocode.model.Aluno;
+import com.example.technocode.model.Orientador;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -32,8 +29,6 @@ public class CadastroController {
     HBox hBoxOrientador, hBoxCurso;
     @FXML
     ComboBox<String> comboBoxOrientador, comboBoxCurso;
-    @FXML
-    private Button btnCadastrar;
 
     private ToggleGroup grupoUsuario;
     private Map<String, String> orientadoresMap;
@@ -47,19 +42,13 @@ public class CadastroController {
         radioOrientador.setUserData("Orientador");
         hBoxOrientador.setVisible(false);
         hBoxCurso.setVisible(false);
-        Connector con =  new Connector();
-        orientadoresMap = con.buscarOrientadores();
+        orientadoresMap = Orientador.buscarTodos();
         comboBoxOrientador.getItems().addAll(orientadoresMap.keySet());
         comboBoxCurso.getItems().addAll("TG1", "TG2", "TG1/TG2");
 
     }
     public void voltar(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/login.fxml"));
-        Parent root = loader.load();
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+        NavigationService.navegarPara(event, "/com/example/technocode/login.fxml");
     }
 
     public String getTipoUsuario(){
@@ -99,33 +88,39 @@ public class CadastroController {
             return;
         }
 
-        Connector conn = new Connector();
-
         if (tipo.equals("Aluno")) {
             // Busca o email do orientador a partir do nome selecionado
             String nomeSelecionado = comboBoxOrientador.getValue();
-            String emailOrientador = conn.buscarEmailOrientadorPorNome(nomeSelecionado);
+            String emailOrientador = Orientador.buscarEmailPorNome(nomeSelecionado);
 
             if (emailOrientador == null) {
                 mostrarAlertaErro("Orientador inválido", "Não foi possível encontrar o email do orientador selecionado.");
                 return;
             }
 
-            conn.cadastrarAluno(
+            // Cria e cadastra objeto Aluno
+            Aluno aluno = new Aluno(
                     txtNome.getText(),
                     txtEmail.getText(),
                     txtSenha.getText(),
-                    emailOrientador, // usa o email como FK
+                    emailOrientador,
                     comboBoxCurso.getValue()
             );
+            aluno.cadastrar();
 
         } else if (tipo.equals("Orientador")) {
-            conn.cadastrarOrientador(txtNome.getText(), txtEmail.getText(), txtSenha.getText());
+            // Cria e cadastra objeto Orientador
+            Orientador orientador = new Orientador(
+                    txtNome.getText(),
+                    txtEmail.getText(),
+                    txtSenha.getText()
+            );
+            orientador.cadastrar();
 
             // Recarrega a lista de orientadores após cadastrar um novo
             try {
                 comboBoxOrientador.getItems().clear();
-                comboBoxOrientador.getItems().addAll(conn.buscarOrientadores().keySet());
+                comboBoxOrientador.getItems().addAll(Orientador.buscarTodos().keySet());
             } catch (Exception e) {
                 System.err.println("Erro ao recarregar comboBoxOrientador: " + e.getMessage());
             }

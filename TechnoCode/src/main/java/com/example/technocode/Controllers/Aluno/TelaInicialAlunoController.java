@@ -1,13 +1,12 @@
 package com.example.technocode.Controllers.Aluno;
 
 import com.example.technocode.Controllers.*;
-import com.example.technocode.dao.Connector;
+import com.example.technocode.Services.NavigationService;
+import com.example.technocode.model.SecaoApi;
+import com.example.technocode.model.SecaoApresentacao;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
@@ -16,13 +15,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -53,14 +47,12 @@ public class TelaInicialAlunoController {
             return;
         }
         
-        Connector connector = new Connector();
-        
         // Carrega seções de apresentação
-        List<Map<String, String>> secoesApresentacao = connector.secoesApresentacao(emailAluno);
+        List<Map<String, String>> secoesApresentacao = SecaoApresentacao.buscarSecoesPorAluno(emailAluno);
         exibirSecoesApresentacao(secoesApresentacao);
         
         // Carrega seções de API
-        List<Map<String, String>> secoesApi = connector.secoesApi(emailAluno);
+        List<Map<String, String>> secoesApi = SecaoApi.buscarSecoesPorAluno(emailAluno);
         exibirSecoesApi(secoesApi);
     }
     
@@ -132,13 +124,15 @@ public class TelaInicialAlunoController {
         String horarioFeedback = null;
         if ("apresentacao".equals(tipo)) {
             int versao = Integer.parseInt(secao.get("versao"));
-            horarioFeedback = buscarHorarioFeedbackApresentacao(emailAluno, versao);
+            horarioFeedback = SecaoApresentacao.buscarHorarioFeedback(emailAluno, versao);
         } else {
             String semestreCurso = secao.get("semestre_curso");
             String ano = secao.get("ano");
             String semestreAno = secao.get("semestre_ano");
             int versao = Integer.parseInt(secao.get("versao"));
-            horarioFeedback = buscarHorarioFeedbackApi(emailAluno, semestreCurso, ano, semestreAno, versao);
+            // Extrair apenas o ano da data (ex: "2024-01-01" -> "2024")
+            String anoExtraido = ano != null ? ano.split("-")[0] : ano;
+            horarioFeedback = SecaoApi.buscarHorarioFeedback(emailAluno, semestreCurso, anoExtraido, semestreAno, versao);
         }
         
         // Se existe feedback, adiciona label com o horário
@@ -166,7 +160,7 @@ public class TelaInicialAlunoController {
 // Verifica se existe feedback para esta seção
         if ("apresentacao".equals(tipo)) {
             int versao = Integer.parseInt(secao.get("versao"));
-            if (existeFeedbackApresentacao(emailAluno, versao)) { // retorna boolean
+            if (SecaoApresentacao.verificarFeedback(emailAluno, versao)) {
                 btnFeedback.setDisable(false);
             }
         } else {
@@ -174,7 +168,9 @@ public class TelaInicialAlunoController {
             String ano = secao.get("ano");
             String semestreAno = secao.get("semestre_ano");
             int versao = Integer.parseInt(secao.get("versao"));
-            if (existeFeedbackApi(emailAluno, semestreCurso, ano, semestreAno, versao)) { // retorna boolean
+            // Extrair apenas o ano da data (ex: "2024-01-01" -> "2024")
+            String anoExtraido = ano.split("-")[0];
+            if (SecaoApi.verificarFeedback(emailAluno, semestreCurso, Integer.parseInt(anoExtraido), semestreAno, versao)) {
                 btnFeedback.setDisable(false);
             }
         }
@@ -218,93 +214,58 @@ public class TelaInicialAlunoController {
         String emailAluno = LoginController.getEmailLogado();
         
         if ("apresentacao".equals(tipo)) {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-visualizar-secao-aluno.fxml"));
-            Parent root = loader.load();
-            
-            TelaVisualizarSecaoAlunoController controller = loader.getController();
-            controller.setIdentificadorSecao(emailAluno, Integer.parseInt(secao.get("versao")));
-            
-            Stage stage = (Stage) containerApresentacoes.getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
+            Node node = containerApresentacoes;
+            NavigationService.navegarPara(node, "/com/example/technocode/Aluno/aluno-visualizar-apresentacao.fxml",
+                controller -> {
+                    if (controller instanceof AlunoVisualizarApresentacaoController) {
+                        ((AlunoVisualizarApresentacaoController) controller).setIdentificadorSecao(
+                            emailAluno, Integer.parseInt(secao.get("versao"))
+                        );
+                    }
+                });
         } else {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-visualizar-secao-api-aluno.fxml"));
-            Parent root = loader.load();
-            
-            TelaVisualizarSecaoApiAlunoController controller = loader.getController();
-            
+            Node node = containerApis;
             String semestreCurso = secao.get("semestre_curso");
             String ano = secao.get("ano");
             String semestreAno = secao.get("semestre_ano");
             String versao = secao.get("versao");
             
             if (semestreCurso != null && ano != null && semestreAno != null && versao != null) {
-                // Extrair apenas o ano da data (ex: "2024-01-01" -> "2024")
                 String anoExtraido = ano.split("-")[0];
+                final int anoInt = Integer.parseInt(anoExtraido);
+                final int versaoInt = Integer.parseInt(versao);
                 
-                controller.setIdentificadorSecao(
-                    emailAluno,  // email do aluno
-                    semestreCurso,          // semestre_curso
-                    Integer.parseInt(anoExtraido),   // ano extraído da data
-                    semestreAno,            // semestre_ano
-                    Integer.parseInt(versao) // versao
-                );
+                NavigationService.navegarPara(node, "/com/example/technocode/Aluno/aluno-visualizar-api.fxml",
+                    controller -> {
+                        if (controller instanceof AlunoVisualizarApiController) {
+                            ((AlunoVisualizarApiController) controller).setIdentificadorSecao(
+                                emailAluno, semestreCurso, anoInt, semestreAno, versaoInt
+                            );
+                        }
+                    });
             }
-            
-            Stage stage = (Stage) containerApis.getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
         }
     }
     
     @FXML
     private void voltarLogin(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/login.fxml"));
-        Parent root = loader.load();
-
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+        NavigationService.navegarPara(event, "/com/example/technocode/login.fxml");
     }
 
     @FXML
     private void adicionarApresentacao(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/formulario-apresentacao.fxml"));
-        Parent root = loader.load();
-        
-        Stage stage;
-        if (event != null && event.getSource() != null) {
-            stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        } else {
-            // Se chamado programaticamente, pega a janela atual
-            stage = (Stage) btnAdicionarApresentacao.getScene().getWindow();
-        }
-        
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+        Node node = (event != null && event.getSource() != null) 
+            ? (Node) event.getSource() 
+            : btnAdicionarApresentacao;
+        NavigationService.navegarPara(node, "/com/example/technocode/Aluno/formulario-apresentacao.fxml");
     }
 
     @FXML
     private void adicionarApi(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/formulario-api.fxml"));
-        Parent root = loader.load();
-        
-        Stage stage;
-        if (event != null && event.getSource() != null) {
-            stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        } else {
-            // Se chamado programaticamente, pega a janela atual
-            stage = (Stage) btnAdicionarApi.getScene().getWindow();
-        }
-        
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+        Node node = (event != null && event.getSource() != null) 
+            ? (Node) event.getSource() 
+            : btnAdicionarApi;
+        NavigationService.navegarPara(node, "/com/example/technocode/Aluno/formulario-api.fxml");
     }
     
     // Método público para ser chamado quando retornar dos formulários
@@ -319,18 +280,14 @@ public class TelaInicialAlunoController {
         }
 
         int versao = Integer.parseInt(secao.get("versao"));
+        final int versaoFinal = versao;
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-feedback-apresentacao-aluno.fxml"));
-        Parent root = loader.load();
-
-        TelaFeedbackApresentacaoAlunoController controller = loader.getController();
-        controller.setIdentificadorSecao(emailAluno, versao);
-
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
-
+        NavigationService.navegarPara(event, "/com/example/technocode/Aluno/aluno-feedback-apresentacao.fxml",
+            controller -> {
+                if (controller instanceof AlunoFeedbackApresentacaoController) {
+                    ((AlunoFeedbackApresentacaoController) controller).setIdentificadorSecao(emailAluno, versaoFinal);
+                }
+            });
     }
 
     private void verFeedbackApi(ActionEvent event, Map<String, String> secao) throws IOException {
@@ -344,27 +301,20 @@ public class TelaInicialAlunoController {
         String semestreAno = secao.get("semestre_ano");
         String versao = secao.get("versao");
 
-            if (semestreCurso != null && ano != null && semestreAno != null && versao != null) {
-                // Extrair apenas o ano da data (ex: "2024-01-01" -> "2024")
-                String anoExtraido = ano.split("-")[0];
-                
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-feedback-api-aluno.fxml"));
-                Parent root = loader.load();
-                
-                TelaFeedbackApiAlunoController controller = loader.getController();
-                controller.setIdentificadorSecao(
-                    emailAluno,  // email do aluno
-                    semestreCurso,          // semestre_curso
-                    Integer.parseInt(anoExtraido),   // ano extraído da data
-                    semestreAno,            // semestre_ano
-                    Integer.parseInt(versao) // versao
-                );
-                
-                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                Scene scene = new Scene(root);
-                stage.setScene(scene);
-                stage.show();
-            }
+        if (semestreCurso != null && ano != null && semestreAno != null && versao != null) {
+            String anoExtraido = ano.split("-")[0];
+            final int anoInt = Integer.parseInt(anoExtraido);
+            final int versaoInt = Integer.parseInt(versao);
+            
+            NavigationService.navegarPara(event, "/com/example/technocode/Aluno/aluno-feedback-api.fxml",
+                controller -> {
+                    if (controller instanceof AlunoFeedbackApiController) {
+                        ((AlunoFeedbackApiController) controller).setIdentificadorSecao(
+                            emailAluno, semestreCurso, anoInt, semestreAno, versaoInt
+                        );
+                    }
+                });
+        }
     }
 
     @FXML
@@ -393,83 +343,5 @@ public class TelaInicialAlunoController {
         });
     }
 
-    public boolean existeFeedbackApi(String aluno, String semestreCurso, String ano, String semestreAno, int versao) {
-        String sql = "SELECT 1 FROM feedback_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ? LIMIT 1";
-        try(Connection con = new Connector().getConnection()) {
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, aluno);
-            ps.setString(2, semestreCurso);
-            ps.setString(3, ano);
-            ps.setString(4, semestreAno);
-            ps.setInt(5, versao);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-    private boolean existeFeedbackApresentacao(String aluno, int versao) {
-        String sql = "SELECT 1 FROM feedback_apresentacao WHERE aluno = ? AND versao = ? LIMIT 1";
-        try(Connection con = new Connector().getConnection()) {
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, aluno);
-            ps.setInt(2, versao);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
 
-    }
-
-    /**
-     * Busca o horário do feedback para uma seção de API
-     * @return String formatada com data e hora, ou null se não existir feedback
-     */
-    private String buscarHorarioFeedbackApi(String aluno, String semestreCurso, String ano, String semestreAno, int versao) {
-        String sql = "SELECT DATE_FORMAT(horario, '%d/%m/%Y às %H:%i') as horario_formatado " +
-                     "FROM feedback_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ? LIMIT 1";
-        try (Connection con = new Connector().getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, aluno);
-            ps.setString(2, semestreCurso);
-            ps.setString(3, ano);
-            ps.setString(4, semestreAno);
-            ps.setInt(5, versao);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getString("horario_formatado");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * Busca o horário do feedback para uma seção de apresentação
-     * @return String formatada com data e hora, ou null se não existir feedback
-     */
-    private String buscarHorarioFeedbackApresentacao(String aluno, int versao) {
-        String sql = "SELECT DATE_FORMAT(horario, '%d/%m/%Y às %H:%i') as horario_formatado " +
-                     "FROM feedback_apresentacao WHERE aluno = ? AND versao = ? LIMIT 1";
-        try (Connection con = new Connector().getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, aluno);
-            ps.setInt(2, versao);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getString("horario_formatado");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 }

@@ -1,29 +1,23 @@
 package com.example.technocode.Controllers.Orientador;
 
-import com.example.technocode.dao.Connector;
+import com.example.technocode.Services.NavigationService;
+import com.example.technocode.model.SecaoApi;
+import com.example.technocode.model.SecaoApresentacao;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-public class TelaHistoricoOrientadorController {
+public class OrientadorHistoricoController {
 
     @FXML
     private VBox containerApresentacoes;
@@ -52,14 +46,12 @@ public class TelaHistoricoOrientadorController {
             return;
         }
         
-        Connector connector = new Connector();
-        
         // Carrega histórico de apresentações
-        List<Map<String, String>> historicoApresentacoes = connector.historicoVersoesApresentacao(emailAlunoSelecionado);
+        List<Map<String, String>> historicoApresentacoes = SecaoApresentacao.buscarHistoricoVersoes(emailAlunoSelecionado);
         exibirHistoricoApresentacoes(historicoApresentacoes);
         
         // Carrega histórico de APIs
-        List<Map<String, String>> historicoApis = connector.historicoVersoesApi(emailAlunoSelecionado);
+        List<Map<String, String>> historicoApis = SecaoApi.buscarHistoricoVersoes(emailAlunoSelecionado);
         exibirHistoricoApis(historicoApis);
     }
     
@@ -143,13 +135,15 @@ public class TelaHistoricoOrientadorController {
         String horarioFeedback = null;
         if ("apresentacao".equals(tipo)) {
             int versaoNum = Integer.parseInt(versao.get("versao"));
-            horarioFeedback = buscarHorarioFeedbackApresentacao(emailAlunoSelecionado, versaoNum);
+            horarioFeedback = SecaoApresentacao.buscarHorarioFeedback(emailAlunoSelecionado, versaoNum);
         } else {
             String semestreCurso = versao.get("semestre_curso");
             String ano = versao.get("ano");
             String semestreAno = versao.get("semestre_ano");
             int versaoNum = Integer.parseInt(versao.get("versao"));
-            horarioFeedback = buscarHorarioFeedbackApi(emailAlunoSelecionado, semestreCurso, ano, semestreAno, versaoNum);
+            // Extrair apenas o ano da data (ex: "2024-01-01" -> "2024")
+            String anoExtraido = ano != null ? ano.split("-")[0] : ano;
+            horarioFeedback = SecaoApi.buscarHorarioFeedback(emailAlunoSelecionado, semestreCurso, anoExtraido, semestreAno, versaoNum);
         }
         
         // Se existe feedback, adiciona label com o horário
@@ -201,111 +195,50 @@ public class TelaHistoricoOrientadorController {
     
     private void abrirVisualizacaoVersao(Map<String, String> versao, String tipo) throws IOException {
         if ("apresentacao".equals(tipo)) {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Orientador/tela-secoesenviadas.fxml"));
-            Parent root = loader.load();
-            
-            TelaSecoesenviadasController controller = loader.getController();
-            controller.setIdentificadorSecao(emailAlunoSelecionado, Integer.parseInt(versao.get("versao")));
-            
-            Stage stage = (Stage) containerApresentacoes.getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
+            Node node = containerApresentacoes;
+            final int versaoFinal = Integer.parseInt(versao.get("versao"));
+            NavigationService.navegarPara(node, "/com/example/technocode/Orientador/orientador-corrigir-apresentacao.fxml",
+                controller -> {
+                    if (controller instanceof OrientadorCorrigirApresentacaoController) {
+                        ((OrientadorCorrigirApresentacaoController) controller).setIdentificadorSecao(
+                            emailAlunoSelecionado, versaoFinal);
+                    }
+                });
         } else {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Orientador/tela-secoesenviadasAPI.fxml"));
-            Parent root = loader.load();
-            
-            TelaSecoesenviadasAPIController controller = loader.getController();
-            
+            Node node = containerApis;
             String semestreCurso = versao.get("semestre_curso");
             String ano = versao.get("ano");
             String semestreAno = versao.get("semestre_ano");
             String versaoNum = versao.get("versao");
             
             if (semestreCurso != null && ano != null && semestreAno != null && versaoNum != null) {
-                // Extrair apenas o ano da data (ex: "2024-01-01" -> "2024")
                 String anoExtraido = ano.split("-")[0];
+                final int anoFinal = Integer.parseInt(anoExtraido);
+                final int versaoFinal = Integer.parseInt(versaoNum);
                 
-                controller.setIdentificadorSecao(
-                    emailAlunoSelecionado,
-                    semestreCurso,
-                    Integer.parseInt(anoExtraido),
-                    semestreAno,
-                    Integer.parseInt(versaoNum)
-                );
+                NavigationService.navegarPara(node, "/com/example/technocode/Orientador/orientador-corrigir-api.fxml",
+                    controller -> {
+                        if (controller instanceof OrientadorCorrigirApiController) {
+                            ((OrientadorCorrigirApiController) controller).setIdentificadorSecao(
+                                emailAlunoSelecionado, semestreCurso, anoFinal, semestreAno, versaoFinal);
+                        }
+                    });
             }
-            
-            Stage stage = (Stage) containerApis.getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
         }
     }
 
     @FXML
     private void voltarTelaEntregas(ActionEvent event) throws IOException {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Orientador/tela-entregasDoAluno.fxml"));
-            Parent root = loader.load();
-            
-            // Obtém o controller e recarrega os dados do aluno
-            TelaEntregasDoAluno controller = loader.getController();
-            controller.setEmailAlunoParaConsulta(emailAlunoSelecionado);
-            controller.setDadosAluno(emailAlunoSelecionado);
-            
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Erro ao voltar para tela de entregas: " + e.getMessage());
-            throw e;
-        }
+        final String emailFinal = emailAlunoSelecionado;
+        NavigationService.navegarPara(event, "/com/example/technocode/Orientador/entregas-do-aluno.fxml",
+            controller -> {
+                if (controller instanceof EntregasDoAlunoController) {
+                    EntregasDoAlunoController entregasController = (EntregasDoAlunoController) controller;
+                    entregasController.setEmailAlunoParaConsulta(emailFinal);
+                    entregasController.setDadosAluno(emailFinal);
+                }
+            });
     }
 
-    /**
-     * Busca o horário do feedback para uma seção de API
-     */
-    private String buscarHorarioFeedbackApi(String aluno, String semestreCurso, String ano, String semestreAno, int versao) {
-        String sql = "SELECT DATE_FORMAT(horario, '%d/%m/%Y às %H:%i') as horario_formatado " +
-                     "FROM feedback_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ? LIMIT 1";
-        try (Connection con = new Connector().getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, aluno);
-            ps.setString(2, semestreCurso);
-            ps.setString(3, ano);
-            ps.setString(4, semestreAno);
-            ps.setInt(5, versao);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getString("horario_formatado");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * Busca o horário do feedback para uma seção de apresentação
-     */
-    private String buscarHorarioFeedbackApresentacao(String aluno, int versao) {
-        String sql = "SELECT DATE_FORMAT(horario, '%d/%m/%Y às %H:%i') as horario_formatado " +
-                     "FROM feedback_apresentacao WHERE aluno = ? AND versao = ? LIMIT 1";
-        try (Connection con = new Connector().getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, aluno);
-            ps.setInt(2, versao);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getString("horario_formatado");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 }
 

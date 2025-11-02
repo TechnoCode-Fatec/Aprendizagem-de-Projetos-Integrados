@@ -1,15 +1,11 @@
 package com.example.technocode.Controllers;
 
-import com.example.technocode.dao.Connector;
+import com.example.technocode.Services.NavigationService;
+import com.example.technocode.model.dao.Connector;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 
@@ -46,21 +42,11 @@ public class LoginController {
             emailLogado = txtEmail.getText();
         }
         if (tipo.equals("Aluno")){
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-inicial-aluno.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
+            NavigationService.navegarPara(event, "/com/example/technocode/Aluno/tela-inicial-aluno.fxml");
             return;
         }
         if (tipo.equals("Orientador")){
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Orientador/tela-inicial-orientador.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
+            NavigationService.navegarPara(event, "/com/example/technocode/Orientador/tela-inicial-orientador.fxml");
         }
     }
 
@@ -78,11 +64,6 @@ public class LoginController {
     }
 
     public void cadastrarUsuario(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/cadastro.fxml"));
-        Parent root = loader.load();
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+        NavigationService.navegarPara(event, "/com/example/technocode/cadastro.fxml");
     }
 }

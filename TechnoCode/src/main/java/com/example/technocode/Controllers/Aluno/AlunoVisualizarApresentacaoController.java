@@ -1,15 +1,13 @@
 package com.example.technocode.Controllers.Aluno;
 
-import com.example.technocode.dao.Connector;
+import com.example.technocode.Services.NavigationService;
+import com.example.technocode.model.dao.Connector;
+import com.example.technocode.model.SecaoApresentacao;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -19,11 +17,10 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Period;
 
-public class TelaVisualizarSecaoAlunoController {
+public class AlunoVisualizarApresentacaoController {
 
-    // Identificador da seção
-    private String alunoId;
-    private int versaoId;
+    // Identificador da seção usando classe modelo
+    private SecaoApresentacao secaoApresentacao;
 
     @FXML private TextArea alunoTextNome;
     @FXML private TextArea alunoTextIdade;
@@ -37,24 +34,24 @@ public class TelaVisualizarSecaoAlunoController {
 
     // Recebe identificador da secao e carrega dados
     public void setIdentificadorSecao(String aluno, int versao) {
-        this.alunoId = aluno;
-        this.versaoId = versao;
+        // Cria objeto SecaoApresentacao para identificar a seção
+        this.secaoApresentacao = new SecaoApresentacao(aluno, versao);
         carregarSecaoAluno();
-        if (btnFeedback != null) {
-            boolean existe = existeFeedbackApresentacao(alunoId, versaoId);
+        if (btnFeedback != null && secaoApresentacao != null) {
+            boolean existe = SecaoApresentacao.verificarFeedback(secaoApresentacao.getEmailAluno(), secaoApresentacao.getVersao());
             btnFeedback.setDisable(!existe);
         }
     }
 
     // Carrega dados da secao_apresentacao
     public void carregarSecaoAluno() {
-        if (alunoId == null) return;
+        if (secaoApresentacao == null || secaoApresentacao.getEmailAluno() == null) return;
         String sql = "SELECT nome, idade, curso, motivacao, historico, link_github, link_linkedin, principais_conhecimentos " +
                 "FROM secao_apresentacao WHERE aluno = ? AND versao = ?";
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, alunoId);
-            pst.setInt(2, versaoId);
+            pst.setString(1, secaoApresentacao.getEmailAluno());
+            pst.setInt(2, secaoApresentacao.getVersao());
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     if (alunoTextNome != null) alunoTextNome.setText(rs.getString("nome"));
@@ -82,67 +79,27 @@ public class TelaVisualizarSecaoAlunoController {
 
     @FXML
     private void verFeedback(ActionEvent event) throws IOException {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-feedback-apresentacao-aluno.fxml"));
-            Parent root = loader.load();
+        if (secaoApresentacao != null) {
+            final String emailAluno = secaoApresentacao.getEmailAluno();
+            final int versao = secaoApresentacao.getVersao();
             
-            TelaFeedbackApresentacaoAlunoController controller = loader.getController();
-            controller.setIdentificadorSecao(alunoId, versaoId);
-            
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Erro ao abrir tela de feedback: " + e.getMessage());
-            throw e;
+            NavigationService.navegarPara(event, "/com/example/technocode/Aluno/aluno-feedback-apresentacao.fxml",
+                controller -> {
+                    if (controller instanceof AlunoFeedbackApresentacaoController) {
+                        ((AlunoFeedbackApresentacaoController) controller).setIdentificadorSecao(emailAluno, versao);
+                    }
+                });
         }
     }
 
     @FXML
     private void verHistorico(ActionEvent event) throws IOException {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-historico-versoes.fxml"));
-            Parent root = loader.load();
-            
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Erro ao abrir tela de histórico: " + e.getMessage());
-            throw e;
-        }
+        NavigationService.navegarPara(event, "/com/example/technocode/Aluno/aluno-historico.fxml");
     }
 
     @FXML
     private void voltarTelaInicial(ActionEvent event) throws IOException {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-inicial-aluno.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Erro ao voltar para tela inicial: " + e.getMessage());
-            throw e;
-        }
-    }
-    private boolean existeFeedbackApresentacao(String aluno, int versao) {
-        String sql = "SELECT 1 FROM feedback_apresentacao WHERE aluno = ? AND versao = ? LIMIT 1";
-        try(Connection con = new Connector().getConnection()) {
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, aluno);
-            ps.setInt(2, versao);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-
+        NavigationService.navegarPara(event, "/com/example/technocode/Aluno/tela-inicial-aluno.fxml");
     }
 
     private void mostrarErro(String titulo, Exception e) {
@@ -156,7 +113,7 @@ public class TelaVisualizarSecaoAlunoController {
      */
     @FXML
     private void carregarVersaoAnteriorApresentacao(ActionEvent event) {
-        if (alunoId == null) return;
+        if (secaoApresentacao == null || secaoApresentacao.getEmailAluno() == null) return;
 
         String sql = "SELECT nome, idade, curso, motivacao, historico, link_github, link_linkedin, principais_conhecimentos " +
                      "FROM secao_apresentacao WHERE aluno = ? AND versao = ?";
@@ -164,8 +121,8 @@ public class TelaVisualizarSecaoAlunoController {
         try (Connection con = new Connector().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             
-            ps.setString(1, alunoId);
-            ps.setInt(2, versaoId);
+            ps.setString(1, secaoApresentacao.getEmailAluno());
+            ps.setInt(2, secaoApresentacao.getVersao());
             
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -179,28 +136,25 @@ public class TelaVisualizarSecaoAlunoController {
                     String linkedin = rs.getString("link_linkedin");
                     String conhecimentos = rs.getString("principais_conhecimentos");
                     
-                    // Carrega o formulário
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/formulario-apresentacao.fxml"));
-                    Parent root = loader.load();
+                    // Carrega o formulário e preenche os dados
+                    final String nomeFinal = nome;
+                    final String dataNascimentoFinal = dataNascimento;
+                    final String cursoFinal = curso;
+                    final String motivacaoFinal = motivacao;
+                    final String historicoFinal = historico;
+                    final String githubFinal = github;
+                    final String linkedinFinal = linkedin;
+                    final String conhecimentosFinal = conhecimentos;
                     
-                    // Obtém o controller e preenche os dados
-                    FormularioApresentacaoController controller = loader.getController();
-                    controller.setDadosVersaoAnterior(
-                        nome, 
-                        dataNascimento, 
-                        curso, 
-                        motivacao, 
-                        historico, 
-                        github, 
-                        linkedin, 
-                        conhecimentos
-                    );
-                    
-                    // Abre a tela do formulário
-                    Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                    Scene scene = new Scene(root);
-                    stage.setScene(scene);
-                    stage.show();
+                    NavigationService.navegarPara(event, "/com/example/technocode/Aluno/formulario-apresentacao.fxml",
+                        controller -> {
+                            if (controller instanceof FormularioApresentacaoController) {
+                                ((FormularioApresentacaoController) controller).setDadosVersaoAnterior(
+                                    nomeFinal, dataNascimentoFinal, cursoFinal, motivacaoFinal,
+                                    historicoFinal, githubFinal, linkedinFinal, conhecimentosFinal
+                                );
+                            }
+                        });
                     
                 } else {
                     System.err.println("Seção de apresentação não encontrada para criar nova versão");

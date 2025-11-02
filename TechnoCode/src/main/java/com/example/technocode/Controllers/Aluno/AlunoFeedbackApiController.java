@@ -1,15 +1,12 @@
 package com.example.technocode.Controllers.Aluno;
 
-import com.example.technocode.dao.Connector;
+import com.example.technocode.Services.NavigationService;
+import com.example.technocode.model.dao.Connector;
+import com.example.technocode.model.SecaoApi;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -17,14 +14,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class TelaFeedbackApiAlunoController {
+public class AlunoFeedbackApiController {
 
-    // Identificador da seção
-    private String alunoId;
-    private String semestreCursoId;
-    private int anoId;
-    private String semestreAnoId;
-    private int versaoId;
+    // Identificador da seção usando classe modelo
+    private SecaoApi secaoApi;
 
     @FXML private TextArea feedbackProblema;
     @FXML private TextArea feedbackSolucao;
@@ -42,17 +35,14 @@ public class TelaFeedbackApiAlunoController {
 
     // Recebe identificador da secao e carrega dados
     public void setIdentificadorSecao(String aluno, String semestreCurso, int ano, String semestreAno, int versao) {
-        this.alunoId = aluno;
-        this.semestreCursoId = semestreCurso;
-        this.anoId = ano;
-        this.semestreAnoId = semestreAno;
-        this.versaoId = versao;
+        // Cria objeto SecaoApi para identificar a seção
+        this.secaoApi = new SecaoApi(aluno, semestreCurso, ano, semestreAno, versao);
         carregarFeedback();
     }
 
     // Carrega dados do feedback_api
     public void carregarFeedback() {
-        if (alunoId == null) return;
+        if (secaoApi == null || secaoApi.getEmailAluno() == null) return;
         String sql = "SELECT status_problema, feedback_problema, " +
                 "status_solucao, feedback_solucao, " +
                 "status_tecnologias, feedback_tecnologias, " +
@@ -62,11 +52,11 @@ public class TelaFeedbackApiAlunoController {
                 "FROM feedback_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, alunoId);
-            pst.setString(2, semestreCursoId);
-            pst.setInt(3, anoId);
-            pst.setString(4, semestreAnoId);
-            pst.setInt(5, versaoId);
+            pst.setString(1, secaoApi.getEmailAluno());
+            pst.setString(2, secaoApi.getSemestreCurso());
+            pst.setInt(3, secaoApi.getAno());
+            pst.setString(4, secaoApi.getSemestreAno());
+            pst.setInt(5, secaoApi.getVersao());
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     carregarCampoFeedback("problema", rs, feedbackProblema, statusProblema);
@@ -110,36 +100,26 @@ public class TelaFeedbackApiAlunoController {
 
     @FXML
     private void visualizarSecao(ActionEvent event) throws IOException {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-visualizar-secao-api-aluno.fxml"));
-            Parent root = loader.load();
+        if (secaoApi != null) {
+            final String emailAluno = secaoApi.getEmailAluno();
+            final String semestreCurso = secaoApi.getSemestreCurso();
+            final int ano = secaoApi.getAno();
+            final String semestreAno = secaoApi.getSemestreAno();
+            final int versao = secaoApi.getVersao();
             
-            TelaVisualizarSecaoApiAlunoController controller = loader.getController();
-            controller.setIdentificadorSecao(alunoId, semestreCursoId, anoId, semestreAnoId, versaoId);
-            
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Erro ao voltar para tela de seção: " + e.getMessage());
-            throw e;
+            NavigationService.navegarPara(event, "/com/example/technocode/Aluno/aluno-visualizar-api.fxml",
+                controller -> {
+                    if (controller instanceof AlunoVisualizarApiController) {
+                        ((AlunoVisualizarApiController) controller).setIdentificadorSecao(
+                            emailAluno, semestreCurso, ano, semestreAno, versao);
+                    }
+                });
         }
     }
 
     @FXML
     private void voltarTelaInicial(ActionEvent event) throws IOException {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-inicial-aluno.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Erro ao voltar para tela inicial: " + e.getMessage());
-            throw e;
-        }
+        NavigationService.navegarPara(event, "/com/example/technocode/Aluno/tela-inicial-aluno.fxml");
     }
 
     private void mostrarErro(String titulo, Exception e) {

@@ -1,22 +1,20 @@
 package com.example.technocode.Controllers.Aluno;
 
 import com.example.technocode.Controllers.LoginController;
-import com.example.technocode.dao.Connector;
+import com.example.technocode.Services.NavigationService;
+import com.example.technocode.model.SecaoApi;
+import com.example.technocode.model.SecaoApresentacao;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-public class TelaHistoricoVersoesController {
+public class AlunoHistoricoController {
 
     @FXML
     private VBox containerApresentacoes;
@@ -35,14 +33,12 @@ public class TelaHistoricoVersoesController {
             return;
         }
         
-        Connector connector = new Connector();
-        
         // Carrega histórico de apresentações
-        List<Map<String, String>> historicoApresentacoes = connector.historicoVersoesApresentacao(emailAluno);
+        List<Map<String, String>> historicoApresentacoes = SecaoApresentacao.buscarHistoricoVersoes(emailAluno);
         exibirHistoricoApresentacoes(historicoApresentacoes);
         
         // Carrega histórico de APIs
-        List<Map<String, String>> historicoApis = connector.historicoVersoesApi(emailAluno);
+        List<Map<String, String>> historicoApis = SecaoApi.buscarHistoricoVersoes(emailAluno);
         exibirHistoricoApis(historicoApis);
     }
     
@@ -129,59 +125,41 @@ public class TelaHistoricoVersoesController {
         String emailAluno = LoginController.getEmailLogado();
         
         if ("apresentacao".equals(tipo)) {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-visualizar-secao-aluno.fxml"));
-            Parent root = loader.load();
-            
-            TelaVisualizarSecaoAlunoController controller = loader.getController();
-            controller.setIdentificadorSecao(emailAluno, Integer.parseInt(versao.get("versao")));
-            
-            Stage stage = (Stage) containerApresentacoes.getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
+            Node node = containerApresentacoes;
+            NavigationService.navegarPara(node, "/com/example/technocode/Aluno/aluno-visualizar-apresentacao.fxml",
+                controller -> {
+                    if (controller instanceof AlunoVisualizarApresentacaoController) {
+                        ((AlunoVisualizarApresentacaoController) controller).setIdentificadorSecao(
+                            emailAluno, Integer.parseInt(versao.get("versao"))
+                        );
+                    }
+                });
         } else {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-visualizar-secao-api-aluno.fxml"));
-            Parent root = loader.load();
-            
-            TelaVisualizarSecaoApiAlunoController controller = loader.getController();
-            
+            Node node = containerApis;
             String semestreCurso = versao.get("semestre_curso");
             String ano = versao.get("ano");
             String semestreAno = versao.get("semestre_ano");
             String versaoNum = versao.get("versao");
             
             if (semestreCurso != null && ano != null && semestreAno != null && versaoNum != null) {
-                // Extrair apenas o ano da data (ex: "2024-01-01" -> "2024")
                 String anoExtraido = ano.split("-")[0];
+                final int anoInt = Integer.parseInt(anoExtraido);
+                final int versaoInt = Integer.parseInt(versaoNum);
                 
-                controller.setIdentificadorSecao(
-                    emailAluno,  // email do aluno
-                    semestreCurso,          // semestre_curso
-                    Integer.parseInt(anoExtraido),   // ano extraído da data
-                    semestreAno,            // semestre_ano
-                    Integer.parseInt(versaoNum) // versao
-                );
+                NavigationService.navegarPara(node, "/com/example/technocode/Aluno/aluno-visualizar-api.fxml",
+                    controller -> {
+                        if (controller instanceof AlunoVisualizarApiController) {
+                            ((AlunoVisualizarApiController) controller).setIdentificadorSecao(
+                                emailAluno, semestreCurso, anoInt, semestreAno, versaoInt
+                            );
+                        }
+                    });
             }
-            
-            Stage stage = (Stage) containerApis.getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
         }
     }
 
     @FXML
     private void voltarTelaInicial(ActionEvent event) throws IOException {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-inicial-aluno.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Erro ao voltar para tela inicial: " + e.getMessage());
-            throw e;
-        }
+        NavigationService.navegarPara(event, "/com/example/technocode/Aluno/tela-inicial-aluno.fxml");
     }
 }

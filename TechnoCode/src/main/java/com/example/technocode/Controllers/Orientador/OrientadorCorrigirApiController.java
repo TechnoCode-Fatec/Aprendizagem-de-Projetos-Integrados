@@ -1,13 +1,13 @@
 package com.example.technocode.Controllers.Orientador;
 
-import com.example.technocode.dao.Connector;
+import com.example.technocode.Services.NavigationService;
+
+import com.example.technocode.model.dao.Connector;
+import com.example.technocode.model.SecaoApi;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
@@ -22,14 +22,10 @@ import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TelaSecoesenviadasAPIController {
+public class OrientadorCorrigirApiController {
 
-    // Identificador da seção
-    private String alunoId;
-    private String semestreCursoId;
-    private int anoId;
-    private String semestreAnoId;
-    private int versaoId;
+    // Identificador da seção usando classe modelo
+    private SecaoApi secaoApi;
 
     // Status por campo (Aprovado | Revisar | null)
     private final Map<String, String> statusPorCampo = new HashMap<>();
@@ -63,26 +59,23 @@ public class TelaSecoesenviadasAPIController {
 
     // Recebe identificador da secao e carrega dados
     public void setIdentificadorSecao(String aluno, String semestreCurso, int ano, String semestreAno, int versao) {
-        this.alunoId = aluno;
-        this.semestreCursoId = semestreCurso;
-        this.anoId = ano;
-        this.semestreAnoId = semestreAno;
-        this.versaoId = versao;
+        // Cria objeto SecaoApi para identificar a seção
+        this.secaoApi = new SecaoApi(aluno, semestreCurso, ano, semestreAno, versao);
         carregarSecaoAluno();
     }
 
     // 1) Carrega dados da secao_api
     public void carregarSecaoAluno() {
-        if (alunoId == null) return;
+        if (secaoApi == null || secaoApi.getEmailAluno() == null) return;
         String sql = "SELECT problema, solucao, tecnologias, contribuicoes, hard_skills, soft_skills " +
                 "FROM secao_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, alunoId);
-            pst.setString(2, semestreCursoId);
-            pst.setInt(3, anoId);
-            pst.setString(4, semestreAnoId);
-            pst.setInt(5, versaoId);
+            pst.setString(1, secaoApi.getEmailAluno());
+            pst.setString(2, secaoApi.getSemestreCurso());
+            pst.setInt(3, secaoApi.getAno());
+            pst.setString(4, secaoApi.getSemestreAno());
+            pst.setInt(5, secaoApi.getVersao());
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     if (alunoProblema != null) alunoProblema.setText(rs.getString("problema"));
@@ -103,7 +96,7 @@ public class TelaSecoesenviadasAPIController {
     
     // Carrega feedback existente do orientador
     private void carregarFeedbackExistente() {
-        if (alunoId == null) return;
+        if (secaoApi == null || secaoApi.getEmailAluno() == null) return;
         String sql = "SELECT status_problema, feedback_problema, " +
                 "status_solucao, feedback_solucao, " +
                 "status_tecnologias, feedback_tecnologias, " +
@@ -113,11 +106,11 @@ public class TelaSecoesenviadasAPIController {
                 "FROM feedback_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, alunoId);
-            pst.setString(2, semestreCursoId);
-            pst.setInt(3, anoId);
-            pst.setString(4, semestreAnoId);
-            pst.setInt(5, versaoId);
+            pst.setString(1, secaoApi.getEmailAluno());
+            pst.setString(2, secaoApi.getSemestreCurso());
+            pst.setInt(3, secaoApi.getAno());
+            pst.setString(4, secaoApi.getSemestreAno());
+            pst.setInt(5, secaoApi.getVersao());
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     carregarCampoFeedbackExistente("problema", rs, feedbackProblema);
@@ -291,18 +284,18 @@ public class TelaSecoesenviadasAPIController {
 
             if (feedbackExiste) {
                 // Para UPDATE, adiciona WHERE
-                pst.setString(13, alunoId);
-                pst.setString(14, semestreCursoId);
-                pst.setInt(15, anoId);
-                pst.setString(16, semestreAnoId);
-                pst.setInt(17, versaoId);
+                pst.setString(13, secaoApi.getEmailAluno());
+                pst.setString(14, secaoApi.getSemestreCurso());
+                pst.setInt(15, secaoApi.getAno());
+                pst.setString(16, secaoApi.getSemestreAno());
+                pst.setInt(17, secaoApi.getVersao());
             } else {
                 // Para INSERT, adiciona aluno e versao
-                pst.setString(13, alunoId);
-                pst.setString(14, semestreCursoId);
-                pst.setInt(15, anoId);
-                pst.setString(16, semestreAnoId);
-                pst.setInt(17, versaoId);
+                pst.setString(13, secaoApi.getEmailAluno());
+                pst.setString(14, secaoApi.getSemestreCurso());
+                pst.setInt(15, secaoApi.getAno());
+                pst.setString(16, secaoApi.getSemestreAno());
+                pst.setInt(17, secaoApi.getVersao());
             }
 
             pst.executeUpdate();
@@ -318,14 +311,15 @@ public class TelaSecoesenviadasAPIController {
     }
     
     private boolean verificarFeedbackExistente() {
+        if (secaoApi == null || secaoApi.getEmailAluno() == null) return false;
         String sql = "SELECT COUNT(*) FROM feedback_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, alunoId);
-            pst.setString(2, semestreCursoId);
-            pst.setInt(3, anoId);
-            pst.setString(4, semestreAnoId);
-            pst.setInt(5, versaoId);
+            pst.setString(1, secaoApi.getEmailAluno());
+            pst.setString(2, secaoApi.getSemestreCurso());
+            pst.setInt(3, secaoApi.getAno());
+            pst.setString(4, secaoApi.getSemestreAno());
+            pst.setInt(5, secaoApi.getVersao());
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1) > 0;
@@ -353,25 +347,16 @@ public class TelaSecoesenviadasAPIController {
 
     @FXML
     private void voltarTelaOrientador(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Orientador/tela-entregasDoAluno.fxml"));
-        Parent root = loader.load();
-        
-        // Obtém o controlador da tela de destino
-        TelaEntregasDoAluno controller = loader.getController();
-        
-        // Define o email do aluno para consulta
-        controller.setEmailAlunoParaConsulta(alunoId);
-        
-        // Carrega os dados do aluno (nome, email, curso)
-        controller.setDadosAluno(alunoId);
-        
-        // Recarrega os dados da tabela
-        controller.recarregarDados();
-        
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+        final String emailAluno = secaoApi != null ? secaoApi.getEmailAluno() : null;
+        NavigationService.navegarPara(event, "/com/example/technocode/Orientador/entregas-do-aluno.fxml",
+            controller -> {
+                if (controller instanceof EntregasDoAlunoController) {
+                    EntregasDoAlunoController entregasController = (EntregasDoAlunoController) controller;
+                    entregasController.setEmailAlunoParaConsulta(emailAluno);
+                    entregasController.setDadosAluno(emailAluno);
+                    entregasController.recarregarDados();
+                }
+            });
     }
 
     private void mostrarErro(String titulo, Exception e) {

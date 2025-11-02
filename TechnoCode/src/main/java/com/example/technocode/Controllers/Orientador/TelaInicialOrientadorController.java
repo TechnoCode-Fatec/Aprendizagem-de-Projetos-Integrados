@@ -1,22 +1,18 @@
 package com.example.technocode.Controllers.Orientador;
 
 import com.example.technocode.Controllers.LoginController;
-import com.example.technocode.dao.Connector;
+import com.example.technocode.Services.NavigationService;
+import com.example.technocode.model.Aluno;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import javafx.util.Callback;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-public class TelaOrientadorController {
+public class TelaInicialOrientadorController {
 
     @FXML
     private TableView<Map<String, String>> tabelaAlunos;
@@ -31,12 +27,7 @@ public class TelaOrientadorController {
 
     @FXML
     private void voltarLogin(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/login.fxml"));
-        Parent root = loader.load();
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+        NavigationService.navegarPara(event, "/com/example/technocode/login.fxml");
     }
 
     @FXML
@@ -51,8 +42,7 @@ public class TelaOrientadorController {
             colMatriculado.setCellValueFactory(data ->
                     new SimpleStringProperty(data.getValue().get("curso"))
             );
-            Connector con = new Connector();
-            List<Map<String, String>> alunos = con.alunos(LoginController.getEmailLogado());
+            List<Map<String, String>> alunos = Aluno.buscarPorOrientador(LoginController.getEmailLogado());
 
             tabelaAlunos.getItems().setAll(alunos);
 
@@ -102,18 +92,15 @@ public class TelaOrientadorController {
     
     private void abrirTelaAluno(String emailAluno) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Orientador/tela-entregasDoAluno.fxml"));
-            Parent root = loader.load();
-
-            TelaEntregasDoAluno controller = loader.getController();
-            controller.setDadosAluno(emailAluno);
-            // PASSA O E-MAIL DO ALUNO PARA A PRÓXIMA TELA
-            controller.setEmailAlunoParaConsulta(emailAluno);
-
-            Stage stage = (Stage) tabelaAlunos.getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
+            final String emailFinal = emailAluno;
+            NavigationService.navegarPara(tabelaAlunos, "/com/example/technocode/Orientador/entregas-do-aluno.fxml",
+                controller -> {
+                    if (controller instanceof EntregasDoAlunoController) {
+                        EntregasDoAlunoController entregasController = (EntregasDoAlunoController) controller;
+                        entregasController.setDadosAluno(emailFinal);
+                        entregasController.setEmailAlunoParaConsulta(emailFinal);
+                    }
+                });
         } catch (IOException e) {
             System.err.println("Erro ao abrir tela de análise do aluno: " + e.getMessage());
             e.printStackTrace();
@@ -123,8 +110,7 @@ public class TelaOrientadorController {
     // Método público para recarregar a tabela de alunos
     public void recarregarTabelaAlunos() {
         try {
-            Connector con = new Connector();
-            List<Map<String, String>> alunos = con.alunos(LoginController.getEmailLogado());
+            List<Map<String, String>> alunos = Aluno.buscarPorOrientador(LoginController.getEmailLogado());
 
             tabelaAlunos.getItems().setAll(alunos);
             tabelaAlunos.refresh();
