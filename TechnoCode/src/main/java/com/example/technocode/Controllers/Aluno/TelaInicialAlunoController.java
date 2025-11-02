@@ -1,14 +1,12 @@
 package com.example.technocode.Controllers.Aluno;
 
 import com.example.technocode.Controllers.*;
+import com.example.technocode.Services.NavigationService;
 import com.example.technocode.model.SecaoApi;
 import com.example.technocode.model.SecaoApresentacao;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
@@ -17,7 +15,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.List;
@@ -217,93 +214,58 @@ public class TelaInicialAlunoController {
         String emailAluno = LoginController.getEmailLogado();
         
         if ("apresentacao".equals(tipo)) {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-visualizar-secao-aluno.fxml"));
-            Parent root = loader.load();
-            
-            TelaVisualizarSecaoAlunoController controller = loader.getController();
-            controller.setIdentificadorSecao(emailAluno, Integer.parseInt(secao.get("versao")));
-            
-            Stage stage = (Stage) containerApresentacoes.getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
+            Node node = containerApresentacoes;
+            NavigationService.navegarPara(node, "/com/example/technocode/Aluno/aluno-visualizar-apresentacao.fxml",
+                controller -> {
+                    if (controller instanceof AlunoVisualizarApresentacaoController) {
+                        ((AlunoVisualizarApresentacaoController) controller).setIdentificadorSecao(
+                            emailAluno, Integer.parseInt(secao.get("versao"))
+                        );
+                    }
+                });
         } else {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-visualizar-secao-api-aluno.fxml"));
-            Parent root = loader.load();
-            
-            TelaVisualizarSecaoApiAlunoController controller = loader.getController();
-            
+            Node node = containerApis;
             String semestreCurso = secao.get("semestre_curso");
             String ano = secao.get("ano");
             String semestreAno = secao.get("semestre_ano");
             String versao = secao.get("versao");
             
             if (semestreCurso != null && ano != null && semestreAno != null && versao != null) {
-                // Extrair apenas o ano da data (ex: "2024-01-01" -> "2024")
                 String anoExtraido = ano.split("-")[0];
+                final int anoInt = Integer.parseInt(anoExtraido);
+                final int versaoInt = Integer.parseInt(versao);
                 
-                controller.setIdentificadorSecao(
-                    emailAluno,  // email do aluno
-                    semestreCurso,          // semestre_curso
-                    Integer.parseInt(anoExtraido),   // ano extraído da data
-                    semestreAno,            // semestre_ano
-                    Integer.parseInt(versao) // versao
-                );
+                NavigationService.navegarPara(node, "/com/example/technocode/Aluno/aluno-visualizar-api.fxml",
+                    controller -> {
+                        if (controller instanceof AlunoVisualizarApiController) {
+                            ((AlunoVisualizarApiController) controller).setIdentificadorSecao(
+                                emailAluno, semestreCurso, anoInt, semestreAno, versaoInt
+                            );
+                        }
+                    });
             }
-            
-            Stage stage = (Stage) containerApis.getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
         }
     }
     
     @FXML
     private void voltarLogin(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/login.fxml"));
-        Parent root = loader.load();
-
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+        NavigationService.navegarPara(event, "/com/example/technocode/login.fxml");
     }
 
     @FXML
     private void adicionarApresentacao(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/formulario-apresentacao.fxml"));
-        Parent root = loader.load();
-        
-        Stage stage;
-        if (event != null && event.getSource() != null) {
-            stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        } else {
-            // Se chamado programaticamente, pega a janela atual
-            stage = (Stage) btnAdicionarApresentacao.getScene().getWindow();
-        }
-        
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+        Node node = (event != null && event.getSource() != null) 
+            ? (Node) event.getSource() 
+            : btnAdicionarApresentacao;
+        NavigationService.navegarPara(node, "/com/example/technocode/Aluno/formulario-apresentacao.fxml");
     }
 
     @FXML
     private void adicionarApi(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/formulario-api.fxml"));
-        Parent root = loader.load();
-        
-        Stage stage;
-        if (event != null && event.getSource() != null) {
-            stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        } else {
-            // Se chamado programaticamente, pega a janela atual
-            stage = (Stage) btnAdicionarApi.getScene().getWindow();
-        }
-        
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+        Node node = (event != null && event.getSource() != null) 
+            ? (Node) event.getSource() 
+            : btnAdicionarApi;
+        NavigationService.navegarPara(node, "/com/example/technocode/Aluno/formulario-api.fxml");
     }
     
     // Método público para ser chamado quando retornar dos formulários
@@ -318,18 +280,14 @@ public class TelaInicialAlunoController {
         }
 
         int versao = Integer.parseInt(secao.get("versao"));
+        final int versaoFinal = versao;
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-feedback-apresentacao-aluno.fxml"));
-        Parent root = loader.load();
-
-        TelaFeedbackApresentacaoAlunoController controller = loader.getController();
-        controller.setIdentificadorSecao(emailAluno, versao);
-
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
-
+        NavigationService.navegarPara(event, "/com/example/technocode/Aluno/aluno-feedback-apresentacao.fxml",
+            controller -> {
+                if (controller instanceof AlunoFeedbackApresentacaoController) {
+                    ((AlunoFeedbackApresentacaoController) controller).setIdentificadorSecao(emailAluno, versaoFinal);
+                }
+            });
     }
 
     private void verFeedbackApi(ActionEvent event, Map<String, String> secao) throws IOException {
@@ -343,27 +301,20 @@ public class TelaInicialAlunoController {
         String semestreAno = secao.get("semestre_ano");
         String versao = secao.get("versao");
 
-            if (semestreCurso != null && ano != null && semestreAno != null && versao != null) {
-                // Extrair apenas o ano da data (ex: "2024-01-01" -> "2024")
-                String anoExtraido = ano.split("-")[0];
-                
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-feedback-api-aluno.fxml"));
-                Parent root = loader.load();
-                
-                TelaFeedbackApiAlunoController controller = loader.getController();
-                controller.setIdentificadorSecao(
-                    emailAluno,  // email do aluno
-                    semestreCurso,          // semestre_curso
-                    Integer.parseInt(anoExtraido),   // ano extraído da data
-                    semestreAno,            // semestre_ano
-                    Integer.parseInt(versao) // versao
-                );
-                
-                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                Scene scene = new Scene(root);
-                stage.setScene(scene);
-                stage.show();
-            }
+        if (semestreCurso != null && ano != null && semestreAno != null && versao != null) {
+            String anoExtraido = ano.split("-")[0];
+            final int anoInt = Integer.parseInt(anoExtraido);
+            final int versaoInt = Integer.parseInt(versao);
+            
+            NavigationService.navegarPara(event, "/com/example/technocode/Aluno/aluno-feedback-api.fxml",
+                controller -> {
+                    if (controller instanceof AlunoFeedbackApiController) {
+                        ((AlunoFeedbackApiController) controller).setIdentificadorSecao(
+                            emailAluno, semestreCurso, anoInt, semestreAno, versaoInt
+                        );
+                    }
+                });
+        }
     }
 
     @FXML

@@ -1,6 +1,6 @@
 package com.example.technocode.model;
 
-import com.example.technocode.dao.Connector;
+import com.example.technocode.model.dao.Connector;
 
 import java.sql.Connection;
 import java.sql.Date;

@@ -1,17 +1,13 @@
 package com.example.technocode.Controllers.Aluno;
 
 import com.example.technocode.Controllers.LoginController;
-import com.example.technocode.dao.Connector;
+import com.example.technocode.Services.NavigationService;
+import com.example.technocode.model.dao.Connector;
 import com.example.technocode.model.SecaoApi;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -19,7 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class TelaVisualizarSecaoApiAlunoController {
+public class AlunoVisualizarApiController {
 
     // Identificador da seção usando classe modelo
     private SecaoApi secaoApi;
@@ -75,55 +71,31 @@ public class TelaVisualizarSecaoApiAlunoController {
 
     @FXML
     private void verFeedback(ActionEvent event) throws IOException {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-feedback-api-aluno.fxml"));
-            Parent root = loader.load();
+        if (secaoApi != null) {
+            final String emailAluno = secaoApi.getEmailAluno();
+            final String semestreCurso = secaoApi.getSemestreCurso();
+            final int ano = secaoApi.getAno();
+            final String semestreAno = secaoApi.getSemestreAno();
+            final int versao = secaoApi.getVersao();
             
-            TelaFeedbackApiAlunoController controller = loader.getController();
-            if (secaoApi != null) {
-                controller.setIdentificadorSecao(secaoApi.getEmailAluno(), secaoApi.getSemestreCurso(), 
-                        secaoApi.getAno(), secaoApi.getSemestreAno(), secaoApi.getVersao());
-            }
-            
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Erro ao abrir tela de feedback: " + e.getMessage());
-            throw e;
+            NavigationService.navegarPara(event, "/com/example/technocode/Aluno/aluno-feedback-api.fxml",
+                controller -> {
+                    if (controller instanceof AlunoFeedbackApiController) {
+                        ((AlunoFeedbackApiController) controller).setIdentificadorSecao(
+                            emailAluno, semestreCurso, ano, semestreAno, versao);
+                    }
+                });
         }
     }
 
     @FXML
     private void verHistorico(ActionEvent event) throws IOException {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-historico-versoes.fxml"));
-            Parent root = loader.load();
-            
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Erro ao abrir tela de histórico: " + e.getMessage());
-            throw e;
-        }
+        NavigationService.navegarPara(event, "/com/example/technocode/Aluno/aluno-historico.fxml");
     }
 
     @FXML
     private void voltarTelaInicial(ActionEvent event) throws IOException {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-inicial-aluno.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Erro ao voltar para tela inicial: " + e.getMessage());
-            throw e;
-        }
+        NavigationService.navegarPara(event, "/com/example/technocode/Aluno/tela-inicial-aluno.fxml");
     }
 
     private void mostrarErro(String titulo, Exception e) {
@@ -166,31 +138,29 @@ public class TelaVisualizarSecaoApiAlunoController {
                     String hardSkills = rs.getString("hard_skills");
                     String softSkills = rs.getString("soft_skills");
                     
-                    // Carrega o formulário
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/formulario-api.fxml"));
-                    Parent root = loader.load();
+                    // Carrega o formulário e preenche os dados
+                    final String semestreCursoFinal = semestreCurso;
+                    final String anoFinal = String.valueOf(ano);
+                    final String semestreAnoFinal = semestreAno;
+                    final String empresaFinal = empresa;
+                    final String repositorioFinal = repositorio;
+                    final String problemaFinal = problema;
+                    final String solucaoFinal = solucao;
+                    final String tecnologiasFinal = tecnologias;
+                    final String contribuicoesFinal = contribuicoes;
+                    final String hardSkillsFinal = hardSkills;
+                    final String softSkillsFinal = softSkills;
                     
-                    // Obtém o controller e preenche os dados
-                    FormularioApiController controller = loader.getController();
-                    controller.setDadosVersaoAnterior(
-                        semestreCurso, 
-                        String.valueOf(ano), 
-                        semestreAno,
-                            empresa,
-                            repositorio,
-                        problema, 
-                        solucao, 
-                        tecnologias, 
-                        contribuicoes, 
-                        hardSkills, 
-                        softSkills
-                    );
-                    
-                    // Abre a tela do formulário
-                    Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                    Scene scene = new Scene(root);
-                    stage.setScene(scene);
-                    stage.show();
+                    NavigationService.navegarPara(event, "/com/example/technocode/Aluno/formulario-api.fxml",
+                        controller -> {
+                            if (controller instanceof FormularioApiController) {
+                                ((FormularioApiController) controller).setDadosVersaoAnterior(
+                                    semestreCursoFinal, anoFinal, semestreAnoFinal, empresaFinal,
+                                    repositorioFinal, problemaFinal, solucaoFinal, tecnologiasFinal,
+                                    contribuicoesFinal, hardSkillsFinal, softSkillsFinal
+                                );
+                            }
+                        });
                     
                 } else {
                     System.err.println("Seção não encontrada para criar nova versão");

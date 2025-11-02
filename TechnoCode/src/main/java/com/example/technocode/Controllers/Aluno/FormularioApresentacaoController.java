@@ -1,13 +1,11 @@
 package com.example.technocode.Controllers.Aluno;
 
 import com.example.technocode.Controllers.LoginController;
+import com.example.technocode.Services.NavigationService;
 import com.example.technocode.model.SecaoApresentacao;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
@@ -122,23 +120,16 @@ public class FormularioApresentacaoController {
     }
 
     public void voltar (ActionEvent event) throws IOException {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-inicial-aluno.fxml"));
-            Parent root = loader.load();
+        Node node = (event != null && event.getSource() != null) 
+            ? (Node) event.getSource() 
+            : txtNome;
             
-            TelaInicialAlunoController controller = loader.getController();
-            controller.recarregarSecoes();
-
-            Stage stage;
-            if (event != null && event.getSource() != null) {
-                stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            } else {
-                // Se chamado programaticamente, pega a janela atual
-                stage = (Stage) txtNome.getScene().getWindow();
-            }
-
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
+        NavigationService.navegarPara(node, "/com/example/technocode/Aluno/tela-inicial-aluno.fxml", 
+            controller -> {
+                if (controller instanceof TelaInicialAlunoController) {
+                    ((TelaInicialAlunoController) controller).recarregarSecoes();
+                }
+            });
     }
     public void mostrarAlerta (String titulo, String mensagem){
             Alert alerta = new Alert(Alert.AlertType.WARNING);

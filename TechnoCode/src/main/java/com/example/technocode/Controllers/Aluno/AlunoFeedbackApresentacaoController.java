@@ -1,16 +1,12 @@
 package com.example.technocode.Controllers.Aluno;
 
-import com.example.technocode.dao.Connector;
+import com.example.technocode.Services.NavigationService;
+import com.example.technocode.model.dao.Connector;
 import com.example.technocode.model.SecaoApresentacao;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -18,7 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class TelaFeedbackApresentacaoAlunoController {
+public class AlunoFeedbackApresentacaoController {
 
     // Identificador da seção usando classe modelo
     private SecaoApresentacao secaoApresentacao;
@@ -109,38 +105,22 @@ public class TelaFeedbackApresentacaoAlunoController {
 
     @FXML
     private void visualizarSecao(ActionEvent event) throws IOException {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-visualizar-secao-aluno.fxml"));
-            Parent root = loader.load();
+        if (secaoApresentacao != null) {
+            final String emailAluno = secaoApresentacao.getEmailAluno();
+            final int versao = secaoApresentacao.getVersao();
             
-            TelaVisualizarSecaoAlunoController controller = loader.getController();
-            if (secaoApresentacao != null) {
-                controller.setIdentificadorSecao(secaoApresentacao.getEmailAluno(), secaoApresentacao.getVersao());
-            }
-            
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Erro ao voltar para tela de seção: " + e.getMessage());
-            throw e;
+            NavigationService.navegarPara(event, "/com/example/technocode/Aluno/aluno-visualizar-apresentacao.fxml",
+                controller -> {
+                    if (controller instanceof AlunoVisualizarApresentacaoController) {
+                        ((AlunoVisualizarApresentacaoController) controller).setIdentificadorSecao(emailAluno, versao);
+                    }
+                });
         }
     }
 
     @FXML
     private void voltarTelaInicial(ActionEvent event) throws IOException {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-inicial-aluno.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Erro ao voltar para tela inicial: " + e.getMessage());
-            throw e;
-        }
+        NavigationService.navegarPara(event, "/com/example/technocode/Aluno/tela-inicial-aluno.fxml");
     }
 
     private void mostrarErro(String titulo, Exception e) {

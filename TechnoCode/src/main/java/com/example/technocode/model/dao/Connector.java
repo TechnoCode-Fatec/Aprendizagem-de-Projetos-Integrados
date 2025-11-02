@@ -1,4 +1,4 @@
-package com.example.technocode.dao;
+package com.example.technocode.model.dao;
 
 import com.example.technocode.model.Aluno;
 import com.example.technocode.model.Orientador;

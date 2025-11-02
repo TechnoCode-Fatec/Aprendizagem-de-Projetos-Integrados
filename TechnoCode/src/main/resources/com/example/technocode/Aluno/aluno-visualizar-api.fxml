@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox alignment="TOP_CENTER" prefHeight="700.0" prefWidth="800.0" style="-fx-background-color: C4C4C4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.Aluno.TelaVisualizarSecaoAlunoController">
+<VBox alignment="TOP_CENTER" prefHeight="700.0" prefWidth="800.0" style="-fx-background-color: C4C4C4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.Aluno.AlunoVisualizarApiController">
     <children>
         <HBox alignment="CENTER" prefHeight="60.0" prefWidth="800.0" style="-fx-spacing: 25; -fx-padding: 10 20 10 20;">
             <children>
@@ -13,7 +13,7 @@
                         <Font size="14.0" />
                     </font>
                 </Button>
-                <Label fx:id="labelTitulo" alignment="CENTER" prefHeight="39.0" prefWidth="227.0" text="MINHA SEÇÃO">
+                <Label fx:id="labelTitulo" alignment="CENTER" prefHeight="39.0" prefWidth="293.0" text="MINHA SEÇÃO API">
                     <font>
                         <Font name="System Bold" size="24.0" />
                     </font>
@@ -28,7 +28,7 @@
                         <Font size="16.0" />
                     </font>
                 </Button>
-                <Button mnemonicParsing="false" onAction="#carregarVersaoAnteriorApresentacao" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #5E5555;" text="Nova versão" textFill="WHITE">
+                <Button mnemonicParsing="false" onAction="#carregarVersaoAnterior" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #5E5555;" text="Nova versão" textFill="WHITE">
                     <font>
                         <Font size="16.0" />
                     </font>
@@ -51,103 +51,77 @@
                                 <RowConstraints valignment="TOP" vgrow="NEVER" />
                                 <RowConstraints valignment="TOP" vgrow="NEVER" />
                                 <RowConstraints valignment="TOP" vgrow="NEVER" />
-                                <RowConstraints valignment="TOP" vgrow="NEVER" />
-                                <RowConstraints valignment="TOP" vgrow="NEVER" />
                             </rowConstraints>
 
-                            <!-- Nome Completo -->
+                            <!-- Problema -->
                             <VBox style="-fx-spacing: 8;" GridPane.columnIndex="0" GridPane.rowIndex="0">
                                 <children>
-                                    <Label text="Nome Completo">
+                                    <Label text="Problema">
                                         <font>
                                             <Font name="System Bold" size="16.0" />
                                         </font>
                                     </Label>
-                                    <TextArea fx:id="alunoTextNome" editable="false" prefHeight="130.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" wrapText="true" />
+                                    <TextArea fx:id="alunoProblema" editable="false" prefHeight="130.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" wrapText="true" />
                                 </children>
                             </VBox>
 
-                            <!-- Idade -->
+                            <!-- Solução -->
                             <VBox style="-fx-spacing: 8;" GridPane.columnIndex="0" GridPane.rowIndex="1">
                                 <children>
-                                    <Label text="Idade">
+                                    <Label text="Solução">
                                         <font>
                                             <Font name="System Bold" size="16.0" />
                                         </font>
                                     </Label>
-                                    <TextArea fx:id="alunoTextIdade" editable="false" prefHeight="130.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" wrapText="true" />
+                                    <TextArea fx:id="alunoSolucao" editable="false" prefHeight="130.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" wrapText="true" />
                                 </children>
                             </VBox>
 
-                            <!-- Curso -->
+                            <!-- Tecnologias utilizadas -->
                             <VBox style="-fx-spacing: 8;" GridPane.columnIndex="0" GridPane.rowIndex="2">
                                 <children>
-                                    <Label text="Curso">
+                                    <Label text="Tecnologias Utilizadas">
                                         <font>
                                             <Font name="System Bold" size="16.0" />
                                         </font>
                                     </Label>
-                                    <TextArea fx:id="alunoTextCurso" editable="false" prefHeight="130.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" wrapText="true" />
+                                    <TextArea fx:id="alunoTecnologias" editable="false" prefHeight="130.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" wrapText="true" />
                                 </children>
                             </VBox>
 
-                            <!-- Motivação para entrar na Fatec -->
+                            <!-- Contribuições pessoais -->
                             <VBox style="-fx-spacing: 8;" GridPane.columnIndex="0" GridPane.rowIndex="3">
                                 <children>
-                                    <Label text="Motivação para entrar na Fatec">
+                                    <Label text="Contribuições Pessoais">
                                         <font>
                                             <Font name="System Bold" size="16.0" />
                                         </font>
                                     </Label>
-                                    <TextArea fx:id="alunoTextMotivacao" editable="false" prefHeight="130.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" wrapText="true" />
+                                    <TextArea fx:id="alunoContribuicoes" editable="false" prefHeight="130.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" wrapText="true" />
                                 </children>
                             </VBox>
 
-                            <!-- Histórico Acadêmico -->
+                            <!-- Hard Skills -->
                             <VBox style="-fx-spacing: 8;" GridPane.columnIndex="0" GridPane.rowIndex="4">
                                 <children>
-                                    <Label text="Histórico Acadêmico">
+                                    <Label text="Hard Skills">
                                         <font>
                                             <Font name="System Bold" size="16.0" />
                                         </font>
                                     </Label>
-                                    <TextArea fx:id="alunoTextHistorico" editable="false" prefHeight="130.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" wrapText="true" />
+                                    <TextArea fx:id="alunoHardSkills" editable="false" prefHeight="130.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" wrapText="true" />
                                 </children>
                             </VBox>
 
-                            <!-- GitHub -->
+                            <!-- Soft Skills -->
                             <VBox style="-fx-spacing: 8;" GridPane.columnIndex="0" GridPane.rowIndex="5">
                                 <children>
-                                    <Label text="GitHub">
+                                    <Label text="Soft Skills">
                                         <font>
                                             <Font name="System Bold" size="16.0" />
                                         </font>
                                     </Label>
-                                    <TextArea fx:id="alunoTextGithub" editable="false" prefHeight="130.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" wrapText="true" />
-                                </children>
-                            </VBox>
-
-                            <!-- LinkedIn -->
-                            <VBox style="-fx-spacing: 8;" GridPane.columnIndex="0" GridPane.rowIndex="6">
-                                <children>
-                                    <Label text="LinkedIn">
-                                        <font>
-                                            <Font name="System Bold" size="16.0" />
-                                        </font>
-                                    </Label>
-                                    <TextArea fx:id="alunoTextLinkedin" editable="false" prefHeight="130.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" wrapText="true" />
-                                </children>
-                            </VBox>
-
-                            <!-- Principais Conhecimentos -->
-                            <VBox style="-fx-spacing: 8;" GridPane.columnIndex="0" GridPane.rowIndex="7">
-                                <children>
-                                    <Label text="Principais Conhecimentos">
-                                        <font>
-                                            <Font name="System Bold" size="16.0" />
-                                        </font>
-                                    </Label>
-                                    <TextArea fx:id="alunoTextConhecimentos" editable="false" prefHeight="130.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" wrapText="true" />
+                                    <TextArea fx:id="alunoSoftSkills" editable="false" prefHeight="130.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" wrapText="true" />
                                 </children>
                             </VBox>
                         </GridPane>

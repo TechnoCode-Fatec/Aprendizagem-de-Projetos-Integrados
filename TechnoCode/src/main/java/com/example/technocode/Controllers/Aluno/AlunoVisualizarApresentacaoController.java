@@ -1,16 +1,13 @@
 package com.example.technocode.Controllers.Aluno;
 
-import com.example.technocode.dao.Connector;
+import com.example.technocode.Services.NavigationService;
+import com.example.technocode.model.dao.Connector;
 import com.example.technocode.model.SecaoApresentacao;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -20,7 +17,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Period;
 
-public class TelaVisualizarSecaoAlunoController {
+public class AlunoVisualizarApresentacaoController {
 
     // Identificador da seção usando classe modelo
     private SecaoApresentacao secaoApresentacao;
@@ -82,54 +79,27 @@ public class TelaVisualizarSecaoAlunoController {
 
     @FXML
     private void verFeedback(ActionEvent event) throws IOException {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-feedback-apresentacao-aluno.fxml"));
-            Parent root = loader.load();
+        if (secaoApresentacao != null) {
+            final String emailAluno = secaoApresentacao.getEmailAluno();
+            final int versao = secaoApresentacao.getVersao();
             
-            TelaFeedbackApresentacaoAlunoController controller = loader.getController();
-            if (secaoApresentacao != null) {
-                controller.setIdentificadorSecao(secaoApresentacao.getEmailAluno(), secaoApresentacao.getVersao());
-            }
-            
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Erro ao abrir tela de feedback: " + e.getMessage());
-            throw e;
+            NavigationService.navegarPara(event, "/com/example/technocode/Aluno/aluno-feedback-apresentacao.fxml",
+                controller -> {
+                    if (controller instanceof AlunoFeedbackApresentacaoController) {
+                        ((AlunoFeedbackApresentacaoController) controller).setIdentificadorSecao(emailAluno, versao);
+                    }
+                });
         }
     }
 
     @FXML
     private void verHistorico(ActionEvent event) throws IOException {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-historico-versoes.fxml"));
-            Parent root = loader.load();
-            
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Erro ao abrir tela de histórico: " + e.getMessage());
-            throw e;
-        }
+        NavigationService.navegarPara(event, "/com/example/technocode/Aluno/aluno-historico.fxml");
     }
 
     @FXML
     private void voltarTelaInicial(ActionEvent event) throws IOException {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-inicial-aluno.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Erro ao voltar para tela inicial: " + e.getMessage());
-            throw e;
-        }
+        NavigationService.navegarPara(event, "/com/example/technocode/Aluno/tela-inicial-aluno.fxml");
     }
 
     private void mostrarErro(String titulo, Exception e) {
@@ -166,28 +136,25 @@ public class TelaVisualizarSecaoAlunoController {
                     String linkedin = rs.getString("link_linkedin");
                     String conhecimentos = rs.getString("principais_conhecimentos");
                     
-                    // Carrega o formulário
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/formulario-apresentacao.fxml"));
-                    Parent root = loader.load();
+                    // Carrega o formulário e preenche os dados
+                    final String nomeFinal = nome;
+                    final String dataNascimentoFinal = dataNascimento;
+                    final String cursoFinal = curso;
+                    final String motivacaoFinal = motivacao;
+                    final String historicoFinal = historico;
+                    final String githubFinal = github;
+                    final String linkedinFinal = linkedin;
+                    final String conhecimentosFinal = conhecimentos;
                     
-                    // Obtém o controller e preenche os dados
-                    FormularioApresentacaoController controller = loader.getController();
-                    controller.setDadosVersaoAnterior(
-                        nome, 
-                        dataNascimento, 
-                        curso, 
-                        motivacao, 
-                        historico, 
-                        github, 
-                        linkedin, 
-                        conhecimentos
-                    );
-                    
-                    // Abre a tela do formulário
-                    Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                    Scene scene = new Scene(root);
-                    stage.setScene(scene);
-                    stage.show();
+                    NavigationService.navegarPara(event, "/com/example/technocode/Aluno/formulario-apresentacao.fxml",
+                        controller -> {
+                            if (controller instanceof FormularioApresentacaoController) {
+                                ((FormularioApresentacaoController) controller).setDadosVersaoAnterior(
+                                    nomeFinal, dataNascimentoFinal, cursoFinal, motivacaoFinal,
+                                    historicoFinal, githubFinal, linkedinFinal, conhecimentosFinal
+                                );
+                            }
+                        });
                     
                 } else {
                     System.err.println("Seção de apresentação não encontrada para criar nova versão");

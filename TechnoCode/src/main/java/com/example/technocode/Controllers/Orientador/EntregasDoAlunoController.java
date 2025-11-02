@@ -1,5 +1,6 @@
 package com.example.technocode.Controllers.Orientador;
 
+import com.example.technocode.Services.NavigationService;
 import com.example.technocode.model.Aluno;
 import com.example.technocode.model.SecaoApi;
 import com.example.technocode.model.SecaoApresentacao;
@@ -10,15 +11,11 @@ import java.util.List;
 import java.util.ArrayList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import java.io.IOException;
 
-public class TelaEntregasDoAluno {
+public class EntregasDoAlunoController {
 
     @FXML
     private Label nomeAluno;
@@ -165,52 +162,37 @@ public class TelaEntregasDoAluno {
                         
                         if ("apresentacao".equals(tipo)) {
                             // Abre tela de apresentação
-                            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Orientador/tela-secoesenviadas.fxml"));
-                            Parent root = loader.load();
-
-                            TelaSecoesenviadasController controller = loader.getController();
-                            
                             String versao = item.getOrDefault("versao", null);
                             if (versao != null) {
-                                controller.setIdentificadorSecao(
-                                    emailAlunoParaConsulta,  // email do aluno
-                                    Integer.parseInt(versao) // versao
-                                );
+                                final int versaoFinal = Integer.parseInt(versao);
+                                NavigationService.navegarPara(tabelaSecao, "/com/example/technocode/Orientador/orientador-corrigir-apresentacao.fxml",
+                                    controller -> {
+                                        if (controller instanceof OrientadorCorrigirApresentacaoController) {
+                                            ((OrientadorCorrigirApresentacaoController) controller).setIdentificadorSecao(
+                                                emailAlunoParaConsulta, versaoFinal);
+                                        }
+                                    });
                             }
-                            
-                            Stage stage = (Stage) tabelaSecao.getScene().getWindow();
-                            Scene scene = new Scene(root);
-                            stage.setScene(scene);
-                            stage.show();
                         } else {
-                            // Abre tela de API (comportamento original)
-                            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Orientador/tela-secoesenviadasAPI.fxml"));
-                            Parent root = loader.load();
-
-                            TelaSecoesenviadasAPIController controller = loader.getController();
-                            
+                            // Abre tela de API
                             String semestreCurso = item.getOrDefault("semestre_curso", null);
                             String ano = item.getOrDefault("ano", null);
                             String semestreAno = item.getOrDefault("semestre_ano", null);
                             String versao = item.getOrDefault("versao", null);
                             
                             if (semestreCurso != null && ano != null && semestreAno != null && versao != null) {
-                                // Extrair apenas o ano da data (ex: "2024-01-01" -> "2024")
                                 String anoExtraido = ano.split("-")[0];
+                                final int anoFinal = Integer.parseInt(anoExtraido);
+                                final int versaoFinal = Integer.parseInt(versao);
                                 
-                                controller.setIdentificadorSecao(
-                                    emailAlunoParaConsulta,  // email do aluno
-                                    semestreCurso,          // semestre_curso
-                                    Integer.parseInt(anoExtraido),   // ano extraído da data
-                                    semestreAno,            // semestre_ano
-                                    Integer.parseInt(versao) // versao
-                                );
+                                NavigationService.navegarPara(tabelaSecao, "/com/example/technocode/Orientador/orientador-corrigir-api.fxml",
+                                    controller -> {
+                                        if (controller instanceof OrientadorCorrigirApiController) {
+                                            ((OrientadorCorrigirApiController) controller).setIdentificadorSecao(
+                                                emailAlunoParaConsulta, semestreCurso, anoFinal, semestreAno, versaoFinal);
+                                        }
+                                    });
                             }
-                            
-                            Stage stage = (Stage) tabelaSecao.getScene().getWindow();
-                            Scene scene = new Scene(root);
-                            stage.setScene(scene);
-                            stage.show();
                         }
                     } catch (IOException ex) {
                         ex.printStackTrace();
@@ -225,28 +207,14 @@ public class TelaEntregasDoAluno {
         });
     }
 
-
     @FXML
     private void voltarTelaOrientador(ActionEvent event) throws IOException {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Orientador/tela-inicial-orientador.fxml"));
-            Parent root = loader.load();
-            
-            // Obtém o controlador da tela de destino
-            TelaOrientadorController controller = loader.getController();
-            
-            // Recarrega a tabela de alunos com os dados atualizados
-            controller.recarregarTabelaAlunos();
-            
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Erro ao voltar para tela do orientador: " + e.getMessage());
-            throw e;
-        }
-
+        NavigationService.navegarPara(event, "/com/example/technocode/Orientador/tela-inicial-orientador.fxml",
+            controller -> {
+                if (controller instanceof TelaInicialOrientadorController) {
+                    ((TelaInicialOrientadorController) controller).recarregarTabelaAlunos();
+                }
+            });
     }
 
     /**
@@ -254,26 +222,14 @@ public class TelaEntregasDoAluno {
      */
     @FXML
     private void abrirHistorico(ActionEvent event) throws IOException {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Orientador/tela-historico-orientador.fxml"));
-            Parent root = loader.load();
-            
-            // Obtém o controller e passa o email do aluno
-            TelaHistoricoOrientadorController controller = loader.getController();
-            controller.setEmailAluno(emailAlunoParaConsulta);
-            
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Erro ao abrir histórico: " + e.getMessage());
-            throw e;
-        }
+        final String emailFinal = emailAlunoParaConsulta;
+        NavigationService.navegarPara(event, "/com/example/technocode/Orientador/orientador-historico.fxml",
+            controller -> {
+                if (controller instanceof OrientadorHistoricoController) {
+                    ((OrientadorHistoricoController) controller).setEmailAluno(emailFinal);
+                }
+            });
     }
-
-
-
 
     public void setDadosAluno(String emailAluno) {
         if (emailAluno != null && !emailAluno.isBlank()) {
