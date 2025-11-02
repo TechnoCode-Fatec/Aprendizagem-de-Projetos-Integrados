@@ -1,7 +1,7 @@
 package com.example.technocode.Controllers.Orientador;
 
 import com.example.technocode.Controllers.LoginController;
-import com.example.technocode.dao.Connector;
+import com.example.technocode.model.Aluno;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -51,8 +51,7 @@ public class TelaOrientadorController {
             colMatriculado.setCellValueFactory(data ->
                     new SimpleStringProperty(data.getValue().get("curso"))
             );
-            Connector con = new Connector();
-            List<Map<String, String>> alunos = con.alunos(LoginController.getEmailLogado());
+            List<Map<String, String>> alunos = Aluno.buscarPorOrientador(LoginController.getEmailLogado());
 
             tabelaAlunos.getItems().setAll(alunos);
 
@@ -123,8 +122,7 @@ public class TelaOrientadorController {
     // Método público para recarregar a tabela de alunos
     public void recarregarTabelaAlunos() {
         try {
-            Connector con = new Connector();
-            List<Map<String, String>> alunos = con.alunos(LoginController.getEmailLogado());
+            List<Map<String, String>> alunos = Aluno.buscarPorOrientador(LoginController.getEmailLogado());
 
             tabelaAlunos.getItems().setAll(alunos);
             tabelaAlunos.refresh();

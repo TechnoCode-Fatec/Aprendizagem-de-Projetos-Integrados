@@ -1,7 +1,8 @@
 package com.example.technocode.Controllers.Aluno;
 
 import com.example.technocode.Controllers.*;
-import com.example.technocode.dao.Connector;
+import com.example.technocode.model.SecaoApi;
+import com.example.technocode.model.SecaoApresentacao;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,10 +20,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -53,14 +50,12 @@ public class TelaInicialAlunoController {
             return;
         }
         
-        Connector connector = new Connector();
-        
         // Carrega seções de apresentação
-        List<Map<String, String>> secoesApresentacao = connector.secoesApresentacao(emailAluno);
+        List<Map<String, String>> secoesApresentacao = SecaoApresentacao.buscarSecoesPorAluno(emailAluno);
         exibirSecoesApresentacao(secoesApresentacao);
         
         // Carrega seções de API
-        List<Map<String, String>> secoesApi = connector.secoesApi(emailAluno);
+        List<Map<String, String>> secoesApi = SecaoApi.buscarSecoesPorAluno(emailAluno);
         exibirSecoesApi(secoesApi);
     }
     
@@ -132,13 +127,15 @@ public class TelaInicialAlunoController {
         String horarioFeedback = null;
         if ("apresentacao".equals(tipo)) {
             int versao = Integer.parseInt(secao.get("versao"));
-            horarioFeedback = buscarHorarioFeedbackApresentacao(emailAluno, versao);
+            horarioFeedback = SecaoApresentacao.buscarHorarioFeedback(emailAluno, versao);
         } else {
             String semestreCurso = secao.get("semestre_curso");
             String ano = secao.get("ano");
             String semestreAno = secao.get("semestre_ano");
             int versao = Integer.parseInt(secao.get("versao"));
-            horarioFeedback = buscarHorarioFeedbackApi(emailAluno, semestreCurso, ano, semestreAno, versao);
+            // Extrair apenas o ano da data (ex: "2024-01-01" -> "2024")
+            String anoExtraido = ano != null ? ano.split("-")[0] : ano;
+            horarioFeedback = SecaoApi.buscarHorarioFeedback(emailAluno, semestreCurso, anoExtraido, semestreAno, versao);
         }
         
         // Se existe feedback, adiciona label com o horário
@@ -166,7 +163,7 @@ public class TelaInicialAlunoController {
 // Verifica se existe feedback para esta seção
         if ("apresentacao".equals(tipo)) {
             int versao = Integer.parseInt(secao.get("versao"));
-            if (existeFeedbackApresentacao(emailAluno, versao)) { // retorna boolean
+            if (SecaoApresentacao.verificarFeedback(emailAluno, versao)) {
                 btnFeedback.setDisable(false);
             }
         } else {
@@ -174,7 +171,9 @@ public class TelaInicialAlunoController {
             String ano = secao.get("ano");
             String semestreAno = secao.get("semestre_ano");
             int versao = Integer.parseInt(secao.get("versao"));
-            if (existeFeedbackApi(emailAluno, semestreCurso, ano, semestreAno, versao)) { // retorna boolean
+            // Extrair apenas o ano da data (ex: "2024-01-01" -> "2024")
+            String anoExtraido = ano.split("-")[0];
+            if (SecaoApi.verificarFeedback(emailAluno, semestreCurso, Integer.parseInt(anoExtraido), semestreAno, versao)) {
                 btnFeedback.setDisable(false);
             }
         }
@@ -393,83 +392,5 @@ public class TelaInicialAlunoController {
         });
     }
 
-    public boolean existeFeedbackApi(String aluno, String semestreCurso, String ano, String semestreAno, int versao) {
-        String sql = "SELECT 1 FROM feedback_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ? LIMIT 1";
-        try(Connection con = new Connector().getConnection()) {
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, aluno);
-            ps.setString(2, semestreCurso);
-            ps.setString(3, ano);
-            ps.setString(4, semestreAno);
-            ps.setInt(5, versao);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-    private boolean existeFeedbackApresentacao(String aluno, int versao) {
-        String sql = "SELECT 1 FROM feedback_apresentacao WHERE aluno = ? AND versao = ? LIMIT 1";
-        try(Connection con = new Connector().getConnection()) {
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, aluno);
-            ps.setInt(2, versao);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
 
-    }
-
-    /**
-     * Busca o horário do feedback para uma seção de API
-     * @return String formatada com data e hora, ou null se não existir feedback
-     */
-    private String buscarHorarioFeedbackApi(String aluno, String semestreCurso, String ano, String semestreAno, int versao) {
-        String sql = "SELECT DATE_FORMAT(horario, '%d/%m/%Y às %H:%i') as horario_formatado " +
-                     "FROM feedback_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ? LIMIT 1";
-        try (Connection con = new Connector().getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, aluno);
-            ps.setString(2, semestreCurso);
-            ps.setString(3, ano);
-            ps.setString(4, semestreAno);
-            ps.setInt(5, versao);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getString("horario_formatado");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * Busca o horário do feedback para uma seção de apresentação
-     * @return String formatada com data e hora, ou null se não existir feedback
-     */
-    private String buscarHorarioFeedbackApresentacao(String aluno, int versao) {
-        String sql = "SELECT DATE_FORMAT(horario, '%d/%m/%Y às %H:%i') as horario_formatado " +
-                     "FROM feedback_apresentacao WHERE aluno = ? AND versao = ? LIMIT 1";
-        try (Connection con = new Connector().getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, aluno);
-            ps.setInt(2, versao);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getString("horario_formatado");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 }

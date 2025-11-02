@@ -1,6 +1,8 @@
 package com.example.technocode.Controllers.Orientador;
 
-import com.example.technocode.dao.Connector;
+import com.example.technocode.model.Aluno;
+import com.example.technocode.model.SecaoApi;
+import com.example.technocode.model.SecaoApresentacao;
 import javafx.beans.property.SimpleStringProperty;
 
 import java.util.Map;
@@ -96,13 +98,11 @@ public class TelaEntregasDoAluno {
             // ainda não foi informado pelo controller anterior
             return;
         }
-        Connector connector = new Connector();
-        
         // Carrega seções API
-        List<Map<String,String>> secoesApi = connector.secoesApi(emailAlunoParaConsulta);
+        List<Map<String,String>> secoesApi = SecaoApi.buscarSecoesPorAluno(emailAlunoParaConsulta);
         
         // Carrega seções de apresentação
-        List<Map<String,String>> secoesApresentacao = connector.secoesApresentacao(emailAlunoParaConsulta);
+        List<Map<String,String>> secoesApresentacao = SecaoApresentacao.buscarSecoesPorAluno(emailAlunoParaConsulta);
         
         // Combina as duas listas
         List<Map<String,String>> todasSecoes = new ArrayList<>();
@@ -111,14 +111,14 @@ public class TelaEntregasDoAluno {
         
         // Adiciona status de feedback para cada seção
         for (Map<String, String> secao : todasSecoes) {
-            String statusFeedback = determinarStatusFeedback(secao, connector);
+            String statusFeedback = determinarStatusFeedback(secao);
             secao.put("status_feedback", statusFeedback);
         }
         
         tabelaSecao.getItems().setAll(todasSecoes);
     }
 
-    private String determinarStatusFeedback(Map<String, String> secao, Connector connector) {
+    private String determinarStatusFeedback(Map<String, String> secao) {
         try {
             String tipo = secao.getOrDefault("tipo", "api");
             String emailAluno = emailAlunoParaConsulta;
@@ -127,7 +127,7 @@ public class TelaEntregasDoAluno {
                 // Para seções de apresentação, verifica se existe feedback
                 String versao = secao.getOrDefault("versao", null);
                 if (versao != null) {
-                    boolean temFeedback = connector.verificarFeedbackApresentacao(emailAluno, Integer.parseInt(versao));
+                    boolean temFeedback = SecaoApresentacao.verificarFeedback(emailAluno, Integer.parseInt(versao));
                     return temFeedback ? "Respondida" : "Á responder";
                 }
             } else {
@@ -140,7 +140,7 @@ public class TelaEntregasDoAluno {
                 if (semestreCurso != null && ano != null && semestreAno != null && versao != null) {
                     // Extrair apenas o ano da data (ex: "2024-01-01" -> "2024")
                     String anoExtraido = ano.split("-")[0];
-                    boolean temFeedback = connector.verificarFeedbackApi(emailAluno, semestreCurso, Integer.parseInt(anoExtraido), semestreAno, Integer.parseInt(versao));
+                    boolean temFeedback = SecaoApi.verificarFeedback(emailAluno, semestreCurso, Integer.parseInt(anoExtraido), semestreAno, Integer.parseInt(versao));
                     return temFeedback ? "Respondida" : "Á responder";
                 }
             }
@@ -277,8 +277,7 @@ public class TelaEntregasDoAluno {
 
     public void setDadosAluno(String emailAluno) {
         if (emailAluno != null && !emailAluno.isBlank()) {
-            Connector connector = new Connector();
-            Map<String, String> dadosAluno = connector.buscarDadosAluno(emailAluno);
+            Map<String, String> dadosAluno = Aluno.buscarDadosPorEmail(emailAluno);
             
             if (!dadosAluno.isEmpty()) {
                 nomeAluno.setText(dadosAluno.get("nome"));

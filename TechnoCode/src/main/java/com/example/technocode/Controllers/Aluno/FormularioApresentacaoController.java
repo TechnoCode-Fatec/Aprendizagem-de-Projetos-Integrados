@@ -1,7 +1,6 @@
 package com.example.technocode.Controllers.Aluno;
 
 import com.example.technocode.Controllers.LoginController;
-import com.example.technocode.dao.Connector;
 import com.example.technocode.model.SecaoApresentacao;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -94,13 +93,12 @@ public class FormularioApresentacaoController {
             return;
         }
 
-        Connector connector = new Connector();
         String emailAluno = LoginController.getEmailLogado();
         
         // Busca a próxima versão disponível automaticamente
-        int proximaVersao = connector.getProximaVersaoApresentacao(emailAluno);
+        int proximaVersao = SecaoApresentacao.getProximaVersao(emailAluno);
         
-        // Cria objeto SecaoApresentacao
+        // Cria e cadastra objeto SecaoApresentacao
         SecaoApresentacao secaoApresentacao = new SecaoApresentacao(
                 emailAluno,
                 txtNome.getText(),
@@ -113,20 +111,7 @@ public class FormularioApresentacaoController {
                 txtLinkedin.getText(),
                 txtPrincipaisConhecimentos.getText()
         );
-        
-        // Mantém compatibilidade com o método existente
-        connector.cadastrarApresentacao(
-                secaoApresentacao.getEmailAluno(),
-                secaoApresentacao.getNome(),
-                secaoApresentacao.getIdade(),
-                secaoApresentacao.getCurso(),
-                secaoApresentacao.getVersao(),
-                secaoApresentacao.getMotivacao(),
-                secaoApresentacao.getHistorico(),
-                secaoApresentacao.getLinkGithub(),
-                secaoApresentacao.getLinkLinkedin(),
-                secaoApresentacao.getPrincipaisConhecimentos()
-        );
+        secaoApresentacao.cadastrar();
         
         // Volta para a tela inicial e recarrega as seções
         try {

@@ -1,7 +1,8 @@
 package com.example.technocode.Controllers.Aluno;
 
 import com.example.technocode.Controllers.LoginController;
-import com.example.technocode.dao.Connector;
+import com.example.technocode.model.SecaoApi;
+import com.example.technocode.model.SecaoApresentacao;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -35,14 +36,12 @@ public class TelaHistoricoVersoesController {
             return;
         }
         
-        Connector connector = new Connector();
-        
         // Carrega histórico de apresentações
-        List<Map<String, String>> historicoApresentacoes = connector.historicoVersoesApresentacao(emailAluno);
+        List<Map<String, String>> historicoApresentacoes = SecaoApresentacao.buscarHistoricoVersoes(emailAluno);
         exibirHistoricoApresentacoes(historicoApresentacoes);
         
         // Carrega histórico de APIs
-        List<Map<String, String>> historicoApis = connector.historicoVersoesApi(emailAluno);
+        List<Map<String, String>> historicoApis = SecaoApi.buscarHistoricoVersoes(emailAluno);
         exibirHistoricoApis(historicoApis);
     }
     

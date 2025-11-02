@@ -40,8 +40,8 @@ public class TelaVisualizarSecaoApiAlunoController {
         this.secaoApi = new SecaoApi(aluno, semestreCurso, ano, semestreAno, versao);
         carregarSecaoAluno();
         if (btnFeedback != null && secaoApi != null) {
-            boolean existe = existeFeedbackApi(secaoApi.getEmailAluno(), secaoApi.getSemestreCurso(), 
-                    String.valueOf(secaoApi.getAno()), secaoApi.getSemestreAno(), secaoApi.getVersao());
+            boolean existe = SecaoApi.verificarFeedback(secaoApi.getEmailAluno(), secaoApi.getSemestreCurso(), 
+                    secaoApi.getAno(), secaoApi.getSemestreAno(), secaoApi.getVersao());
             btnFeedback.setDisable(!existe);
         }
     }
@@ -131,23 +131,6 @@ public class TelaVisualizarSecaoApiAlunoController {
         e.printStackTrace();
     }
 
-    public boolean existeFeedbackApi(String aluno, String semestreCurso, String ano, String semestreAno, int versao) {
-        String sql = "SELECT 1 FROM feedback_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ? LIMIT 1";
-        try (Connection con = new Connector().getConnection()) {
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, aluno);
-            ps.setString(2, semestreCurso);
-            ps.setString(3, ano);
-            ps.setString(4, semestreAno);
-            ps.setInt(5, versao);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
 
     /**
      * Carrega os dados da versão atual e abre o formulário preenchido

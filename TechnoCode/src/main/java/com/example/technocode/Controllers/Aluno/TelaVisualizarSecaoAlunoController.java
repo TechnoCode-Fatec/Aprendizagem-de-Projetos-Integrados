@@ -41,7 +41,7 @@ public class TelaVisualizarSecaoAlunoController {
         this.secaoApresentacao = new SecaoApresentacao(aluno, versao);
         carregarSecaoAluno();
         if (btnFeedback != null && secaoApresentacao != null) {
-            boolean existe = existeFeedbackApresentacao(secaoApresentacao.getEmailAluno(), secaoApresentacao.getVersao());
+            boolean existe = SecaoApresentacao.verificarFeedback(secaoApresentacao.getEmailAluno(), secaoApresentacao.getVersao());
             btnFeedback.setDisable(!existe);
         }
     }
@@ -130,21 +130,6 @@ public class TelaVisualizarSecaoAlunoController {
             System.err.println("Erro ao voltar para tela inicial: " + e.getMessage());
             throw e;
         }
-    }
-    private boolean existeFeedbackApresentacao(String aluno, int versao) {
-        String sql = "SELECT 1 FROM feedback_apresentacao WHERE aluno = ? AND versao = ? LIMIT 1";
-        try(Connection con = new Connector().getConnection()) {
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, aluno);
-            ps.setInt(2, versao);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-
     }
 
     private void mostrarErro(String titulo, Exception e) {

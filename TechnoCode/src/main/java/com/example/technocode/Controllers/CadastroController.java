@@ -1,6 +1,5 @@
 package com.example.technocode.Controllers;
 
-import com.example.technocode.dao.Connector;
 import com.example.technocode.model.Aluno;
 import com.example.technocode.model.Orientador;
 import javafx.event.ActionEvent;
@@ -34,8 +33,6 @@ public class CadastroController {
     HBox hBoxOrientador, hBoxCurso;
     @FXML
     ComboBox<String> comboBoxOrientador, comboBoxCurso;
-    @FXML
-    private Button btnCadastrar;
 
     private ToggleGroup grupoUsuario;
     private Map<String, String> orientadoresMap;
@@ -49,8 +46,7 @@ public class CadastroController {
         radioOrientador.setUserData("Orientador");
         hBoxOrientador.setVisible(false);
         hBoxCurso.setVisible(false);
-        Connector con =  new Connector();
-        orientadoresMap = con.buscarOrientadores();
+        orientadoresMap = Orientador.buscarTodos();
         comboBoxOrientador.getItems().addAll(orientadoresMap.keySet());
         comboBoxCurso.getItems().addAll("TG1", "TG2", "TG1/TG2");
 
@@ -101,19 +97,17 @@ public class CadastroController {
             return;
         }
 
-        Connector conn = new Connector();
-
         if (tipo.equals("Aluno")) {
             // Busca o email do orientador a partir do nome selecionado
             String nomeSelecionado = comboBoxOrientador.getValue();
-            String emailOrientador = conn.buscarEmailOrientadorPorNome(nomeSelecionado);
+            String emailOrientador = Orientador.buscarEmailPorNome(nomeSelecionado);
 
             if (emailOrientador == null) {
                 mostrarAlertaErro("Orientador inválido", "Não foi possível encontrar o email do orientador selecionado.");
                 return;
             }
 
-            // Cria objeto Aluno
+            // Cria e cadastra objeto Aluno
             Aluno aluno = new Aluno(
                     txtNome.getText(),
                     txtEmail.getText(),
@@ -121,35 +115,21 @@ public class CadastroController {
                     emailOrientador,
                     comboBoxCurso.getValue()
             );
-
-            // Mantém compatibilidade com o método existente
-            conn.cadastrarAluno(
-                    aluno.getNome(),
-                    aluno.getEmail(),
-                    aluno.getSenha(),
-                    aluno.getOrientador(),
-                    aluno.getCurso()
-            );
+            aluno.cadastrar();
 
         } else if (tipo.equals("Orientador")) {
-            // Cria objeto Orientador
+            // Cria e cadastra objeto Orientador
             Orientador orientador = new Orientador(
                     txtNome.getText(),
                     txtEmail.getText(),
                     txtSenha.getText()
             );
-
-            // Mantém compatibilidade com o método existente
-            conn.cadastrarOrientador(
-                    orientador.getNome(),
-                    orientador.getEmail(),
-                    orientador.getSenha()
-            );
+            orientador.cadastrar();
 
             // Recarrega a lista de orientadores após cadastrar um novo
             try {
                 comboBoxOrientador.getItems().clear();
-                comboBoxOrientador.getItems().addAll(conn.buscarOrientadores().keySet());
+                comboBoxOrientador.getItems().addAll(Orientador.buscarTodos().keySet());
             } catch (Exception e) {
                 System.err.println("Erro ao recarregar comboBoxOrientador: " + e.getMessage());
             }
