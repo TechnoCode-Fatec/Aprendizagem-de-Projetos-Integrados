@@ -18,6 +18,8 @@ Entregar as ultimas funcionalidades que viabilizam a visualização dos portfól
 | **Visualização de Portfólios** | Como orientador, quero visualizar os portfólios completos e suas seções separadamente, para ter facilidade em corrigi-los. | 🔺 Média | ✍ Planejado |
 | **Formato MD** | Como aluno, quero exportar meu TG em formato MD (MarkDown), quando estiver finalizado, conforme foi pedido pela instituição. | 🔺 Média | ✍ Planejado |
 | **Agendamento de TG** | Como professor de TG, quero agendar um dia e uma sala para encontrar o aluno e fazer e defesa do TG, para que o aluno comprove a sua aptidão e domínio sobre o tema estudado. |  🔸 Média | ✍ Planejado |
+| **Status de TG** | Como professor de TG, quero acessar o status do TG do aluno, para ter noção de como está o andamento do trabalho de graduação |  🔸 Média | ✍ Planejado |
+
 
 ---
 
