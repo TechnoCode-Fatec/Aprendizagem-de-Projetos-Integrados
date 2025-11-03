@@ -215,7 +215,7 @@ public class TelaInicialAlunoController {
         
         if ("apresentacao".equals(tipo)) {
             Node node = containerApresentacoes;
-            NavigationService.navegarPara(node, "/com/example/technocode/Aluno/aluno-visualizar-apresentacao.fxml",
+            NavigationService.navegarParaTelaInterna(node, "/com/example/technocode/Aluno/aluno-visualizar-apresentacao.fxml",
                 controller -> {
                     if (controller instanceof AlunoVisualizarApresentacaoController) {
                         ((AlunoVisualizarApresentacaoController) controller).setIdentificadorSecao(
@@ -235,7 +235,7 @@ public class TelaInicialAlunoController {
                 final int anoInt = Integer.parseInt(anoExtraido);
                 final int versaoInt = Integer.parseInt(versao);
                 
-                NavigationService.navegarPara(node, "/com/example/technocode/Aluno/aluno-visualizar-api.fxml",
+                NavigationService.navegarParaTelaInterna(node, "/com/example/technocode/Aluno/aluno-visualizar-api.fxml",
                     controller -> {
                         if (controller instanceof AlunoVisualizarApiController) {
                             ((AlunoVisualizarApiController) controller).setIdentificadorSecao(
@@ -257,7 +257,7 @@ public class TelaInicialAlunoController {
         Node node = (event != null && event.getSource() != null) 
             ? (Node) event.getSource() 
             : btnAdicionarApresentacao;
-        NavigationService.navegarPara(node, "/com/example/technocode/Aluno/formulario-apresentacao.fxml");
+        NavigationService.navegarParaTelaInterna(node, "/com/example/technocode/Aluno/formulario-apresentacao.fxml");
     }
 
     @FXML
@@ -265,7 +265,7 @@ public class TelaInicialAlunoController {
         Node node = (event != null && event.getSource() != null) 
             ? (Node) event.getSource() 
             : btnAdicionarApi;
-        NavigationService.navegarPara(node, "/com/example/technocode/Aluno/formulario-api.fxml");
+        NavigationService.navegarParaTelaInterna(node, "/com/example/technocode/Aluno/formulario-api.fxml");
     }
     
     // Método público para ser chamado quando retornar dos formulários
@@ -282,7 +282,7 @@ public class TelaInicialAlunoController {
         int versao = Integer.parseInt(secao.get("versao"));
         final int versaoFinal = versao;
 
-        NavigationService.navegarPara(event, "/com/example/technocode/Aluno/aluno-feedback-apresentacao.fxml",
+        NavigationService.navegarParaTelaInterna(event, "/com/example/technocode/Aluno/aluno-feedback-apresentacao.fxml",
             controller -> {
                 if (controller instanceof AlunoFeedbackApresentacaoController) {
                     ((AlunoFeedbackApresentacaoController) controller).setIdentificadorSecao(emailAluno, versaoFinal);
@@ -306,7 +306,7 @@ public class TelaInicialAlunoController {
             final int anoInt = Integer.parseInt(anoExtraido);
             final int versaoInt = Integer.parseInt(versao);
             
-            NavigationService.navegarPara(event, "/com/example/technocode/Aluno/aluno-feedback-api.fxml",
+            NavigationService.navegarParaTelaInterna(event, "/com/example/technocode/Aluno/aluno-feedback-api.fxml",
                 controller -> {
                     if (controller instanceof AlunoFeedbackApiController) {
                         ((AlunoFeedbackApiController) controller).setIdentificadorSecao(

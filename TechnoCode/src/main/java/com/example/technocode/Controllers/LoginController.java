@@ -42,11 +42,11 @@ public class LoginController {
             emailLogado = txtEmail.getText();
         }
         if (tipo.equals("Aluno")){
-            NavigationService.navegarPara(event, "/com/example/technocode/Aluno/tela-inicial-aluno.fxml");
+            NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/principal.fxml", null);
             return;
         }
         if (tipo.equals("Orientador")){
-            NavigationService.navegarPara(event, "/com/example/technocode/Orientador/tela-inicial-orientador.fxml");
+            NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/Orientador/tela-inicial-orientador.fxml", null);
         }
     }
 
@@ -64,6 +64,6 @@ public class LoginController {
     }
 
     public void cadastrarUsuario(ActionEvent event) throws IOException {
-        NavigationService.navegarPara(event, "/com/example/technocode/cadastro.fxml");
+        NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/cadastro.fxml", null);
     }
 }

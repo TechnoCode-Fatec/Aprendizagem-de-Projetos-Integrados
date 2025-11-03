@@ -135,7 +135,7 @@ public class FormularioApiController {
             ? (Node) event.getSource() 
             : txtEmpresa;
             
-        NavigationService.navegarPara(node, "/com/example/technocode/Aluno/tela-inicial-aluno.fxml", 
+        NavigationService.navegarParaTelaInterna(node, "/com/example/technocode/Aluno/tela-inicial-aluno.fxml", 
             controller -> {
                 if (controller instanceof TelaInicialAlunoController) {
                     ((TelaInicialAlunoController) controller).recarregarSecoes();

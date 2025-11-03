@@ -9,15 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-
-import static java.sql.DriverManager.getConnection;
 
 public class CadastroController {
 
@@ -48,7 +40,7 @@ public class CadastroController {
 
     }
     public void voltar(ActionEvent event) throws IOException {
-        NavigationService.navegarPara(event, "/com/example/technocode/login.fxml");
+        NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/login.fxml", null);
     }
 
     public String getTipoUsuario(){

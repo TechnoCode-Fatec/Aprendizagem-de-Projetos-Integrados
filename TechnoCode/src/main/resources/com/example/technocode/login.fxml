@@ -4,25 +4,25 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox alignment="CENTER" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.LoginController">
+<VBox alignment="CENTER" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.LoginController">
    <children>
       <Label text="TechnoTG Login">
          <font>
             <Font name="System Bold" size="25.0" />
          </font></Label>
-      <HBox alignment="CENTER" prefHeight="46.0" prefWidth="600.0" style="-fx-spacing: 10;">
+      <HBox alignment="CENTER" style="-fx-spacing: 10; -fx-padding: 10;">
          <children>
             <Label text="Email" />
-            <TextField fx:id="txtEmail" />
+            <TextField fx:id="txtEmail" prefWidth="300.0" />
          </children>
       </HBox>
-       <HBox alignment="CENTER" prefHeight="46.0" prefWidth="600.0" style="-fx-spacing: 10;">
+       <HBox alignment="CENTER" style="-fx-spacing: 10; -fx-padding: 10;">
            <children>
                <Label text="Senha" />
-               <TextField fx:id="txtSenha" />
+               <TextField fx:id="txtSenha" prefWidth="300.0" />
            </children>
        </HBox>
-      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" style="-fx-spacing: 100;">
+      <HBox alignment="CENTER" style="-fx-spacing: 100; -fx-padding: 20;">
          <children>
             <Button mnemonicParsing="false" onAction="#cadastrarUsuario" style="-fx-background-color: grey;" text="Cadastrar" textFill="WHITE">
                <font>
