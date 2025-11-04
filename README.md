@@ -22,18 +22,18 @@ Nosso projeto busca propor uma solução em **Java Desktop**, com persistência 
 #### 📶 Backlog do Produto
 | Rank | Prioridade |User Story | Estimativa | Sprint |
 |:-------------|:---------|:-------------:| :-----------: | :-----------: |
-| 1 | Alta | Como orientador, quero visualizar as seções dos alunos e corrigi-las, para auxiliar os TG´s dos alunos. | ? | 2 |
-| 2 | Alta | Como orientador, quero ter um controle com todos os alunos que estou orientando, para ver rapidamente quem está em atraso, em revisão ou finalizou seções. | ? | 2 |
-| 3 | Alta  | Como aluno, quero enviar os TG’s em seções e receber os feedbacks, para arrumar os TG´s conforme o orientador recomendou | ? | 2 |
-| 4 | Alta | Como aluno, quero analisar os feedbacks recebidos e corrigi-los, para alinhar com a opinião do orientador | ? | 2 |
-| 5 | Média | Como professor de TG, quero visualizar os orientadores e seus alunos atribuídos, para manter controle do andamento dos trabalhos | ? |2 |
-| 6 | Média | Como orientador, quero adicionar feedbacks de forma separada em cada seção e manter os feedbacks visíveis, para ter controle dos feedbacks que já foram feitos | ? | 2 |
-| 7 | Média | Como orientador, quero acessar o histórico de versões das seções do TG de cada aluno, para acompanhar a evolução e manter controle das correções | ? |3
-| 8 | Média | Como orientador, quero aprovar as seções para controlar o progresso, assim evidenciando ao aluno quando seu TG estiver pronto para continuar | ? | 2 |
-| 9 | Média | Como orientador, quero visualizar os portfólios completos e suas seções separadamente, para ter facilidade em corrigi-los | ? | 3 |
-| 10 | Baixa | Como aluno, quero exportar meu TG em formato MD (MarkDown), quando estiver finalizado, conforme foi pedido pela instituição | ? | 3 |
-| 11 | Baixa | Como professor de TG, quero agendar um dia e uma sala para encontrar o aluno e fazer e defesa do TG, para que o aluno comprove a sua aptidão e domínio sobre o tema estudado | ? | 3 |
-| 12 | Média | Como professor de TG, quero acessar o status do TG do aluno, para ter noção de como está o andamento do trabalho de graduação | ? | 3 |
+| 1 | Alta | Como orientador, quero visualizar as seções dos alunos e corrigi-las, para auxiliar os TG´s dos alunos. | 2 | 2 |
+| 2 | Alta | Como orientador, quero ter um controle com todos os alunos que estou orientando, para ver rapidamente quem está em atraso, em revisão ou finalizou seções. | 3 | 2 |
+| 3 | Alta  | Como aluno, quero enviar os TG’s em seções e receber os feedbacks, para arrumar os TG´s conforme o orientador recomendou | 5 | 2 |
+| 4 | Alta | Como aluno, quero analisar os feedbacks recebidos e corrigi-los, para alinhar com a opinião do orientador | 3 | 2 |
+| 5 | Média | Como professor de TG, quero visualizar os orientadores e seus alunos atribuídos, para manter controle do andamento dos trabalhos | 8 |2 |
+| 6 | Média | Como orientador, quero adicionar feedbacks de forma separada em cada seção e manter os feedbacks visíveis, para ter controle dos feedbacks que já foram feitos | 5 | 2 |
+| 7 | Média | Como orientador, quero acessar o histórico de versões das seções do TG de cada aluno, para acompanhar a evolução e manter controle das correções | 2 |3
+| 8 | Média | Como orientador, quero aprovar as seções para controlar o progresso, assim evidenciando ao aluno quando seu TG estiver pronto para continuar | 3 | 2 |
+| 9 | Média | Como orientador, quero visualizar os portfólios completos e suas seções separadamente, para ter facilidade em corrigi-los | 5 | 3 |
+| 10 | Baixa | Como aluno, quero exportar meu TG em formato MD (MarkDown), quando estiver finalizado, conforme foi pedido pela instituição | 8 | 3 |
+| 11 | Baixa | Como professor de TG, quero agendar um dia e uma sala para encontrar o aluno e fazer e defesa do TG, para que o aluno comprove a sua aptidão e domínio sobre o tema estudado | 5 | 3 |
+| 12 | Baixa | Como professor de TG, quero acessar o status do TG do aluno, para ter noção de como está o andamento do trabalho de graduação | 5 | 3 |
 
 ---
 
