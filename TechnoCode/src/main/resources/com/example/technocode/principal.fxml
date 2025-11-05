@@ -8,7 +8,7 @@
 
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
-<BorderPane fx:id="rootPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.PrincipalAlunoController">
+<BorderPane fx:id="rootPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.PrincipalAlunoController" stylesheets="@css/estilo.css">
    <top>
       <HBox alignment="CENTER_LEFT" style="-fx-background-color: WHITE; -fx-border-color: #c9c9c9; -fx-border-width: 0 0 1 0; -fx-padding: 10;" BorderPane.alignment="CENTER_RIGHT">
          <children>
@@ -51,7 +51,7 @@
                         <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" text="Aluno" textAlignment="RIGHT" textFill="#acacac" textOverrun="CLIP" />
                      </children>
                   </VBox>
-                   <Button fx:id="btnSair" onAction="#onSair" contentDisplay="GRAPHIC_ONLY">
+                   <Button fx:id="btnSair" onAction="#onSair" style="-fx-background-color: WHITE;" contentDisplay="GRAPHIC_ONLY">
                        <graphic>
                            <ImageView fitWidth="30" fitHeight="30" preserveRatio="true">
                                <image>
@@ -68,13 +68,27 @@
    <left>
       <VBox alignment="TOP_CENTER" prefHeight="164.0" prefWidth="263.0" style="-fx-background-color: WHITE; -fx-spacing: 10; -fx-padding: 15; -fx-min-width: 158;" BorderPane.alignment="CENTER">
          <children>
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarInicio" style="-fx-background-color: WHITE;" text="Início" />
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarEnviarApi" style="-fx-background-color: WHITE;" text="Enviar Api" />
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarEnviarApresentacao" style="-fx-background-color: WHITE;" text="Enviar Apresentação" />
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarHistorico" style="-fx-background-color: WHITE;" text="Histórico" />
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarInicio" style="-fx-background-color: WHITE;" text="Início" styleClass="menu-button" />
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarEnviarApi" style="-fx-background-color: WHITE;" text="Enviar Api" styleClass="menu-button" />
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarEnviarApresentacao" style="-fx-background-color: WHITE;" text="Enviar Apresentação" styleClass="menu-button" />
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarHistorico" style="-fx-background-color: WHITE;" text="Histórico" styleClass="menu-button" />
          </children></VBox>
    </left>
     <center>
-      <StackPane fx:id="centerContent" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
+        <StackPane fx:id="centerContent" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+            <children>
+                <!-- Conteúdo central dinâmico -->
+                <AnchorPane fx:id="mainContent" />
+
+                <!-- Imagem fixa no canto inferior esquerdo -->
+                <ImageView fitWidth="200" preserveRatio="true" opacity="0.6"
+                           AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10">
+                    <image>
+                        <Image url="@imagens/rodape_fatec.png" />
+                    </image>
+                </ImageView>
+            </children>
+        </StackPane>
+
     </center>
 </BorderPane>

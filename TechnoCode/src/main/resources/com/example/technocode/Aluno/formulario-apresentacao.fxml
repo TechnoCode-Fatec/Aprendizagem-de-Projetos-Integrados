@@ -3,103 +3,118 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
 
-<VBox alignment="TOP_CENTER" prefHeight="508.0" prefWidth="600.0" style="-fx-background-color: #C4C4C4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.Aluno.FormularioApresentacaoController">
-    <HBox alignment="CENTER" prefHeight="44.0" prefWidth="600.0" style="-fx-spacing: 25;">
+<VBox alignment="TOP_CENTER" prefHeight="508.0" prefWidth="900.0"
+      spacing="20"
+      style="-fx-background-color: #C4C4C4;"
+      xmlns="http://javafx.com/javafx/17.0.12"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.technocode.Controllers.Aluno.FormularioApresentacaoController">
+
+    <!-- Cabeçalho -->
+    <HBox alignment="CENTER" prefHeight="44.0" prefWidth="900.0" style="-fx-spacing: 25;">
         <children>
-            <Button mnemonicParsing="false" onAction="#voltar" prefHeight="30.0" prefWidth="113.0" style="-fx-background-color: B82E1A;" text="Voltar" textFill="WHITE">
-                <font>
-                    <Font size="14.0" />
-                </font></Button>
-         <VBox alignment="CENTER" prefHeight="44.0" prefWidth="272.0">
-            <children>
-                  <Label alignment="CENTER" prefHeight="47.0" prefWidth="295.0" text="APRESENTAÇÃO DO ALUNO">
-                      <font>
-                          <Font name="System Bold" size="18.0" />
-                      </font>
-               </Label>
-               <Label text="Cadastre sua seção">
-                  <font>
-                     <Font name="System Bold" size="12.0" />
-                  </font></Label>
-            </children>
-         </VBox>
-            <Button mnemonicParsing="false" prefHeight="30.0" prefWidth="113.0" style="-fx-background-color: B82E1A;" text="API" textFill="WHITE">
-                <font>
-                    <Font size="14.0" />
-                </font></Button>
+            <Button mnemonicParsing="false" onAction="#voltar" prefHeight="30.0" prefWidth="113.0"
+                    style="-fx-background-color: #B82E1A;" text="Voltar" textFill="WHITE">
+                <font><Font size="14.0"/></font>
+            </Button>
+
+            <VBox alignment="CENTER" prefHeight="44.0" prefWidth="272.0">
+                <children>
+                    <Label alignment="CENTER" text="APRESENTAÇÃO DO ALUNO">
+                        <font><Font name="System Bold" size="18.0"/></font>
+                    </Label>
+                    <Label text="Cadastre sua seção">
+                        <font><Font name="System Bold" size="12.0"/></font>
+                    </Label>
+                </children>
+            </VBox>
+
+            <Button mnemonicParsing="false" prefHeight="30.0" prefWidth="113.0"
+                    style="-fx-background-color: #B82E1A;" text="API" textFill="WHITE">
+                <font><Font size="14.0"/></font>
+            </Button>
         </children>
     </HBox>
-    <VBox alignment="CENTER" prefHeight="410.0" prefWidth="600.0">
-        <HBox prefHeight="27.0" prefWidth="600.0" style="-fx-spacing: 100; -fx-padding: 8;">
-            <Label prefHeight="18.0" prefWidth="183.0" text="Nome Completo:">
-            <font>
-               <Font name="System Bold" size="12.0" />
-            </font></Label>
-            <TextField fx:id="txtNome" prefHeight="25.0" prefWidth="275.0" />
-        </HBox>
-        <HBox prefHeight="27.0" prefWidth="600.0" style="-fx-spacing: 100; -fx-padding: 8;">
+
+    <!-- Corpo dividido em duas colunas -->
+    <HBox alignment="TOP_CENTER" spacing="40" prefWidth="900.0">
+        <VBox.margin><Insets top="10.0"/></VBox.margin>
+
+        <!-- Coluna da esquerda -->
+        <VBox alignment="TOP_LEFT" spacing="10">
             <children>
-                <Label prefHeight="18.0" prefWidth="183.0" text="Idade:">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font></Label>
-            <DatePicker fx:id="datePickerIdade" prefHeight="25.0" prefWidth="275.0" />
+
+                <HBox spacing="20" alignment="CENTER_LEFT">
+                    <Label text="Nome Completo:" prefWidth="150">
+                        <font><Font name="System Bold" size="12.0"/></font>
+                    </Label>
+                    <TextField fx:id="txtNome" prefWidth="250"/>
+                </HBox>
+
+                <HBox spacing="20" alignment="CENTER_LEFT">
+                    <Label text="Idade:" prefWidth="150">
+                        <font><Font name="System Bold" size="12.0"/></font>
+                    </Label>
+                    <DatePicker fx:id="datePickerIdade" prefWidth="250"/>
+                </HBox>
+
+                <HBox spacing="20" alignment="CENTER_LEFT">
+                    <Label text="Curso:" prefWidth="150">
+                        <font><Font name="System Bold" size="12.0"/></font>
+                    </Label>
+                    <ChoiceBox fx:id="choiceBoxCurso" prefWidth="250"/>
+                </HBox>
+
+                <HBox spacing="20" alignment="CENTER_LEFT">
+                    <Label text="Motivação para entrar na Fatec:" prefWidth="150">
+                        <font><Font name="System Bold" size="12.0"/></font>
+                    </Label>
+                    <TextArea fx:id="txtMotivacao" prefWidth="250" prefHeight="80"/>
+                </HBox>
+
             </children>
-        </HBox>
-        <HBox prefHeight="27.0" prefWidth="600.0" style="-fx-spacing: 100; -fx-padding: 8;">
+        </VBox>
+
+        <!-- Coluna da direita -->
+        <VBox alignment="TOP_LEFT" spacing="10">
             <children>
-                <Label prefHeight="18.0" prefWidth="183.0" text="Curso:">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font></Label>
-            <ChoiceBox fx:id="choiceBoxCurso" prefHeight="25.0" prefWidth="275.0" />
+
+                <HBox spacing="20" alignment="CENTER_LEFT">
+                    <Label text="Histórico Acadêmico:" prefWidth="150">
+                        <font><Font name="System Bold" size="12.0"/></font>
+                    </Label>
+                    <TextArea fx:id="txtHistorico" prefWidth="250" prefHeight="50"/>
+                </HBox>
+
+                <HBox spacing="20" alignment="CENTER_LEFT">
+                    <Label text="Github:" prefWidth="150">
+                        <font><Font name="System Bold" size="12.0"/></font>
+                    </Label>
+                    <TextField fx:id="txtGithub" prefWidth="250"/>
+                </HBox>
+
+                <HBox spacing="20" alignment="CENTER_LEFT">
+                    <Label text="LinkedIn:" prefWidth="150">
+                        <font><Font name="System Bold" size="12.0"/></font>
+                    </Label>
+                    <TextField fx:id="txtLinkedin" prefWidth="250"/>
+                </HBox>
+
+                <HBox spacing="20" alignment="CENTER_LEFT">
+                    <Label text="Principais Conhecimentos:" prefWidth="150">
+                        <font><Font name="System Bold" size="12.0"/></font>
+                    </Label>
+                    <TextArea fx:id="txtPrincipaisConhecimentos" prefWidth="250" prefHeight="50"/>
+                </HBox>
+
             </children>
-        </HBox>
-        <HBox prefHeight="533.0" prefWidth="600.0" style="-fx-spacing: 100; -fx-padding: 8;">
-            <children>
-                <Label prefHeight="18.0" prefWidth="183.0" text="Motivação para entrar na Fatec:">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font></Label>
-            <TextArea fx:id="txtMotivacao" minHeight="-Infinity" prefHeight="80.0" prefWidth="275.0" />
-            </children>
-        </HBox>
-        <HBox prefHeight="27.0" prefWidth="600.0" style="-fx-spacing: 100; -fx-padding: 8;">
-            <children>
-                <Label prefHeight="18.0" prefWidth="183.0" text="Histórico Academico:">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font></Label>
-            <TextArea fx:id="txtHistorico" minHeight="-Infinity" prefHeight="50.0" prefWidth="275.0" />
-            </children>
-        </HBox>
-        <HBox prefHeight="27.0" prefWidth="600.0" style="-fx-spacing: 100; -fx-padding: 8;">
-            <children>
-                <Label prefHeight="18.0" prefWidth="183.0" text="Github:">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font></Label>
-                <TextField fx:id="txtGithub" minHeight="-Infinity" prefHeight="25.0" prefWidth="275.0" />
-            </children>
-        </HBox>
-        <HBox prefHeight="27.0" prefWidth="600.0" style="-fx-spacing: 100; -fx-padding: 8;">
-            <Label prefHeight="18.0" prefWidth="183.0" text="Linkedin:">
-            <font>
-               <Font name="System Bold" size="12.0" />
-            </font></Label>
-            <TextField fx:id="txtLinkedin" minHeight="-Infinity" prefHeight="25.0" prefWidth="275.0" />
-        </HBox>
-        <HBox prefHeight="0.0" prefWidth="600.0" style="-fx-spacing: 100; -fx-padding: 8;">
-            <children>
-                <Label prefHeight="18.0" prefWidth="183.0" text="Principais Conhecimentos:">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font></Label>
-                <TextArea fx:id="txtPrincipaisConhecimentos" minHeight="-Infinity" prefHeight="25.0" prefWidth="275.0" />
-            </children>
-        </HBox>
-    </VBox>
-   <Button mnemonicParsing="false" onAction="#enviarApresentacao" prefHeight="30.0" prefWidth="130.0" style="-fx-background-color: B82E1A;" text="ENVIAR" textFill="WHITE" />
+        </VBox>
+    </HBox>
+
+    <!-- Botão enviar -->
+    <Button mnemonicParsing="false" onAction="#enviarApresentacao" prefHeight="30.0" prefWidth="130.0"
+            style="-fx-background-color: #B82E1A;" text="ENVIAR" textFill="WHITE"/>
 
 </VBox>
