@@ -4,115 +4,129 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox alignment="TOP_CENTER" prefHeight="545.0" prefWidth="600.0" style="-fx-background-color: #C4C4C4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.Aluno.FormularioApiController">
-   <HBox prefHeight="100.0" prefWidth="200.0" />
+<VBox alignment="TOP_CENTER" prefHeight="600.0" prefWidth="900.0" spacing="20" style="-fx-background-color: #C4C4C4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.Aluno.FormularioApiController">
 
-    <HBox alignment="CENTER" prefHeight="44.0" prefWidth="600.0" style="-fx-spacing: 25;">
+    <!-- Cabeçalho -->
+    <HBox alignment="CENTER" prefHeight="60.0" prefWidth="900.0" style="-fx-spacing: 25;">
         <children>
-            <Button mnemonicParsing="false" onAction="#voltar" prefHeight="30.0" prefWidth="113.0" style="-fx-background-color: B82E1A;" text="VOLTAR" textFill="WHITE" />
-            <VBox alignment="CENTER" prefHeight="44.0" prefWidth="272.0">
-                <children>
-                    <Label alignment="CENTER" prefHeight="47.0" prefWidth="295.0" text="PROJETOS API">
-                        <font>
-                            <Font name="System Bold" size="18.0" />
-                        </font>
-                    </Label>
-                    <Label text="Cadastre sua seção" />
-                </children>
+            <Button mnemonicParsing="false" onAction="#voltar" prefHeight="30.0" prefWidth="113.0" style="-fx-background-color: #B82E1A;" text="VOLTAR" textFill="WHITE" />
+            <VBox alignment="CENTER">
+                <Label text="PROJETOS API">
+                    <font>
+                        <Font name="System Bold" size="18.0" />
+                    </font>
+                </Label>
+                <Label text="Cadastre sua seção" />
             </VBox>
-            <Button mnemonicParsing="false" prefHeight="30.0" prefWidth="113.0" style="-fx-background-color: B82E1A;" text="API" textFill="WHITE" />
+            <Button mnemonicParsing="false" prefHeight="30.0" prefWidth="113.0" style="-fx-background-color: #B82E1A;" text="API" textFill="WHITE" />
         </children>
     </HBox>
-    <VBox alignment="CENTER" prefHeight="410.0" prefWidth="600.0">
-        <HBox alignment="CENTER_LEFT" prefHeight="27.0" prefWidth="600.0" style="-fx-spacing: 18; -fx-padding: 8;">
-             <Label prefHeight="18.0" prefWidth="140.0" text="Semestre do curso:">
-            <font>
-               <Font name="System Bold" size="12.0" />
-            </font></Label>
-             <ChoiceBox fx:id="choiceBoxSemestreDoCurso" prefWidth="150.0" />
-             <Label text="Ano:">
-            <font>
-               <Font name="System Bold" size="12.0" />
-            </font></Label>
-             <TextField fx:id="txtAno" prefHeight="26.0" prefWidth="63.0" />
-             <Label text="Semestre:">
-            <font>
-               <Font name="System Bold" size="12.0" />
-            </font></Label>
-             <ChoiceBox fx:id="choiceBoxSemestre" prefHeight="26.0" prefWidth="51.0" />
-        </HBox>
-        <HBox prefHeight="27.0" prefWidth="600.0" style="-fx-spacing: 18; -fx-padding: 8;">
-            <children>
-                <Label prefHeight="18.0" prefWidth="140.0" text="Empresa Parceira:">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font></Label>
-            <TextField fx:id="txtEmpresa" minHeight="-Infinity" prefHeight="38.0" prefWidth="410.0" />
-            </children>
-        </HBox>
-        <HBox prefHeight="73.0" prefWidth="600.0" style="-fx-spacing: 18; -fx-padding: 8;">
-            <children>
-                <Label prefHeight="18.0" prefWidth="140.0" text="Problema:">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font></Label>
-            <TextArea fx:id="txtProblema" minHeight="-Infinity" prefHeight="38.0" prefWidth="410.0" />
-            </children>
-        </HBox>
-        <HBox prefHeight="80.0" prefWidth="600.0" style="-fx-spacing: 18; -fx-padding: 8;">
-            <children>
-                <Label prefHeight="18.0" prefWidth="140.0" text="Solução:">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font></Label>
-                <TextArea fx:id="txtSolucao" minHeight="-Infinity" prefHeight="38.0" prefWidth="410.0" />
-            </children>
-        </HBox>
-        <HBox prefHeight="400.0" prefWidth="600.0" style="-fx-spacing: 18; -fx-padding: 8;">
-            <children>
-                <Label prefHeight="46.0" prefWidth="140.0" text="Link do repositório:">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font></Label>
-            <TextField fx:id="txtLinkRepositorio" minHeight="-Infinity" prefHeight="38.0" prefWidth="410.0" />
-            </children>
-        </HBox>
-        <HBox prefHeight="27.0" prefWidth="600.0" style="-fx-spacing: 18; -fx-padding: 8;">
-            <children>
-                <Label prefHeight="18.0" prefWidth="140.0" text="Tecnologias utilizadas:">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font></Label>
-            <TextArea fx:id="txtTecnologias" minHeight="-Infinity" prefHeight="38.0" prefWidth="410.0" />
-            </children>
-        </HBox>
-        <HBox prefHeight="27.0" prefWidth="600.0" style="-fx-spacing: 18; -fx-padding: 8;">
-            <Label prefHeight="18.0" prefWidth="140.0" text="Contribuições pessoais:">
-            <font>
-               <Font name="System Bold" size="12.0" />
-            </font></Label>
-         <TextArea fx:id="txtContribuicoes" minHeight="-Infinity" prefHeight="38.0" prefWidth="410.0" />
-        </HBox>
-        <HBox prefHeight="0.0" prefWidth="600.0" style="-fx-spacing: 18; -fx-padding: 8;">
-            <children>
-                <Label prefHeight="18.0" prefWidth="140.0" text="Hard Skills:">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font></Label>
-                <TextArea fx:id="txtHardSkills" minHeight="-Infinity" prefHeight="38.0" prefWidth="410.0" />
-            </children>
-        </HBox>
-        <HBox prefHeight="0.0" prefWidth="600.0" style="-fx-spacing: 18; -fx-padding: 8;">
-            <children>
-                <Label prefHeight="18.0" prefWidth="140.0" text="Soft Skills:">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font></Label>
-                <TextArea fx:id="txtSoftSkills" minHeight="-Infinity" prefHeight="38.0" prefWidth="410.0" />
-            </children>
-        </HBox>
-    </VBox>
-    <Button mnemonicParsing="false" onAction="#enviarSecaoApi" prefHeight="30.0" prefWidth="130.0" style="-fx-background-color: B82E1A;" text="ENVIAR" textFill="WHITE" />
+    <!-- Linha superior -->
+    <HBox alignment="CENTER" prefHeight="40.0" prefWidth="900.0" style="-fx-spacing: 18; -fx-padding: 8;">
+        <children>
+            <Label text="Semestre do curso:">
+                <font>
+                    <Font name="System Bold" size="12.0" />
+                </font>
+            </Label>
+            <ChoiceBox fx:id="choiceBoxSemestreDoCurso" prefWidth="150.0" />
 
+            <Label text="Ano:">
+                <font>
+                    <Font name="System Bold" size="12.0" />
+                </font>
+            </Label>
+            <TextField fx:id="txtAno" prefWidth="70.0" />
+
+            <Label text="Semestre:">
+                <font>
+                    <Font name="System Bold" size="12.0" />
+                </font>
+            </Label>
+            <ChoiceBox fx:id="choiceBoxSemestre" prefWidth="80.0" />
+        </children>
+    </HBox>
+
+    <!-- Corpo principal dividido em duas colunas -->
+    <HBox alignment="TOP_CENTER" prefHeight="500.0" prefWidth="900.0" spacing="20">
+        <children>
+
+            <!-- Coluna Esquerda -->
+            <VBox alignment="TOP_LEFT" prefWidth="430.0" spacing="10">
+                <children>
+                    <HBox spacing="10">
+                        <Label prefWidth="140.0" text="Empresa Parceira:">
+                            <font><Font name="System Bold" size="12.0" /></font>
+                        </Label>
+                        <TextField fx:id="txtEmpresa" prefHeight="35.0" prefWidth="260.0" />
+                    </HBox>
+
+                    <HBox spacing="10">
+                        <Label prefWidth="140.0" text="Descrição da empresa:">
+                            <font><Font name="System Bold" size="12.0" /></font>
+                        </Label>
+                        <TextField fx:id="txtDescricaoEmpresa" prefHeight="70.0" prefWidth="260.0" />
+                    </HBox>
+
+                    <HBox spacing="10">
+                        <Label prefWidth="140.0" text="Problema:">
+                            <font><Font name="System Bold" size="12.0" /></font>
+                        </Label>
+                        <TextArea fx:id="txtProblema" prefHeight="95.0" prefRowCount="3" prefWidth="260.0" />
+                    </HBox>
+
+                    <HBox spacing="10">
+                        <Label prefWidth="140.0" text="Solução:">
+                            <font><Font name="System Bold" size="12.0" /></font>
+                        </Label>
+                        <TextArea fx:id="txtSolucao" prefHeight="95.0" prefRowCount="3" prefWidth="260.0" />
+                    </HBox>
+                </children>
+            </VBox>
+
+            <!-- Coluna Direita -->
+            <VBox alignment="TOP_LEFT" prefWidth="430.0" spacing="10">
+                <children>
+                    <HBox spacing="10">
+                        <Label prefWidth="140.0" text="Link do repositório:">
+                            <font><Font name="System Bold" size="12.0" /></font>
+                        </Label>
+                        <TextField fx:id="txtLinkRepositorio" prefHeight="35.0" prefWidth="260.0" />
+                    </HBox>
+
+                    <HBox spacing="10">
+                        <Label prefWidth="140.0" text="Tecnologias utilizadas:">
+                            <font><Font name="System Bold" size="12.0" /></font>
+                        </Label>
+                        <TextArea fx:id="txtTecnologias" prefHeight="70.0" prefRowCount="2" prefWidth="260.0" />
+                    </HBox>
+
+                    <HBox spacing="10">
+                        <Label prefWidth="140.0" text="Contribuições pessoais:">
+                            <font><Font name="System Bold" size="12.0" /></font>
+                        </Label>
+                        <TextArea fx:id="txtContribuicoes" prefHeight="70.0" prefRowCount="2" prefWidth="260.0" />
+                    </HBox>
+
+                    <HBox spacing="10">
+                        <Label prefWidth="140.0" text="Hard Skills:">
+                            <font><Font name="System Bold" size="12.0" /></font>
+                        </Label>
+                        <TextArea fx:id="txtHardSkills" prefRowCount="2" prefWidth="260.0" />
+                    </HBox>
+
+                    <HBox spacing="10">
+                        <Label prefWidth="140.0" text="Soft Skills:">
+                            <font><Font name="System Bold" size="12.0" /></font>
+                        </Label>
+                        <TextArea fx:id="txtSoftSkills" prefRowCount="2" prefWidth="260.0" />
+                    </HBox>
+                </children>
+            </VBox>
+        </children>
+    </HBox>
+
+    <!-- Botão de envio -->
+    <Button mnemonicParsing="false" onAction="#enviarSecaoApi" prefHeight="30.0" prefWidth="130.0" style="-fx-background-color: #B82E1A;" text="ENVIAR" textFill="WHITE" />
 
 </VBox>
