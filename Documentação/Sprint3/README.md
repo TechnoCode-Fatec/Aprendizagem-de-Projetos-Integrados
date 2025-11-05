@@ -4,7 +4,7 @@
 
 | Capacidade Estimada da Equipe por Sprint | Meta da Sprint | Previsão da Sprint |
 |:--|:-- |:--|
-| 26 Story Points | User Story de rank 7, rank 9 e rank 10 (total de 15 Story Points) | User Story de rank 11 e rank 12 (total de 10 Story Points) |
+| 26 Story Points | User Story de rank 7, rank 9, rank 10 e rank 12(total de 20 Story Points) | User Story de rank 11 (total de 5 Story Points) |
 
 ---
 
