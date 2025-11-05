@@ -2,13 +2,12 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.image.Image?>
-<BorderPane fx:id="rootPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.PrincipalAlunoController">
+<BorderPane fx:id="rootPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.Aluno.PrincipalAlunoController">
    <top>
       <HBox alignment="CENTER_LEFT" style="-fx-background-color: WHITE; -fx-border-color: #c9c9c9; -fx-border-width: 0 0 1 0; -fx-padding: 10;" BorderPane.alignment="CENTER_RIGHT">
          <children>
@@ -51,11 +50,11 @@
                         <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" text="Aluno" textAlignment="RIGHT" textFill="#acacac" textOverrun="CLIP" />
                      </children>
                   </VBox>
-                   <Button fx:id="btnSair" onAction="#onSair" contentDisplay="GRAPHIC_ONLY">
+                   <Button fx:id="btnSair" contentDisplay="GRAPHIC_ONLY" onAction="#onSair" style="-fx-background-color: WHITE;">
                        <graphic>
-                           <ImageView fitWidth="30" fitHeight="30" preserveRatio="true">
+                           <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
                                <image>
-                                   <Image url="@imagens/logoutver.png"/>
+                                   <Image url="@../imagens/logoutver.png" />
                                </image>
                            </ImageView>
                        </graphic>

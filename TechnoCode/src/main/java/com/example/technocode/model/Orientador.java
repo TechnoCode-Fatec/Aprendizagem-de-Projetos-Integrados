@@ -6,10 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Classe modelo para representar um Orientador
@@ -147,6 +144,23 @@ public class Orientador {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+    public static Map<String, String> buscarDadosPorEmail(String emailOrientador) {
+        Map<String, String> dadosOrientador = new HashMap<>();
+        try (Connection conn = new Connector().getConnection()) {
+            String selectOrientador = "SELECT nome, email FROM orientador WHERE email = ?";
+            PreparedStatement pst = conn.prepareStatement(selectOrientador);
+            pst.setString(1, emailOrientador);
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                dadosOrientador.put("nome", rs.getString("nome"));
+                dadosOrientador.put("email", rs.getString("email"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar dados do orientador", e);
+        }
+        return dadosOrientador;
     }
 }
 

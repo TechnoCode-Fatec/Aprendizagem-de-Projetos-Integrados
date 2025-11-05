@@ -25,7 +25,9 @@ public class LoginController {
     }
 
     public void login(ActionEvent event) throws IOException {
-        if (txtEmail.getText().isEmpty() || txtSenha.getText().isEmpty()) {
+        String senha = obterSenhaAtual();
+        
+        if (txtEmail.getText().isEmpty() || senha.isEmpty()) {
             mostrarAlertaErro("Campos obrigatórios", "Por favor, preencha todos os campos.");
             return;
         }
@@ -36,7 +38,7 @@ public class LoginController {
         }
 
         Connector connector = new Connector();
-        String tipo = connector.login(txtEmail.getText(), txtSenha.getText());
+        String tipo = connector.login(txtEmail.getText(), senha);
 
         if (tipo == null || tipo.isEmpty()) {
             mostrarAlertaErro("Usuário não encontrado", "Email ou senha incorretos. Por favor, tente novamente.");
@@ -45,11 +47,22 @@ public class LoginController {
             emailLogado = txtEmail.getText();
         }
         if (tipo.equals("Aluno")) {
-            NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/principal.fxml", null);
+            NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/Aluno/aluno-principal.fxml", null);
             return;
         }
         if (tipo.equals("Orientador")) {
-            NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/Orientador/tela-inicial-orientador.fxml", null);
+            NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/Orientador/orientador-principal.fxml", null);
+        }
+    }
+
+    /**
+     * Obtém a senha atual do campo que estiver visível
+     */
+    private String obterSenhaAtual() {
+        if (senhaVisivel) {
+            return txtSenhaVisivel.getText();
+        } else {
+            return txtSenha.getText();
         }
     }
 

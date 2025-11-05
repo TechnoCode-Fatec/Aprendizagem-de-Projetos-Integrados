@@ -1,5 +1,7 @@
 package com.example.technocode.Services;
 
+import com.example.technocode.Controllers.Aluno.PrincipalAlunoController;
+import com.example.technocode.Controllers.Orientador.OrientadorPrincipalController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -40,6 +42,7 @@ public class NavigationService {
 
     /**
      * Navega para uma nova tela a partir de um Node, permitindo configurar o controller antes de exibir.
+     * Tenta usar navegação interna se estiver em uma tela principal.
      * 
      * @param node O Node que está na cena atual
      * @param fxmlPath Caminho do arquivo FXML
@@ -47,12 +50,18 @@ public class NavigationService {
      * @throws IOException Se ocorrer erro ao carregar o FXML
      */
     public static void navegarPara(Node node, String fxmlPath, Consumer<Object> configController) throws IOException {
+        // Tenta usar navegação interna se estiver em uma tela principal
+        if (navegarParaTelaInterna(node, fxmlPath, configController)) {
+            return;
+        }
+        
         Stage stage = (Stage) node.getScene().getWindow();
         navegarPara(stage, fxmlPath, configController);
     }
 
     /**
      * Navega para uma nova tela a partir de um ActionEvent, permitindo configurar o controller.
+     * Tenta usar navegação interna se estiver em uma tela principal.
      * 
      * @param event O ActionEvent do botão/clique que disparou a navegação
      * @param fxmlPath Caminho do arquivo FXML
@@ -63,6 +72,12 @@ public class NavigationService {
         if (event == null || event.getSource() == null) {
             throw new IllegalArgumentException("ActionEvent não pode ser null");
         }
+        
+        // Tenta usar navegação interna se estiver em uma tela principal
+        if (navegarParaTelaInterna(event, fxmlPath, configController)) {
+            return;
+        }
+        
         Node node = (Node) event.getSource();
         Stage stage = (Stage) node.getScene().getWindow();
         navegarPara(stage, fxmlPath, configController);
@@ -96,8 +111,9 @@ public class NavigationService {
         javafx.geometry.Rectangle2D screenBounds = javafx.stage.Screen.getPrimary().getVisualBounds();
         Scene scene;
         
-        if (fxmlPath.contains("principal.fxml") || fxmlPath.contains("login.fxml") || 
-            fxmlPath.contains("cadastro.fxml") || fxmlPath.contains("tela-inicial-orientador.fxml")) {
+        if (fxmlPath.contains("aluno-principal.fxml") || fxmlPath.contains("orientador-principal.fxml") ||
+            fxmlPath.contains("login.fxml") || fxmlPath.contains("cadastro.fxml") ||
+            fxmlPath.contains("tela-inicial-orientador.fxml")) {
             // Telas principais: cria com tamanho da tela
             scene = new Scene(root, screenBounds.getWidth(), screenBounds.getHeight());
         } else {
@@ -115,8 +131,9 @@ public class NavigationService {
         stage.show();
         
         // Garante maximização após mostrar para telas principais
-        if (fxmlPath.contains("principal.fxml") || fxmlPath.contains("login.fxml") || 
-            fxmlPath.contains("cadastro.fxml") || fxmlPath.contains("tela-inicial-orientador.fxml")) {
+        if (fxmlPath.contains("aluno-principal.fxml") || fxmlPath.contains("orientador-principal.fxml") ||
+            fxmlPath.contains("login.fxml") || fxmlPath.contains("cadastro.fxml") ||
+            fxmlPath.contains("tela-inicial-orientador.fxml")) {
             javafx.application.Platform.runLater(() -> {
                 if (!stage.isMaximized()) {
                     stage.setMaximized(true);
@@ -156,8 +173,9 @@ public class NavigationService {
         javafx.geometry.Rectangle2D screenBounds = javafx.stage.Screen.getPrimary().getVisualBounds();
         Scene scene;
         
-        if (fxmlPath.contains("principal.fxml") || fxmlPath.contains("login.fxml") || 
-            fxmlPath.contains("cadastro.fxml") || fxmlPath.contains("tela-inicial-orientador.fxml")) {
+        if (fxmlPath.contains("aluno-principal.fxml") || fxmlPath.contains("orientador-principal.fxml") ||
+            fxmlPath.contains("login.fxml") || fxmlPath.contains("cadastro.fxml") ||
+            fxmlPath.contains("tela-inicial-orientador.fxml")) {
             // Telas principais: cria com tamanho da tela
             scene = new Scene(root, screenBounds.getWidth(), screenBounds.getHeight());
         } else {
@@ -184,61 +202,70 @@ public class NavigationService {
      * @param event O ActionEvent do botão/clique que disparou a navegação
      * @param fxmlPath Caminho do arquivo FXML
      * @param configController Consumer para configurar o controller após carregar (pode ser null)
+     * @return true se usou navegação interna, false caso contrário
      * @throws IOException Se ocorrer erro ao carregar o FXML
      */
-    public static void navegarParaTelaInterna(ActionEvent event, String fxmlPath, Consumer<Object> configController) throws IOException {
-        // Tenta obter a instância do PrincipalAlunoController
-        try {
-            com.example.technocode.Controllers.PrincipalAlunoController principalController = 
-                com.example.technocode.Controllers.PrincipalAlunoController.getInstance();
-            
-            if (principalController != null) {
-                // Navega dentro do center da tela principal
-                principalController.navegarParaTelaDoCenter(fxmlPath, configController);
-                return;
-            }
-        } catch (Exception e) {
-            // Se não conseguir acessar o controller principal, navega normalmente
+    public static boolean navegarParaTelaInterna(ActionEvent event, String fxmlPath, Consumer<Object> configController) throws IOException {
+        if (event == null || event.getSource() == null) {
+            return false;
         }
-        
-        // Fallback: navegação normal
-        navegarPara(event, fxmlPath, configController);
+        Node node = (Node) event.getSource();
+        return navegarParaTelaInterna(node, fxmlPath, configController);
     }
     
     /**
      * Versão sem Consumer do método navegarParaTelaInterna
      */
-    public static void navegarParaTelaInterna(ActionEvent event, String fxmlPath) throws IOException {
-        navegarParaTelaInterna(event, fxmlPath, null);
+    public static boolean navegarParaTelaInterna(ActionEvent event, String fxmlPath) throws IOException {
+        return navegarParaTelaInterna(event, fxmlPath, null);
     }
     
     /**
-     * Versão usando Node ao invés de ActionEvent
+     * Versão usando Node ao invés de ActionEvent.
+     * Tenta usar navegação interna se estiver em uma tela principal (aluno ou orientador).
+     * 
+     * @param node O Node que está na cena atual
+     * @param fxmlPath Caminho do arquivo FXML
+     * @param configController Consumer para configurar o controller após carregar (pode ser null)
+     * @return true se usou navegação interna, false caso contrário
+     * @throws IOException Se ocorrer erro ao carregar o FXML
      */
-    public static void navegarParaTelaInterna(Node node, String fxmlPath, Consumer<Object> configController) throws IOException {
-        // Tenta obter a instância do PrincipalAlunoController
-        try {
-            com.example.technocode.Controllers.PrincipalAlunoController principalController = 
-                com.example.technocode.Controllers.PrincipalAlunoController.getInstance();
-            
-            if (principalController != null) {
-                // Navega dentro do center da tela principal
-                principalController.navegarParaTelaDoCenter(fxmlPath, configController);
-                return;
+    public static boolean navegarParaTelaInterna(Node node, String fxmlPath, Consumer<Object> configController) throws IOException {
+        // Verifica se é uma tela do aluno e tenta usar navegação interna
+        if (fxmlPath.contains("/Aluno/") || fxmlPath.contains("aluno-")) {
+            try {
+                PrincipalAlunoController principalController = PrincipalAlunoController.getInstance();
+                if (principalController != null) {
+                    principalController.navegarParaTelaDoCenter(fxmlPath, configController);
+                    return true;
+                }
+            } catch (Exception e) {
+                // Se não conseguir acessar o controller principal, continua
             }
-        } catch (Exception e) {
-            // Se não conseguir acessar o controller principal, navega normalmente
         }
         
-        // Fallback: navegação normal
-        navegarPara(node, fxmlPath, configController);
+        // Verifica se é uma tela do orientador e tenta usar navegação interna
+        if (fxmlPath.contains("/Orientador/") || fxmlPath.contains("orientador-")) {
+            try {
+                OrientadorPrincipalController orientadorController = OrientadorPrincipalController.getInstance();
+                if (orientadorController != null) {
+                    orientadorController.navegarParaTelaDoCenter(fxmlPath, configController);
+                    return true;
+                }
+            } catch (Exception e) {
+                // Se não conseguir acessar o controller principal, continua
+            }
+        }
+        
+        // Não está em uma tela principal ou não conseguiu usar navegação interna
+        return false;
     }
     
     /**
      * Versão usando Node sem Consumer
      */
-    public static void navegarParaTelaInterna(Node node, String fxmlPath) throws IOException {
-        navegarParaTelaInterna(node, fxmlPath, null);
+    public static boolean navegarParaTelaInterna(Node node, String fxmlPath) throws IOException {
+        return navegarParaTelaInterna(node, fxmlPath, null);
     }
 
 }
