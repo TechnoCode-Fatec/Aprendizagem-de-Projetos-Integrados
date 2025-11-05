@@ -19,38 +19,38 @@ import java.util.function.Consumer;
  * Gerencia o cabeçalho, navegação lateral e troca de conteúdo no center.
  */
 public class PrincipalAlunoController {
-    
+
     // Referência estática para permitir que outras telas naveguem dentro do center
     private static PrincipalAlunoController instance;
-    
+
     @FXML
     private BorderPane rootPane;
-    
+
     @FXML
     private Label labelNomeAluno;
-    
+
     @FXML
     private StackPane centerContent;
-    
+
     @FXML
     private void initialize() {
         // Define a instância estática
         instance = this;
-        
+
         // Garante que o rootPane preencha toda a área disponível
         if (rootPane != null) {
             rootPane.setPrefSize(Double.MAX_VALUE, Double.MAX_VALUE);
             rootPane.setMinSize(0, 0);
             rootPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         }
-        
+
         // Carrega o nome do aluno atual
         carregarNomeAluno();
-        
+
         // Carrega a tela inicial no center
         carregarTelaInicial();
     }
-    
+
     /**
      * Obtém a instância atual do PrincipalAlunoController.
      * Permite que outras telas naveguem dentro do center.
@@ -58,7 +58,7 @@ public class PrincipalAlunoController {
     public static PrincipalAlunoController getInstance() {
         return instance;
     }
-    
+
     /**
      * Carrega o nome do aluno atual no label do cabeçalho
      */
@@ -72,7 +72,7 @@ public class PrincipalAlunoController {
             }
         }
     }
-    
+
     /**
      * Botão Sair - volta para a tela de login
      */
@@ -80,14 +80,14 @@ public class PrincipalAlunoController {
     private void sair(ActionEvent event) throws IOException {
         NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/login.fxml", null);
     }
-    
+
     /**
      * Carrega a tela inicial no center
      */
     private void carregarTelaInicial() {
         navegarParaTela("/com/example/technocode/Aluno/tela-inicial-aluno.fxml", null);
     }
-    
+
     /**
      * Navega para uma tela específica no center
      */
@@ -95,7 +95,7 @@ public class PrincipalAlunoController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent content = loader.load();
-            
+
             // Configura o controller se necessário
             if (configController != null) {
                 Object controller = loader.getController();
@@ -103,30 +103,30 @@ public class PrincipalAlunoController {
                     configController.accept(controller);
                 }
             }
-            
+
             // Limpa e adiciona o novo conteúdo no center
             centerContent.getChildren().clear();
             centerContent.getChildren().add(content);
-            
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * Botão Início - carrega a tela inicial
      */
     @FXML
     private void navegarInicio() {
-        navegarParaTela("/com/example/technocode/Aluno/tela-inicial-aluno.fxml", 
-            controller -> {
-                if (controller instanceof com.example.technocode.Controllers.Aluno.TelaInicialAlunoController) {
-                    // Recarrega as seções quando volta para a tela inicial
-                    ((com.example.technocode.Controllers.Aluno.TelaInicialAlunoController) controller).recarregarSecoes();
-                }
-            });
+        navegarParaTela("/com/example/technocode/Aluno/tela-inicial-aluno.fxml",
+                controller -> {
+                    if (controller instanceof com.example.technocode.Controllers.Aluno.TelaInicialAlunoController) {
+                        // Recarrega as seções quando volta para a tela inicial
+                        ((com.example.technocode.Controllers.Aluno.TelaInicialAlunoController) controller).recarregarSecoes();
+                    }
+                });
     }
-    
+
     /**
      * Botão Enviar Api - carrega o formulário de API
      */
@@ -134,7 +134,7 @@ public class PrincipalAlunoController {
     private void navegarEnviarApi() {
         navegarParaTela("/com/example/technocode/Aluno/formulario-api.fxml", null);
     }
-    
+
     /**
      * Botão Enviar Apresentação - carrega o formulário de apresentação
      */
@@ -142,7 +142,7 @@ public class PrincipalAlunoController {
     private void navegarEnviarApresentacao() {
         navegarParaTela("/com/example/technocode/Aluno/formulario-apresentacao.fxml", null);
     }
-    
+
     /**
      * Botão Histórico - carrega a tela de histórico
      */
@@ -150,7 +150,7 @@ public class PrincipalAlunoController {
     private void navegarHistorico() {
         navegarParaTela("/com/example/technocode/Aluno/aluno-historico.fxml", null);
     }
-    
+
     /**
      * Método público para ser chamado por outras telas quando precisarem navegar
      * Mantém a estrutura principal mas troca o conteúdo do center
@@ -158,5 +158,14 @@ public class PrincipalAlunoController {
     public void navegarParaTelaDoCenter(String fxmlPath, Consumer<Object> configController) {
         navegarParaTela(fxmlPath, configController);
     }
+
+    @FXML
+    public void onSair(ActionEvent event) throws IOException {
+    /**
+    * Botão Saida - força logout do perfil do usuário
+    */
+        NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/login.fxml", null);
+    }
 }
+
 

@@ -8,12 +8,12 @@
    <children>
 
        <HBox prefHeight="0.0" prefWidth="600.0" style="-fx-spacing: 50; -fx-padding: 10;">
-           <Button mnemonicParsing="false" onAction="#voltar" prefHeight="50.0" prefWidth="153.0" style="-fx-background-color: #5E5555;" text="VOLTAR" textFill="WHITE">
+           <Button mnemonicParsing="false" onAction="#voltar" prefHeight="51.0" prefWidth="134.0" style="-fx-background-color: B82E1A;" text="VOLTAR" textFill="WHITE">
                <font>
-                   <Font name="Inter Regular" size="23.0" />
+                   <Font name="Inter Regular" size="22.0" />
                </font>
            </Button>
-           <Label alignment="CENTER" prefHeight="47.0" prefWidth="220.0" text="CADASTRO">
+           <Label alignment="TOP_CENTER" prefHeight="47.0" prefWidth="220.0" text="CADASTRO">
              <font>
                 <Font name="System Bold" size="32.0" />
              </font>
@@ -21,7 +21,7 @@
        </HBox>
        <HBox alignment="CENTER" prefHeight="48.0" prefWidth="600.0">
            <children>
-               <Label text="Nome:">
+               <Label prefHeight="47.0" prefWidth="97.0" text="Nome:">
                    <font>
                        <Font name="Inter Regular" size="28.0" />
                    </font></Label>
@@ -29,19 +29,19 @@
            </children></HBox>
        <HBox alignment="CENTER" prefHeight="48.0" prefWidth="600.0">
          <children>
-            <Label text="Email:">
+            <Label prefHeight="47.0" prefWidth="97.0" text="Email:">
                 <font>
                     <Font name="Inter Regular" size="28.0" />
                 </font></Label>
             <TextField fx:id="txtEmail" prefHeight="36.0" prefWidth="230.0" />
          </children></HBox>
-      <HBox alignment="CENTER" prefHeight="42.0" prefWidth="600.0">
+      <HBox alignment="CENTER" prefHeight="48.0" prefWidth="600.0">
          <children>
-            <Label prefHeight="35.0" prefWidth="97.0" text="Senha:">
+            <Label prefHeight="47.0" prefWidth="97.0" text="Senha:">
                 <font>
                     <Font name="Inter Regular" size="28.0" />
                 </font></Label>
-            <TextField fx:id="txtSenha" prefHeight="34.0" prefWidth="230.0" />
+            <TextField fx:id="txtSenha" minHeight="-Infinity" prefHeight="36.0" prefWidth="230.0" />
          </children></HBox>
        <HBox alignment="CENTER" prefHeight="47.0" prefWidth="600.0" style="-fx-spacing: 50;">
            <children>
@@ -59,7 +59,7 @@
        </HBox>
       <HBox fx:id="hBoxOrientador" alignment="CENTER" prefHeight="36.0" prefWidth="600.0" style="-fx-spacing: 10;">
          <children>
-            <Label text="Orientador:">
+            <Label prefHeight="35.0" prefWidth="108.0" text="Orientador:">
                <font>
                   <Font name="Inter Regular" size="20.0" />
                </font>
@@ -69,7 +69,7 @@
       </HBox>
        <HBox fx:id="hBoxCurso" alignment="CENTER" prefHeight="36.0" prefWidth="600.0" style="-fx-spacing: 10;">
            <children>
-               <Label text="Curso:">
+               <Label prefHeight="35.0" prefWidth="108.0" text="Curso:">
                    <font>
                        <Font name="Inter Regular" size="20.0" />
                    </font>
@@ -77,9 +77,9 @@
                <ComboBox fx:id="comboBoxCurso" prefWidth="150.0" />
            </children>
        </HBox>
-      <Button fx:id="btnCadastrar" mnemonicParsing="false" onAction="#cadastrarUsuario" prefHeight="50.0" prefWidth="180.0" style="-fx-background-color: #5E5555;" text="CADASTRAR" textFill="WHITE">
+      <Button fx:id="btnCadastrar" mnemonicParsing="false" onAction="#cadastrarUsuario" prefHeight="47.0" prefWidth="169.0" style="-fx-background-color: B82E1A;" text="CADASTRAR" textFill="WHITE">
          <font>
-            <Font name="Inter Regular" size="23.0" />
+            <Font name="Inter Regular" size="22.0" />
          </font>
       </Button>
    </children>

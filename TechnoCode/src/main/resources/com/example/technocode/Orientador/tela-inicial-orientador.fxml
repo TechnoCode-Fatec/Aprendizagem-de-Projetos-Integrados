@@ -9,7 +9,7 @@
     <children>
         <HBox alignment="CENTER" prefHeight="44.0" prefWidth="600.0" style="-fx-spacing: 25;">
             <children>
-                <Button mnemonicParsing="false" onAction="#voltarLogin" prefHeight="30.0" prefWidth="113.0" style="-fx-background-color: #5E5555;" text="Voltar" textFill="WHITE">
+                <Button mnemonicParsing="false" onAction="#voltarLogin" prefHeight="30.0" prefWidth="113.0" style="-fx-background-color: B82E1A;" text="Voltar" textFill="WHITE">
                     <font><Font size="14.0" /></font>
                 </Button>
                 <Label alignment="CENTER" prefHeight="47.0" prefWidth="295.0" text="INTERFACE ORIENTADOR">
