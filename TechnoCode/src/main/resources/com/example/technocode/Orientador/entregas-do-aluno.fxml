@@ -8,7 +8,7 @@
     <children>
         <HBox alignment="CENTER" prefHeight="44.0" prefWidth="600.0" style="-fx-spacing: 15;">
             <children>
-                <Button mnemonicParsing="false" onAction="#voltarTelaOrientador" prefHeight="30.0" prefWidth="113.0" style="-fx-background-color: #5E5555;" text="Voltar" textFill="WHITE">
+                <Button mnemonicParsing="false" onAction="#voltarTelaOrientador" prefHeight="30.0" prefWidth="113.0" style="-fx-background-color: B82E1A;" text="Voltar" textFill="WHITE">
                     <font>
                         <Font size="14.0" />
                     </font>
@@ -18,7 +18,7 @@
                         <Font name="System Bold" size="26.0" />
                     </font>
                 </Label>
-                <Button mnemonicParsing="false" onAction="#abrirHistorico" prefHeight="30.0" prefWidth="113.0" style="-fx-background-color: #5E5555;" text="Histórico" textFill="WHITE">
+                <Button mnemonicParsing="false" onAction="#abrirHistorico" prefHeight="30.0" prefWidth="113.0" style="-fx-background-color: B82E1A;" text="Histórico" textFill="WHITE">
                     <font>
                         <Font size="14.0" />
                     </font>

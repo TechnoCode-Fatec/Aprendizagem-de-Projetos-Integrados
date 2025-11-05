@@ -1,6 +1,5 @@
 package com.example.technocode.Controllers.Aluno;
 
-import com.example.technocode.Controllers.LoginController;
 import com.example.technocode.Services.NavigationService;
 import com.example.technocode.model.dao.Connector;
 import com.example.technocode.model.SecaoApi;
@@ -19,7 +18,6 @@ public class AlunoVisualizarApiController {
 
     // Identificador da seção usando classe modelo
     private SecaoApi secaoApi;
-    private String emailAluno = LoginController.getEmailLogado();
 
     @FXML private TextArea alunoProblema;
     @FXML private TextArea alunoSolucao;
@@ -78,7 +76,7 @@ public class AlunoVisualizarApiController {
             final String semestreAno = secaoApi.getSemestreAno();
             final int versao = secaoApi.getVersao();
             
-            NavigationService.navegarPara(event, "/com/example/technocode/Aluno/aluno-feedback-api.fxml",
+            NavigationService.navegarParaTelaInterna(event, "/com/example/technocode/Aluno/aluno-feedback-api.fxml",
                 controller -> {
                     if (controller instanceof AlunoFeedbackApiController) {
                         ((AlunoFeedbackApiController) controller).setIdentificadorSecao(
@@ -90,12 +88,17 @@ public class AlunoVisualizarApiController {
 
     @FXML
     private void verHistorico(ActionEvent event) throws IOException {
-        NavigationService.navegarPara(event, "/com/example/technocode/Aluno/aluno-historico.fxml");
+        NavigationService.navegarParaTelaInterna(event, "/com/example/technocode/Aluno/aluno-historico.fxml");
     }
 
     @FXML
     private void voltarTelaInicial(ActionEvent event) throws IOException {
-        NavigationService.navegarPara(event, "/com/example/technocode/Aluno/tela-inicial-aluno.fxml");
+        NavigationService.navegarParaTelaInterna(event, "/com/example/technocode/Aluno/tela-inicial-aluno.fxml",
+            controller -> {
+                if (controller instanceof TelaInicialAlunoController) {
+                    ((TelaInicialAlunoController) controller).recarregarSecoes();
+                }
+            });
     }
 
     private void mostrarErro(String titulo, Exception e) {
@@ -151,7 +154,7 @@ public class AlunoVisualizarApiController {
                     final String hardSkillsFinal = hardSkills;
                     final String softSkillsFinal = softSkills;
                     
-                    NavigationService.navegarPara(event, "/com/example/technocode/Aluno/formulario-api.fxml",
+                    NavigationService.navegarParaTelaInterna(event, "/com/example/technocode/Aluno/formulario-api.fxml",
                         controller -> {
                             if (controller instanceof FormularioApiController) {
                                 ((FormularioApiController) controller).setDadosVersaoAnterior(

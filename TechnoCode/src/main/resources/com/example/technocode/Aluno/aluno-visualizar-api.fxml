@@ -8,7 +8,7 @@
     <children>
         <HBox alignment="CENTER" prefHeight="60.0" prefWidth="800.0" style="-fx-spacing: 25; -fx-padding: 10 20 10 20;">
             <children>
-                <Button mnemonicParsing="false" onAction="#voltarTelaInicial" prefHeight="34.0" prefWidth="130.0" style="-fx-background-color: #5E5555;" text="Voltar" textFill="WHITE">
+                <Button mnemonicParsing="false" onAction="#voltarTelaInicial" prefHeight="34.0" prefWidth="130.0" style="-fx-background-color: B82E1A;" text="Voltar" textFill="WHITE">
                     <font>
                         <Font size="14.0" />
                     </font>
@@ -18,17 +18,17 @@
                         <Font name="System Bold" size="24.0" />
                     </font>
                 </Label>
-                <Button fx:id="btnFeedback" mnemonicParsing="false" onAction="#verFeedback" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #5E5555;" text="Feedback" textFill="WHITE">
+                <Button fx:id="btnFeedback" mnemonicParsing="false" onAction="#verFeedback" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: B82E1A;" text="Feedback" textFill="WHITE">
                     <font>
                         <Font size="16.0" />
                     </font>
                 </Button>
-                <Button mnemonicParsing="false" onAction="#verHistorico" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #5E5555;" text="Histórico" textFill="WHITE">
+                <Button mnemonicParsing="false" onAction="#verHistorico" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: B82E1A;" text="Histórico" textFill="WHITE">
                     <font>
                         <Font size="16.0" />
                     </font>
                 </Button>
-                <Button mnemonicParsing="false" onAction="#carregarVersaoAnterior" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #5E5555;" text="Nova versão" textFill="WHITE">
+                <Button mnemonicParsing="false" onAction="#carregarVersaoAnterior" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: B82E1A;" text="Nova versão" textFill="WHITE">
                     <font>
                         <Font size="16.0" />
                     </font>

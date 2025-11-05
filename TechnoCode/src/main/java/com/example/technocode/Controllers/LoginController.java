@@ -5,13 +5,18 @@ import com.example.technocode.model.dao.Connector;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class LoginController {
     @FXML
-    private TextField txtEmail, txtSenha;
+    private TextField txtEmail;
 
     private static String emailLogado;
 
@@ -20,7 +25,9 @@ public class LoginController {
     }
 
     public void login(ActionEvent event) throws IOException {
-        if (txtEmail.getText().isEmpty() || txtSenha.getText().isEmpty()) {
+        String senha = obterSenhaAtual();
+        
+        if (txtEmail.getText().isEmpty() || senha.isEmpty()) {
             mostrarAlertaErro("Campos obrigatórios", "Por favor, preencha todos os campos.");
             return;
         }
@@ -31,22 +38,31 @@ public class LoginController {
         }
 
         Connector connector = new Connector();
-        String tipo = connector.login(txtEmail.getText(), txtSenha.getText());
+        String tipo = connector.login(txtEmail.getText(), senha);
 
         if (tipo == null || tipo.isEmpty()) {
             mostrarAlertaErro("Usuário não encontrado", "Email ou senha incorretos. Por favor, tente novamente.");
             return;
-        }
-
-        else {
+        } else {
             emailLogado = txtEmail.getText();
         }
-        if (tipo.equals("Aluno")){
-            NavigationService.navegarPara(event, "/com/example/technocode/Aluno/tela-inicial-aluno.fxml");
+        if (tipo.equals("Aluno")) {
+            NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/Aluno/aluno-principal.fxml", null);
             return;
         }
-        if (tipo.equals("Orientador")){
-            NavigationService.navegarPara(event, "/com/example/technocode/Orientador/tela-inicial-orientador.fxml");
+        if (tipo.equals("Orientador")) {
+            NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/Orientador/orientador-principal.fxml", null);
+        }
+    }
+
+    /**
+     * Obtém a senha atual do campo que estiver visível
+     */
+    private String obterSenhaAtual() {
+        if (senhaVisivel) {
+            return txtSenhaVisivel.getText();
+        } else {
+            return txtSenha.getText();
         }
     }
 
@@ -64,6 +80,65 @@ public class LoginController {
     }
 
     public void cadastrarUsuario(ActionEvent event) throws IOException {
-        NavigationService.navegarPara(event, "/com/example/technocode/cadastro.fxml");
+        NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/cadastro.fxml", null);
+    }
+
+    @FXML
+    private PasswordField txtSenha;
+
+    @FXML
+    private TextField txtSenhaVisivel;
+
+    @FXML
+    private Button btnToggleSenha;
+
+    private boolean senhaVisivel = false;
+
+    // Ícones
+    private final ImageView iconMostrar = new ImageView(
+            new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/technocode/imagens/Revelar.png")))
+    );
+    private final ImageView iconOcultar = new ImageView(
+            new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/technocode/imagens/Ocultar.png")))
+    );
+
+    @FXML
+    private void toggleSenha() {
+        if (senhaVisivel) {
+            // Oculta senha
+            txtSenha.setText(txtSenhaVisivel.getText());
+            txtSenhaVisivel.setVisible(false);
+            txtSenhaVisivel.setManaged(false);
+            txtSenha.setVisible(true);
+            txtSenha.setManaged(true);
+            btnToggleSenha.setGraphic(iconMostrar);
+        } else {
+            // Mostra senha
+            txtSenhaVisivel.setText(txtSenha.getText());
+            txtSenha.setVisible(false);
+            txtSenha.setManaged(false);
+            txtSenhaVisivel.setVisible(true);
+            txtSenhaVisivel.setManaged(true);
+            btnToggleSenha.setGraphic(iconOcultar);
+        }
+        senhaVisivel = !senhaVisivel;
+    }
+
+    @FXML
+    private void initialize() {
+        // Define tamanho fixo dos ícones
+        iconMostrar.setFitWidth(16);
+        iconMostrar.setFitHeight(16);
+        iconOcultar.setFitWidth(16);
+        iconOcultar.setFitHeight(16);
+
+        // Mantém proporção e suaviza o redimensionamento
+        iconMostrar.setPreserveRatio(true);
+        iconOcultar.setPreserveRatio(true);
+        iconMostrar.setSmooth(true);
+        iconOcultar.setSmooth(true);
+
+        // Define o ícone inicial
+        btnToggleSenha.setGraphic(iconMostrar);
     }
 }

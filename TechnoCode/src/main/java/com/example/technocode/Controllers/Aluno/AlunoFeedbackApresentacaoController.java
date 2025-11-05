@@ -109,7 +109,7 @@ public class AlunoFeedbackApresentacaoController {
             final String emailAluno = secaoApresentacao.getEmailAluno();
             final int versao = secaoApresentacao.getVersao();
             
-            NavigationService.navegarPara(event, "/com/example/technocode/Aluno/aluno-visualizar-apresentacao.fxml",
+            NavigationService.navegarParaTelaInterna(event, "/com/example/technocode/Aluno/aluno-visualizar-apresentacao.fxml",
                 controller -> {
                     if (controller instanceof AlunoVisualizarApresentacaoController) {
                         ((AlunoVisualizarApresentacaoController) controller).setIdentificadorSecao(emailAluno, versao);
@@ -120,7 +120,12 @@ public class AlunoFeedbackApresentacaoController {
 
     @FXML
     private void voltarTelaInicial(ActionEvent event) throws IOException {
-        NavigationService.navegarPara(event, "/com/example/technocode/Aluno/tela-inicial-aluno.fxml");
+        NavigationService.navegarParaTelaInterna(event, "/com/example/technocode/Aluno/tela-inicial-aluno.fxml",
+            controller -> {
+                if (controller instanceof TelaInicialAlunoController) {
+                    ((TelaInicialAlunoController) controller).recarregarSecoes();
+                }
+            });
     }
 
     private void mostrarErro(String titulo, Exception e) {

@@ -5,7 +5,6 @@ import com.example.technocode.model.dao.Connector;
 import com.example.technocode.model.SecaoApresentacao;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 
@@ -83,7 +82,7 @@ public class AlunoVisualizarApresentacaoController {
             final String emailAluno = secaoApresentacao.getEmailAluno();
             final int versao = secaoApresentacao.getVersao();
             
-            NavigationService.navegarPara(event, "/com/example/technocode/Aluno/aluno-feedback-apresentacao.fxml",
+            NavigationService.navegarParaTelaInterna(event, "/com/example/technocode/Aluno/aluno-feedback-apresentacao.fxml",
                 controller -> {
                     if (controller instanceof AlunoFeedbackApresentacaoController) {
                         ((AlunoFeedbackApresentacaoController) controller).setIdentificadorSecao(emailAluno, versao);
@@ -94,12 +93,17 @@ public class AlunoVisualizarApresentacaoController {
 
     @FXML
     private void verHistorico(ActionEvent event) throws IOException {
-        NavigationService.navegarPara(event, "/com/example/technocode/Aluno/aluno-historico.fxml");
+        NavigationService.navegarParaTelaInterna(event, "/com/example/technocode/Aluno/aluno-historico.fxml");
     }
 
     @FXML
     private void voltarTelaInicial(ActionEvent event) throws IOException {
-        NavigationService.navegarPara(event, "/com/example/technocode/Aluno/tela-inicial-aluno.fxml");
+        NavigationService.navegarParaTelaInterna(event, "/com/example/technocode/Aluno/tela-inicial-aluno.fxml",
+            controller -> {
+                if (controller instanceof TelaInicialAlunoController) {
+                    ((TelaInicialAlunoController) controller).recarregarSecoes();
+                }
+            });
     }
 
     private void mostrarErro(String titulo, Exception e) {
@@ -146,7 +150,7 @@ public class AlunoVisualizarApresentacaoController {
                     final String linkedinFinal = linkedin;
                     final String conhecimentosFinal = conhecimentos;
                     
-                    NavigationService.navegarPara(event, "/com/example/technocode/Aluno/formulario-apresentacao.fxml",
+                    NavigationService.navegarParaTelaInterna(event, "/com/example/technocode/Aluno/formulario-apresentacao.fxml",
                         controller -> {
                             if (controller instanceof FormularioApresentacaoController) {
                                 ((FormularioApresentacaoController) controller).setDadosVersaoAnterior(

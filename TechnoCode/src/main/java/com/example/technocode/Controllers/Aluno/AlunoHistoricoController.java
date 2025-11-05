@@ -126,7 +126,7 @@ public class AlunoHistoricoController {
         
         if ("apresentacao".equals(tipo)) {
             Node node = containerApresentacoes;
-            NavigationService.navegarPara(node, "/com/example/technocode/Aluno/aluno-visualizar-apresentacao.fxml",
+            NavigationService.navegarParaTelaInterna(node, "/com/example/technocode/Aluno/aluno-visualizar-apresentacao.fxml",
                 controller -> {
                     if (controller instanceof AlunoVisualizarApresentacaoController) {
                         ((AlunoVisualizarApresentacaoController) controller).setIdentificadorSecao(
@@ -146,7 +146,7 @@ public class AlunoHistoricoController {
                 final int anoInt = Integer.parseInt(anoExtraido);
                 final int versaoInt = Integer.parseInt(versaoNum);
                 
-                NavigationService.navegarPara(node, "/com/example/technocode/Aluno/aluno-visualizar-api.fxml",
+                NavigationService.navegarParaTelaInterna(node, "/com/example/technocode/Aluno/aluno-visualizar-api.fxml",
                     controller -> {
                         if (controller instanceof AlunoVisualizarApiController) {
                             ((AlunoVisualizarApiController) controller).setIdentificadorSecao(
@@ -160,6 +160,11 @@ public class AlunoHistoricoController {
 
     @FXML
     private void voltarTelaInicial(ActionEvent event) throws IOException {
-        NavigationService.navegarPara(event, "/com/example/technocode/Aluno/tela-inicial-aluno.fxml");
+        NavigationService.navegarParaTelaInterna(event, "/com/example/technocode/Aluno/tela-inicial-aluno.fxml",
+            controller -> {
+                if (controller instanceof TelaInicialAlunoController) {
+                    ((TelaInicialAlunoController) controller).recarregarSecoes();
+                }
+            });
     }
 }
