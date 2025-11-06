@@ -18,6 +18,19 @@ public class LoginController {
     @FXML
     private TextField txtEmail;
 
+    @FXML
+    private PasswordField txtSenha;
+
+    @FXML
+    private TextField txtSenhaVisivel;
+
+    @FXML
+    private Button btnToggleSenha;
+
+    // 🔹 ADIÇÃO — referencie o botão "Entrar" do FXML (precisa ter fx:id="btnEntrar")
+    @FXML
+    private Button btnEntrar;
+
     private static String emailLogado;
 
     public static String getEmailLogado() {
@@ -26,7 +39,7 @@ public class LoginController {
 
     public void login(ActionEvent event) throws IOException {
         String senha = obterSenhaAtual();
-        
+
         if (txtEmail.getText().isEmpty() || senha.isEmpty()) {
             mostrarAlertaErro("Campos obrigatórios", "Por favor, preencha todos os campos.");
             return;
@@ -55,9 +68,6 @@ public class LoginController {
         }
     }
 
-    /**
-     * Obtém a senha atual do campo que estiver visível
-     */
     private String obterSenhaAtual() {
         if (senhaVisivel) {
             return txtSenhaVisivel.getText();
@@ -83,15 +93,6 @@ public class LoginController {
         NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/cadastro.fxml", null);
     }
 
-    @FXML
-    private PasswordField txtSenha;
-
-    @FXML
-    private TextField txtSenhaVisivel;
-
-    @FXML
-    private Button btnToggleSenha;
-
     private boolean senhaVisivel = false;
 
     // Ícones
@@ -105,7 +106,6 @@ public class LoginController {
     @FXML
     private void toggleSenha() {
         if (senhaVisivel) {
-            // Oculta senha
             txtSenha.setText(txtSenhaVisivel.getText());
             txtSenhaVisivel.setVisible(false);
             txtSenhaVisivel.setManaged(false);
@@ -113,7 +113,6 @@ public class LoginController {
             txtSenha.setManaged(true);
             btnToggleSenha.setGraphic(iconMostrar);
         } else {
-            // Mostra senha
             txtSenhaVisivel.setText(txtSenha.getText());
             txtSenha.setVisible(false);
             txtSenha.setManaged(false);
@@ -132,13 +131,16 @@ public class LoginController {
         iconOcultar.setFitWidth(16);
         iconOcultar.setFitHeight(16);
 
-        // Mantém proporção e suaviza o redimensionamento
         iconMostrar.setPreserveRatio(true);
         iconOcultar.setPreserveRatio(true);
         iconMostrar.setSmooth(true);
         iconOcultar.setSmooth(true);
 
-        // Define o ícone inicial
         btnToggleSenha.setGraphic(iconMostrar);
+
+        // ADIÇÃO — faz a tecla Enter acionar o botão "Entrar"
+        txtEmail.setOnAction(e -> btnEntrar.fire());
+        txtSenha.setOnAction(e -> btnEntrar.fire());
+        txtSenhaVisivel.setOnAction(e -> btnEntrar.fire());
     }
 }
