@@ -1,55 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<VBox alignment="CENTER" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.LoginController">
-   <children>
-      <Label text="TechnoTG Login">
-         <font>
-            <Font name="System Bold" size="25.0" />
-         </font></Label>
-      <HBox alignment="CENTER" style="-fx-spacing: 10; -fx-padding: 10;">
-         <children>
-            <Label text="Email">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font></Label>
-            <TextField fx:id="txtEmail" prefHeight="25.0" prefWidth="300.0" promptText="Insira seu email" />
-         </children>
-      </HBox>
-       <HBox alignment="CENTER" style="-fx-spacing: 10; -fx-padding: 10;">
-           <children>
-               <Label text="Senha">
-                   <font>
-                       <Font name="System Bold" size="12.0" />
-                   </font>
-               </Label>
+<StackPane style="-fx-background-color: #f3f3f3;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.LoginController">
 
-               <!-- Campo de senha (oculto) -->
-               <PasswordField fx:id="txtSenha" prefHeight="25.0" prefWidth="270.0" promptText="Insira sua senha" />
+    <!-- Card central -->
+    <VBox alignment="CENTER" maxHeight="520" maxWidth="420" prefHeight="480" prefWidth="380" spacing="20" style="-fx-background-color: white;                  -fx-background-radius: 10;                  -fx-padding: 30;                  -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 15, 0, 0, 5);">
 
-               <!-- Campo de texto (visível) -->
-               <TextField fx:id="txtSenhaVisivel" managed="false" prefHeight="25.0" prefWidth="260.0" visible="false" />
+        <!-- Logo e título -->
+        <VBox alignment="CENTER" spacing="10" VBox.vgrow="NEVER">
+            <StackPane prefWidth="320.0" style="-fx-padding: 0 15 0 15;">
+                <children>
+                    <Rectangle arcHeight="12.0" arcWidth="12.0" fill="#cc2424" height="50.0" smooth="false" stroke="#cc2424" strokeType="INSIDE" width="50.0" />
+                    <Label text="TG" textFill="WHITE">
+                        <font>
+                            <Font name="Arial Black" size="23.0" />
+                        </font>
+                    </Label>
+                </children>
+                <effect>
+                    <DropShadow blurType="GAUSSIAN" height="15.63" radius="7.0625" width="14.62" />
+                </effect>
+            </StackPane>
+            <Label style="-fx-font-size: 24; -fx-font-weight: bold;" text="TechnoTG" />
+            <Label style="-fx-text-fill: #666666;" text="Sistema de Gerenciamento de TG" />
+        </VBox>
 
-               <!-- Botão de mostrar/ocultar -->
-               <Button fx:id="btnToggleSenha" contentDisplay="GRAPHIC_ONLY" onAction="#toggleSenha" />
-           </children>
-       </HBox>
-      <HBox alignment="CENTER" style="-fx-spacing: 100; -fx-padding: 20;">
-         <children>
-            <Button mnemonicParsing="false" onAction="#cadastrarUsuario" style="-fx-background-color: B82E1A;" text="Cadastrar" textFill="WHITE">
-               <font>
-                  <Font size="20.0" />
-               </font>
-            </Button>
-             <Button fx:id="btnEntrar" mnemonicParsing="false" onAction="#login" style="-fx-background-color: B82E1A;" text="Entrar" textFill="WHITE">
-                 <font>
-                     <Font size="20.0" />
-                 </font>
-             </Button>
-         </children>
-      </HBox>
-   </children>
-</VBox>
+        <!-- Seção de login -->
+        <VBox alignment="CENTER" fillWidth="true" spacing="15" VBox.vgrow="ALWAYS">
+
+            <!-- Campo de e-mail -->
+            <VBox alignment="CENTER_LEFT" fillWidth="true" spacing="5">
+                <Label style="-fx-font-weight: bold;" text="E-mail" />
+                <TextField fx:id="txtEmail" maxWidth="Infinity" prefHeight="35" promptText="Insira seu e-mail" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #cccccc;" VBox.vgrow="NEVER" />
+            </VBox>
+
+            <!-- Campo de senha -->
+            <VBox alignment="CENTER_LEFT" fillWidth="true" spacing="5">
+                <Label style="-fx-font-weight: bold;" text="Senha" />
+                <HBox alignment="CENTER_LEFT" fillHeight="true" spacing="5">
+                    <PasswordField fx:id="txtSenha" maxWidth="Infinity" prefHeight="35" promptText="Insira sua senha" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #cccccc;" HBox.hgrow="ALWAYS" />
+
+                    <TextField fx:id="txtSenhaVisivel" managed="false" maxWidth="Infinity" prefHeight="35" promptText="Insira sua senha" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #cccccc;" visible="false" HBox.hgrow="ALWAYS" />
+
+                    <Button fx:id="btnToggleSenha" onAction="#toggleSenha" style="-fx-background-color: transparent;" />
+                </HBox>
+            </VBox>
+
+            <!-- Lembrar-me e Esqueceu senha -->
+            <HBox alignment="CENTER_LEFT" spacing="60">
+                <CheckBox text="Lembrar-me" />
+            </HBox>
+        </VBox>
+
+        <!-- Botão Entrar -->
+        <Button fx:id="btnEntrar" maxWidth="Infinity" onAction="#login" prefHeight="40" style="-fx-background-color: #B82E1A; -fx-text-fill: white;                        -fx-background-radius: 5; -fx-font-size: 14; -fx-font-weight: bold;" text="Entrar" VBox.vgrow="NEVER" />
+
+        <!-- Cadastro -->
+        <HBox alignment="CENTER" spacing="5">
+            <Label text="Não tem uma conta?" />
+            <Hyperlink onAction="#cadastrarUsuario" style="-fx-text-fill: #B82E1A;" text="Cadastre-se" />
+        </HBox>
+    </VBox>
+</StackPane>
