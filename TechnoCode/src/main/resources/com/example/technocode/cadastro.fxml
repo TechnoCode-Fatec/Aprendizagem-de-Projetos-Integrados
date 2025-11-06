@@ -12,15 +12,15 @@
             <children>
 
                 <!-- Card de Cadastro (agora inclui logo e títulos) -->
-                <VBox alignment="CENTER" maxHeight="620.0" maxWidth="340.0" minHeight="620.0" minWidth="340.0" prefHeight="620.0" prefWidth="340" spacing="12" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 25 25 30 25;">
+                <VBox alignment="CENTER" maxHeight="620.0" maxWidth="420.0" prefHeight="480.0" prefWidth="380.0" spacing="12" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 25 25 30 25;">
                     <effect>
-                        <DropShadow color="#d4d4d4" radius="8" />
+                        <DropShadow blurType="GAUSSIAN" height="15.63" radius="7.0625" width="14.62" />
                     </effect>
 
                     <!-- Logo -->
                     <StackPane alignment="CENTER">
                         <children>
-                            <Label style="-fx-background-color: #B82E1A; -fx-text-fill: white; -fx-font-weight: bold;                                           -fx-font-size: 22; -fx-background-radius: 8; -fx-padding: 10 15 10 15;" text="TG">
+                            <Label style="-fx-background-color: #B82E1A; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 22; -fx-background-radius: 8; -fx-padding: 10 15 10 15;" text="TG">
                                 <font>
                                     <Font name="Arial Black" size="23.0" />
                                 </font>
