@@ -19,12 +19,12 @@ public class FormularioApiController {
     @FXML
     private TextField txtAno, txtEmpresa, txtLinkRepositorio;
     @FXML
-    private TextArea txtProblema, txtSolucao, txtTecnologias, txtContribuicoes, txtHardSkills, txtSoftSkills;
+    private TextArea txtDescricaoEmpresa, txtProblema, txtSolucao, txtTecnologias, txtContribuicoes, txtHardSkills, txtSoftSkills;
 
     @FXML
-    private void initialize(){
-        choiceBoxSemestre.getItems().addAll("1","2");
-        choiceBoxSemestreDoCurso.getItems().addAll("1º Semestre","2º Semestre","3º Semestre","4º Semestre","5º Semestre","6º Semestre");
+    private void initialize() {
+        choiceBoxSemestre.getItems().addAll("1", "2");
+        choiceBoxSemestreDoCurso.getItems().addAll("1º Semestre", "2º Semestre", "3º Semestre", "4º Semestre", "5º Semestre", "6º Semestre");
     }
 
     /**

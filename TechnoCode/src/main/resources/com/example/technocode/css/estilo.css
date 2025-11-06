@@ -66,3 +66,7 @@
     -fx-scale-x: 1.0;
     -fx-scale-y: 1.0;
 }
+
+#formulario .label {
+    -fx-text-fill: #2C3E50;
+}

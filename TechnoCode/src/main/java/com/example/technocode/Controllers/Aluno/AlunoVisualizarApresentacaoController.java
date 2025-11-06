@@ -45,7 +45,7 @@ public class AlunoVisualizarApresentacaoController {
     // Carrega dados da secao_apresentacao
     public void carregarSecaoAluno() {
         if (secaoApresentacao == null || secaoApresentacao.getEmailAluno() == null) return;
-        String sql = "SELECT nome, idade, curso, motivacao, historico, link_github, link_linkedin, principais_conhecimentos " +
+        String sql = "SELECT nome, idade, curso, motivacao, historico, historico_profissional, link_github, link_linkedin, principais_conhecimentos " +
                 "FROM secao_apresentacao WHERE aluno = ? AND versao = ?";
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
@@ -119,7 +119,7 @@ public class AlunoVisualizarApresentacaoController {
     private void carregarVersaoAnteriorApresentacao(ActionEvent event) {
         if (secaoApresentacao == null || secaoApresentacao.getEmailAluno() == null) return;
 
-        String sql = "SELECT nome, idade, curso, motivacao, historico, link_github, link_linkedin, principais_conhecimentos " +
+        String sql = "SELECT nome, idade, curso, motivacao, historico, historico_profissional, link_github, link_linkedin, principais_conhecimentos " +
                      "FROM secao_apresentacao WHERE aluno = ? AND versao = ?";
 
         try (Connection con = new Connector().getConnection();
@@ -136,6 +136,7 @@ public class AlunoVisualizarApresentacaoController {
                     String curso = rs.getString("curso");
                     String motivacao = rs.getString("motivacao");
                     String historico = rs.getString("historico");
+                    String historicoProfissional = rs.getString("historico_profissional");
                     String github = rs.getString("link_github");
                     String linkedin = rs.getString("link_linkedin");
                     String conhecimentos = rs.getString("principais_conhecimentos");
@@ -146,6 +147,7 @@ public class AlunoVisualizarApresentacaoController {
                     final String cursoFinal = curso;
                     final String motivacaoFinal = motivacao;
                     final String historicoFinal = historico;
+                    final String historicoProfissionalFinal = historicoProfissional;
                     final String githubFinal = github;
                     final String linkedinFinal = linkedin;
                     final String conhecimentosFinal = conhecimentos;
@@ -155,7 +157,7 @@ public class AlunoVisualizarApresentacaoController {
                             if (controller instanceof FormularioApresentacaoController) {
                                 ((FormularioApresentacaoController) controller).setDadosVersaoAnterior(
                                     nomeFinal, dataNascimentoFinal, cursoFinal, motivacaoFinal,
-                                    historicoFinal, githubFinal, linkedinFinal, conhecimentosFinal
+                                    historicoFinal, historicoProfissionalFinal, githubFinal, linkedinFinal, conhecimentosFinal
                                 );
                             }
                         });

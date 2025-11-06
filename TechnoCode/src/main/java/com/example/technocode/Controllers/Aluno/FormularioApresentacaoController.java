@@ -17,7 +17,7 @@ public class FormularioApresentacaoController {
     @FXML
     private TextField txtNome, txtGithub, txtLinkedin;
     @FXML
-    private TextArea txtMotivacao, txtHistorico, txtPrincipaisConhecimentos;
+    private TextArea txtMotivacao, txtHistorico, txtPrincipaisConhecimentos, txtHistoricoProfissional;
     @FXML
     private DatePicker datePickerIdade;
     @FXML
@@ -33,7 +33,7 @@ public class FormularioApresentacaoController {
      * para criar uma nova versão baseada na anterior
      */
     public void setDadosVersaoAnterior(String nome, String dataNascimento, String curso, 
-                                        String motivacao, String historico, 
+                                        String motivacao, String historico, String historicoProfissional,
                                         String github, String linkedin, String conhecimentos) {
         // Preenche o TextField de nome
         if (nome != null && !nome.isEmpty()) {
@@ -73,6 +73,9 @@ public class FormularioApresentacaoController {
         if (conhecimentos != null && !conhecimentos.isEmpty()) {
             txtPrincipaisConhecimentos.setText(conhecimentos);
         }
+        if (historicoProfissional != null && !historicoProfissional.isEmpty()) {
+            txtHistoricoProfissional.setText(historicoProfissional);
+        }
     }
 
     @FXML
@@ -85,7 +88,8 @@ public class FormularioApresentacaoController {
                 txtHistorico.getText().isEmpty() ||
                 txtGithub.getText().isEmpty() ||
                 txtLinkedin.getText().isEmpty() ||
-                txtPrincipaisConhecimentos.getText().isEmpty()) {
+                txtPrincipaisConhecimentos.getText().isEmpty() ||
+                txtHistoricoProfissional.getText().isEmpty()) {
 
             mostrarAlerta("Campos obrigatórios", "Por favor, preencha todos os campos antes de enviar.");
             return;
@@ -105,6 +109,7 @@ public class FormularioApresentacaoController {
                 proximaVersao,
                 txtMotivacao.getText(),
                 txtHistorico.getText(),
+                txtHistoricoProfissional.getText(),
                 txtGithub.getText(),
                 txtLinkedin.getText(),
                 txtPrincipaisConhecimentos.getText()

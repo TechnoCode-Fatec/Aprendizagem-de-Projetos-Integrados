@@ -71,7 +71,7 @@ public class OrientadorCorrigirApresentacaoController {
     // 1) Carrega dados da secao_apresentacao
     public void carregarSecaoAluno() {
         if (secaoApresentacao == null || secaoApresentacao.getEmailAluno() == null) return;
-        String sql = "SELECT nome, idade, curso, motivacao, historico, link_github, link_linkedin, principais_conhecimentos " +
+        String sql = "SELECT nome, idade, curso, motivacao, historico, historico_profissional, link_github, link_linkedin, principais_conhecimentos " +
                 "FROM secao_apresentacao WHERE aluno = ? AND versao = ?";
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {

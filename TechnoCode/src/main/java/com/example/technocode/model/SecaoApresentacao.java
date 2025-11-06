@@ -23,6 +23,7 @@ public class SecaoApresentacao {
     private Integer versao;
     private String motivacao;
     private String historico;
+    private String historicoProfissional;
     private String linkGithub;
     private String linkLinkedin;
     private String principaisConhecimentos;
@@ -31,7 +32,7 @@ public class SecaoApresentacao {
      * Constructor completo para SecaoApresentacao
      */
     public SecaoApresentacao(String emailAluno, String nome, Date idade, String curso,
-                            Integer versao, String motivacao, String historico,
+                            Integer versao, String motivacao, String historico, String historicoProfissional,
                             String linkGithub, String linkLinkedin, String principaisConhecimentos) {
         this.emailAluno = emailAluno;
         this.nome = nome;
@@ -40,6 +41,7 @@ public class SecaoApresentacao {
         this.versao = versao;
         this.motivacao = motivacao;
         this.historico = historico;
+        this.historicoProfissional = historicoProfissional;
         this.linkGithub = linkGithub;
         this.linkLinkedin = linkLinkedin;
         this.principaisConhecimentos = principaisConhecimentos;
@@ -110,6 +112,14 @@ public class SecaoApresentacao {
         this.historico = historico;
     }
 
+    public String getHistoricoProfissional() {
+        return historicoProfissional;
+    }
+
+    public void setHistoricoProfissional(String historicoProfissional) {
+        this.historicoProfissional = historicoProfissional;
+    }
+
     public String getLinkGithub() {
         return linkGithub;
     }
@@ -141,7 +151,7 @@ public class SecaoApresentacao {
      */
     public void cadastrar() {
         try (Connection con = new Connector().getConnection()) {
-            String insertSql = "INSERT INTO secao_apresentacao (aluno, nome, idade, curso, versao, motivacao, historico, link_github, link_linkedin, principais_conhecimentos) VALUES (?,?,?,?,?,?,?,?,?,?)";
+            String insertSql = "INSERT INTO secao_apresentacao (aluno, nome, idade, curso, versao, motivacao, historico, historico_profissional, link_github, link_linkedin, principais_conhecimentos) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
             PreparedStatement pst = con.prepareStatement(insertSql);
             pst.setString(1, this.emailAluno);
             pst.setString(2, this.nome);
@@ -150,9 +160,10 @@ public class SecaoApresentacao {
             pst.setInt(5, this.versao);
             pst.setString(6, this.motivacao);
             pst.setString(7, this.historico);
-            pst.setString(8, this.linkGithub);
-            pst.setString(9, this.linkLinkedin);
-            pst.setString(10, this.principaisConhecimentos);
+            pst.setString(8, this.historicoProfissional);
+            pst.setString(9, this.linkGithub);
+            pst.setString(10, this.linkLinkedin);
+            pst.setString(11, this.principaisConhecimentos);
             pst.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace();

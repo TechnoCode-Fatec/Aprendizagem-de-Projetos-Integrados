@@ -5,116 +5,188 @@
 <?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 
-<VBox alignment="TOP_CENTER" prefHeight="508.0" prefWidth="900.0"
-      spacing="20"
-      style="-fx-background-color: #C4C4C4;"
-      xmlns="http://javafx.com/javafx/17.0.12"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.example.technocode.Controllers.Aluno.FormularioApresentacaoController">
-
-    <!-- Cabeçalho -->
-    <HBox alignment="CENTER" prefHeight="44.0" prefWidth="900.0" style="-fx-spacing: 25;">
-        <children>
-            <Button mnemonicParsing="false" onAction="#voltar" prefHeight="30.0" prefWidth="113.0"
-                    style="-fx-background-color: #B82E1A;" text="Voltar" textFill="WHITE">
-                <font><Font size="14.0"/></font>
-            </Button>
-
-            <VBox alignment="CENTER" prefHeight="44.0" prefWidth="272.0">
+<?import java.lang.String?>
+<ScrollPane id="formulario" fitToWidth="true" style="-fx-background-color: #F8F9FA; -fx-background: transparent;"
+            vbarPolicy="AS_NEEDED" hbarPolicy="NEVER"
+            stylesheets="@../css/estilo.css"
+            styleClass="formulario-container"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.technocode.Controllers.Aluno.FormularioApresentacaoController">
+    <content>
+        <VBox style="-fx-background-color: #F8F9FA; -fx-padding: 25;" spacing="20" maxWidth="1.7976931348623157E308">
+            
+            <!-- Header Moderno -->
+            <HBox alignment="CENTER" spacing="30" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);">
                 <children>
-                    <Label alignment="CENTER" text="APRESENTAÇÃO DO ALUNO">
-                        <font><Font name="System Bold" size="18.0"/></font>
-                    </Label>
-                    <Label text="Cadastre sua seção">
-                        <font><Font name="System Bold" size="12.0"/></font>
-                    </Label>
+                    <Button mnemonicParsing="false" onAction="#voltar" prefHeight="40.0" prefWidth="120.0" 
+                            style="-fx-background-color: #B82E1A; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(184,46,26,0.3), 5, 0, 0, 2);" 
+                            text="← VOLTAR" textFill="WHITE">
+                        <font>
+                            <Font name="System Bold" size="13.0" />
+                        </font>
+                    </Button>
+                    <VBox alignment="CENTER" spacing="5" HBox.hgrow="ALWAYS">
+                        <Label text="APRESENTAÇÃO DO ALUNO" textFill="#2C3E50">
+                            <font>
+                                <Font name="System Bold" size="24.0" />
+                            </font>
+                        </Label>
+                        <Label text="Preencha os dados da sua apresentação" textFill="#7F8C8D">
+                            <font>
+                                <Font size="12.0" />
+                            </font>
+                        </Label>
+                    </VBox>
+                    <Region prefWidth="120.0" />
                 </children>
-            </VBox>
+            </HBox>
 
-            <Button mnemonicParsing="false" prefHeight="30.0" prefWidth="113.0"
-                    style="-fx-background-color: #B82E1A;" text="API" textFill="WHITE">
-                <font><Font size="14.0"/></font>
-            </Button>
-        </children>
-    </HBox>
+            <!-- Layout em 2 Colunas Principais -->
+            <HBox spacing="20" alignment="TOP_CENTER">
+                <children>
+                    
+                    <!-- Coluna Esquerda -->
+                    <VBox spacing="20" HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308">
+                        <children>
+                            <!-- Card: Informações Pessoais -->
+                            <VBox spacing="15" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);">
+                                <children>
+                                    <HBox alignment="CENTER_LEFT" spacing="10">
+                                        <Region style="-fx-background-color: #3498DB; -fx-background-radius: 4;" prefWidth="4" prefHeight="24" />
+                                        <Label text="Informações Pessoais" textFill="#2C3E50">
+                                            <font>
+                                                <Font name="System Bold" size="16.0" />
+                                            </font>
+                                        </Label>
+                                    </HBox>
+                                    <VBox spacing="15" style="-fx-padding: 10 0 0 0;">
+                                        <VBox spacing="8">
+                                            <Label text="Nome Completo" textFill="#34495E">
+                                                <font>
+                                                    <Font name="System Bold" size="12.0" />
+                                                </font>
+                                            </Label>
+                                            <TextField fx:id="txtNome" prefHeight="40.0" 
+                                                       style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-prompt-text-fill: #95A5A6;" />
+                                        </VBox>
+                                        <HBox spacing="15">
+                                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                                <Label text="Idade" textFill="#34495E">
+                                                    <font>
+                                                        <Font name="System Bold" size="12.0" />
+                                                    </font>
+                                                </Label>
+                                                <DatePicker fx:id="datePickerIdade" prefHeight="40.0" 
+                                                            style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10;" />
+                                            </VBox>
+                                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                                <Label text="Curso" textFill="#34495E">
+                                                    <font>
+                                                        <Font name="System Bold" size="12.0" />
+                                                    </font>
+                                                </Label>
+                                                <ChoiceBox fx:id="choiceBoxCurso" prefHeight="40.0" 
+                                                           style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10;">
+                                                    <styleClass>
+                                                        <String fx:value="choice-box-dark-text" />
+                                                    </styleClass>
+                                                </ChoiceBox>
+                                            </VBox>
+                                        </HBox>
+                                        <VBox spacing="8">
+                                            <Label text="Motivação para entrar na Fatec" textFill="#34495E">
+                                                <font>
+                                                    <Font name="System Bold" size="12.0" />
+                                                </font>
+                                            </Label>
+                                            <TextArea fx:id="txtMotivacao" prefHeight="100.0" 
+                                                      style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true;" />
+                                        </VBox>
+                                    </VBox>
+                                </children>
+                            </VBox>
+                        </children>
+                    </VBox>
 
-    <!-- Corpo dividido em duas colunas -->
-    <HBox alignment="TOP_CENTER" spacing="40" prefWidth="900.0">
-        <VBox.margin><Insets top="10.0"/></VBox.margin>
+                    <!-- Coluna Direita -->
+                    <VBox spacing="20" HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308">
+                        <children>
+                            <!-- Card: Informações Profissionais -->
+                            <VBox spacing="15" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);">
+                                <children>
+                                    <HBox alignment="CENTER_LEFT" spacing="10">
+                                        <Region style="-fx-background-color: #9B59B6; -fx-background-radius: 4;" prefWidth="4" prefHeight="24" />
+                                        <Label text="Informações Profissionais" textFill="#2C3E50">
+                                            <font>
+                                                <Font name="System Bold" size="16.0" />
+                                            </font>
+                                        </Label>
+                                    </HBox>
+                                    <VBox spacing="15" style="-fx-padding: 10 0 0 0;">
+                                        <VBox spacing="8">
+                                            <Label text="Histórico Acadêmico" textFill="#34495E">
+                                                <font>
+                                                    <Font name="System Bold" size="12.0" />
+                                                </font>
+                                            </Label>
+                                            <TextArea fx:id="txtHistorico" prefHeight="90.0" 
+                                                      style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true;" />
+                                        </VBox>
+                                        <VBox spacing="8">
+                                            <Label text="Github" textFill="#34495E">
+                                                <font>
+                                                    <Font name="System Bold" size="12.0" />
+                                                </font>
+                                            </Label>
+                                            <TextField fx:id="txtGithub" prefHeight="40.0" 
+                                                       style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-prompt-text-fill: #95A5A6;" />
+                                        </VBox>
+                                        <VBox spacing="8">
+                                            <Label text="LinkedIn" textFill="#34495E">
+                                                <font>
+                                                    <Font name="System Bold" size="12.0" />
+                                                </font>
+                                            </Label>
+                                            <TextField fx:id="txtLinkedin" prefHeight="40.0" 
+                                                       style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-prompt-text-fill: #95A5A6;" />
+                                        </VBox>
+                                        <VBox spacing="8">
+                                            <Label text="Principais Conhecimentos" textFill="#34495E">
+                                                <font>
+                                                    <Font name="System Bold" size="12.0" />
+                                                </font>
+                                            </Label>
+                                            <TextArea fx:id="txtPrincipaisConhecimentos" prefHeight="90.0" 
+                                                      style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true;" />
+                                        </VBox>
+                                        <VBox spacing="8">
+                                            <Label text="Histórico Profissional" textFill="#34495E">
+                                                <font>
+                                                    <Font name="System Bold" size="12.0" />
+                                                </font>
+                                            </Label>
+                                            <TextArea fx:id="txtHistoricoProfissional" prefHeight="90.0" 
+                                                      style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" />
+                                        </VBox>
+                                    </VBox>
+                                </children>
+                            </VBox>
+                        </children>
+                    </VBox>
+                </children>
+            </HBox>
 
-        <!-- Coluna da esquerda -->
-        <VBox alignment="TOP_LEFT" spacing="10">
-            <children>
-
-                <HBox spacing="20" alignment="CENTER_LEFT">
-                    <Label text="Nome Completo:" prefWidth="150">
-                        <font><Font name="System Bold" size="12.0"/></font>
-                    </Label>
-                    <TextField fx:id="txtNome" prefWidth="250"/>
-                </HBox>
-
-                <HBox spacing="20" alignment="CENTER_LEFT">
-                    <Label text="Idade:" prefWidth="150">
-                        <font><Font name="System Bold" size="12.0"/></font>
-                    </Label>
-                    <DatePicker fx:id="datePickerIdade" prefWidth="250"/>
-                </HBox>
-
-                <HBox spacing="20" alignment="CENTER_LEFT">
-                    <Label text="Curso:" prefWidth="150">
-                        <font><Font name="System Bold" size="12.0"/></font>
-                    </Label>
-                    <ChoiceBox fx:id="choiceBoxCurso" prefWidth="250"/>
-                </HBox>
-
-                <HBox spacing="20" alignment="CENTER_LEFT">
-                    <Label text="Motivação para entrar na Fatec:" prefWidth="150">
-                        <font><Font name="System Bold" size="12.0"/></font>
-                    </Label>
-                    <TextArea fx:id="txtMotivacao" prefWidth="250" prefHeight="80"/>
-                </HBox>
-
-            </children>
+            <!-- Botão de Envio Moderno -->
+            <HBox alignment="CENTER" style="-fx-padding: 10 0 0 0;">
+                <Button mnemonicParsing="false" onAction="#enviarApresentacao" prefHeight="50.0" prefWidth="200.0" 
+                        style="-fx-background-color: #B82E1A; -fx-background-radius: 10; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(184,46,26,0.4), 10, 0, 0, 3);" 
+                        text="ENVIAR APRESENTAÇÃO" textFill="WHITE">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                </Button>
+            </HBox>
         </VBox>
-
-        <!-- Coluna da direita -->
-        <VBox alignment="TOP_LEFT" spacing="10">
-            <children>
-
-                <HBox spacing="20" alignment="CENTER_LEFT">
-                    <Label text="Histórico Acadêmico:" prefWidth="150">
-                        <font><Font name="System Bold" size="12.0"/></font>
-                    </Label>
-                    <TextArea fx:id="txtHistorico" prefWidth="250" prefHeight="50"/>
-                </HBox>
-
-                <HBox spacing="20" alignment="CENTER_LEFT">
-                    <Label text="Github:" prefWidth="150">
-                        <font><Font name="System Bold" size="12.0"/></font>
-                    </Label>
-                    <TextField fx:id="txtGithub" prefWidth="250"/>
-                </HBox>
-
-                <HBox spacing="20" alignment="CENTER_LEFT">
-                    <Label text="LinkedIn:" prefWidth="150">
-                        <font><Font name="System Bold" size="12.0"/></font>
-                    </Label>
-                    <TextField fx:id="txtLinkedin" prefWidth="250"/>
-                </HBox>
-
-                <HBox spacing="20" alignment="CENTER_LEFT">
-                    <Label text="Principais Conhecimentos:" prefWidth="150">
-                        <font><Font name="System Bold" size="12.0"/></font>
-                    </Label>
-                    <TextArea fx:id="txtPrincipaisConhecimentos" prefWidth="250" prefHeight="50"/>
-                </HBox>
-
-            </children>
-        </VBox>
-    </HBox>
-
-    <!-- Botão enviar -->
-    <Button mnemonicParsing="false" onAction="#enviarApresentacao" prefHeight="30.0" prefWidth="130.0"
-            style="-fx-background-color: #B82E1A;" text="ENVIAR" textFill="WHITE"/>
-
-</VBox>
+    </content>
+</ScrollPane>
