@@ -12,7 +12,7 @@ import java.io.IOException;
 public class Principal extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Principal.class.getResource("login.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(Principal.class.getResource("DashboardProfessorTG.fxml"));
         
         // Obtém as dimensões da tela primária
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
@@ -40,3 +40,5 @@ public class Principal extends Application {
         });
     }
 }
+
+// feat (us-10): jajbbqjcda
