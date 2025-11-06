@@ -66,13 +66,73 @@
    </top>
    <left>
       <VBox alignment="TOP_CENTER" prefHeight="164.0" prefWidth="263.0" style="-fx-background-color: WHITE; -fx-spacing: 10; -fx-padding: 15; -fx-min-width: 158;" BorderPane.alignment="CENTER">
-         <children>
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarInicio" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Início" />
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarEnviarApi" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Enviar Api" />
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarEnviarApresentacao" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Enviar Apresentação" />
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarHistorico" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Histórico" />
 
-         </children></VBox>
+          <children>
+              <!-- Botão Início -->
+              <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false"
+                      onAction="#navegarInicio"
+                      style="-fx-background-color: WHITE;"
+                      styleClass="menu-button"
+                      text="Início"
+                      contentDisplay="LEFT">
+                  <graphic>
+                      <ImageView fitHeight="18" fitWidth="18" preserveRatio="true">
+                          <image>
+                              <Image url="@../imagens/home.png" />
+                          </image>
+                      </ImageView>
+                  </graphic>
+              </Button>
+
+              <!-- Botão Enviar API -->
+              <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false"
+                      onAction="#navegarEnviarApi"
+                      style="-fx-background-color: WHITE;"
+                      styleClass="menu-button"
+                      text="Enviar API"
+                      contentDisplay="LEFT">
+                  <graphic>
+                      <ImageView fitHeight="18" fitWidth="18" preserveRatio="true">
+                          <image>
+                              <Image url="@../imagens/doc.png" />
+                          </image>
+                      </ImageView>
+                  </graphic>
+              </Button>
+
+              <!-- Botão Enviar Apresentação -->
+              <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false"
+                      onAction="#navegarEnviarApresentacao"
+                      style="-fx-background-color: WHITE;"
+                      styleClass="menu-button"
+                      text="Enviar Apresentação"
+                      contentDisplay="LEFT">
+                  <graphic>
+                      <ImageView fitHeight="18" fitWidth="18" preserveRatio="true">
+                          <image>
+                              <Image url="@../imagens/doc.png" />
+                          </image>
+                      </ImageView>
+                  </graphic>
+              </Button>
+
+              <!-- Botão Histórico -->
+              <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false"
+                      onAction="#navegarHistorico"
+                      style="-fx-background-color: WHITE;"
+                      styleClass="menu-button"
+                      text="Histórico"
+                      contentDisplay="LEFT">
+                  <graphic>
+                      <ImageView fitHeight="18" fitWidth="18" preserveRatio="true">
+                          <image>
+                              <Image url="@../imagens/history.png" />
+                          </image>
+                      </ImageView>
+                  </graphic>
+              </Button>
+          </children>
+      </VBox>
    </left>
 
     <center>
