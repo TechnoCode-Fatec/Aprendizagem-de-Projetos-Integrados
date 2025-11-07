@@ -6,7 +6,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<StackPane style="-fx-background-color: #f3f3f3;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.LoginController">
+<StackPane style="-fx-background-color: linear-gradient(to bottom right, #fff5f5, #ffffff);" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.LoginController">
 
     <!-- Card central -->
     <VBox alignment="CENTER" maxHeight="520" maxWidth="420" prefHeight="480" prefWidth="380" spacing="20" style="-fx-background-color: white;                  -fx-background-radius: 10;                  -fx-padding: 30;                  -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 15, 0, 0, 5);">
