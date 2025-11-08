@@ -7,27 +7,52 @@
 
 <VBox alignment="TOP_CENTER" prefHeight="800.0" prefWidth="1200.0" style="-fx-background-color: #C4C4C4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.DashboardProfessorTGController">
     <children>
-        <!-- Cabeçalho -->
-        <HBox alignment="CENTER" prefHeight="60.0" prefWidth="1200.0" style="-fx-spacing: 25; -fx-padding: 10 20 10 20; -fx-background-color: WHITE; -fx-border-color: #c9c9c9; -fx-border-width: 0 0 1 0;">
+        <!-- Cabeçalho com Informações do Professor -->
+        <VBox prefWidth="1200.0" style="-fx-background-color: WHITE; -fx-border-color: #c9c9c9; -fx-border-width: 0 0 1 0;">
             <children>
-                <Label alignment="CENTER" prefHeight="47.0" prefWidth="400.0" text="DASHBOARD PROFESSOR DE TG">
-                    <font>
-                        <Font name="System Bold" size="24.0" />
-                    </font>
-                </Label>
-                <Region HBox.hgrow="ALWAYS" />
-                <Button fx:id="btnAtualizar" mnemonicParsing="false" onAction="#atualizarDashboard" prefHeight="34.0" prefWidth="130.0" style="-fx-background-color: B82E1A;" text="Atualizar Dados" textFill="WHITE">
-                    <font>
-                        <Font size="14.0" />
-                    </font>
-                </Button>
-                <Button mnemonicParsing="false" onAction="#voltarLogin" prefHeight="34.0" prefWidth="100.0" style="-fx-background-color: B82E1A;" text="Sair" textFill="WHITE">
-                    <font>
-                        <Font size="14.0" />
-                    </font>
-                </Button>
+                <!-- Informações do Professor -->
+                <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="1200.0" style="-fx-spacing: 15; -fx-padding: 10 20 5 20;">
+                    <children>
+                        <VBox alignment="CENTER_LEFT" style="-fx-spacing: 3;">
+                            <children>
+                                <Label fx:id="lblNomeProfessor" text="Professor de TG: Prof. João da Silva" textFill="#434343">
+                                    <font>
+                                        <Font name="Arial Bold" size="14.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="lblEmailProfessor" text="joao.silva@fatec.sp.gov.br" textFill="#767676">
+                                    <font>
+                                        <Font size="12.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <Region HBox.hgrow="ALWAYS" />
+                    </children>
+                </HBox>
+                <!-- Barra de navegação -->
+                <HBox alignment="CENTER" prefHeight="50.0" prefWidth="1200.0" style="-fx-spacing: 25; -fx-padding: 5 20 10 20;">
+                    <children>
+                        <Label alignment="CENTER" prefHeight="47.0" prefWidth="400.0" text="DASHBOARD PROFESSOR DE TG">
+                            <font>
+                                <Font name="System Bold" size="24.0" />
+                            </font>
+                        </Label>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button fx:id="btnAtualizar" mnemonicParsing="false" onAction="#atualizarDashboard" prefHeight="34.0" prefWidth="130.0" style="-fx-background-color: B82E1A;" text="Atualizar Dados" textFill="WHITE">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#voltarLogin" prefHeight="34.0" prefWidth="100.0" style="-fx-background-color: B82E1A;" text="Sair" textFill="WHITE">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </Button>
+                    </children>
+                </HBox>
             </children>
-        </HBox>
+        </VBox>
 
         <!-- Conteúdo Principal -->
         <ScrollPane fitToWidth="true" prefHeight="740.0" prefWidth="1200.0" style="-fx-background-color: transparent;" vbarPolicy="ALWAYS">
@@ -255,3 +280,4 @@
         </ScrollPane>
     </children>
 </VBox>
+

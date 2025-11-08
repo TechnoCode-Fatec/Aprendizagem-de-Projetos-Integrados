@@ -14,10 +14,8 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.application.Platform;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -89,11 +87,40 @@ public class DashboardProfessorTGController {
     @FXML
     private Button btnAtualizar;
 
+    // Labels do cabeçalho do professor
+    @FXML
+    private Label lblNomeProfessor;
+    @FXML
+    private Label lblEmailProfessor;
+
     @FXML
     public void initialize() {
         configurarTabelas();
         carregarFiltros();
+        inicializarDadosProfessor();
         atualizarDashboard();
+    }
+
+    /**
+     * Inicializa os dados do professor no cabeçalho
+     * Por enquanto, usa valores simulados. No futuro, pode ser substituído por dados de login.
+     */
+    private void inicializarDadosProfessor() {
+        setDadosProfessor("Prof. João da Silva", "joao.silva@fatec.sp.gov.br");
+    }
+
+    /**
+     * Define os dados do professor no cabeçalho
+     * @param nome Nome completo do professor
+     * @param email Email do professor
+     */
+    public void setDadosProfessor(String nome, String email) {
+        if (lblNomeProfessor != null) {
+            lblNomeProfessor.setText("Professor de TG: " + nome);
+        }
+        if (lblEmailProfessor != null) {
+            lblEmailProfessor.setText(email);
+        }
     }
 
     /**
@@ -151,6 +178,7 @@ public class DashboardProfessorTGController {
 
     /**
      * Carrega os dados gerais (cards de estatísticas)
+     * Agora considera apenas versões recentes para garantir consistência com o gráfico
      */
     private void carregarDadosGerais() {
         try (Connection conn = new Connector().getConnection()) {
@@ -162,9 +190,9 @@ public class DashboardProfessorTGController {
             int totalOrientadores = contarRegistros("SELECT COUNT(*) FROM orientador", conn);
             lblTotalOrientadores.setText(String.valueOf(totalOrientadores));
 
-            // Total de seções (API + Apresentação)
-            int totalSecoesApi = contarRegistros("SELECT COUNT(*) FROM secao_api", conn);
-            int totalSecoesApresentacao = contarRegistros("SELECT COUNT(*) FROM secao_apresentacao", conn);
+            // Total de seções (API + Apresentação) - considerando apenas versões recentes
+            int totalSecoesApi = contarTotalSecoesVersaoRecente("api", conn);
+            int totalSecoesApresentacao = contarTotalSecoesVersaoRecente("apresentacao", conn);
             int totalSecoes = totalSecoesApi + totalSecoesApresentacao;
             lblTotalSecoes.setText(String.valueOf(totalSecoes));
 
@@ -195,6 +223,30 @@ public class DashboardProfessorTGController {
     }
 
     /**
+     * Conta o total de seções considerando apenas a versão mais recente de cada aluno
+     * Este método garante consistência com os cálculos de aprovadas e reprovadas
+     */
+    private int contarTotalSecoesVersaoRecente(String tipo, Connection conn) throws SQLException {
+        String sql;
+        if ("api".equals(tipo)) {
+            // Conta apenas a versão mais recente de cada aluno para cada combinação (semestre_curso, ano, semestre_ano)
+            sql = "SELECT COUNT(*) FROM ( " +
+                  "SELECT aluno, semestre_curso, ano, semestre_ano, MAX(versao) as versao_recente " +
+                  "FROM secao_api " +
+                  "GROUP BY aluno, semestre_curso, ano, semestre_ano " +
+                  ") AS versoes_recentes";
+        } else {
+            // Conta apenas a versão mais recente de cada aluno
+            sql = "SELECT COUNT(*) FROM ( " +
+                  "SELECT aluno, MAX(versao) as versao_recente " +
+                  "FROM secao_apresentacao " +
+                  "GROUP BY aluno " +
+                  ") AS versoes_recentes";
+        }
+        return contarRegistros(sql, conn);
+    }
+
+    /**
      * Conta registros de uma consulta SQL
      */
     private int contarRegistros(String sql, Connection conn) throws SQLException {
@@ -210,22 +262,42 @@ public class DashboardProfessorTGController {
     /**
      * Conta seções aprovadas baseado nos status dos feedbacks
      * Uma seção é considerada aprovada quando TODOS os campos estão com status "Aprovado"
+     * Este método agora contabiliza apenas a versão mais recente (maior número de versão)
+     * de cada aluno, garantindo que o gráfico reflita o status atual e não versões antigas.
      */
     private int contarSecoesAprovadas(String tipo, Connection conn) throws SQLException {
         String sql;
         if ("api".equals(tipo)) {
-            sql = "SELECT COUNT(DISTINCT CONCAT(aluno, '-', semestre_curso, '-', ano, '-', semestre_ano, '-', versao)) " +
-                  "FROM feedback_api " +
-                  "WHERE status_problema = 'Aprovado' AND status_solucao = 'Aprovado' " +
-                  "AND status_tecnologias = 'Aprovado' AND status_contribuicoes = 'Aprovado' " +
-                  "AND status_hard_skills = 'Aprovado' AND status_soft_skills = 'Aprovado'";
+            // Busca apenas a versão mais recente de cada aluno para cada combinação (semestre_curso, ano, semestre_ano)
+            // a partir das tabelas de seção, depois verifica o feedback
+            sql = "SELECT COUNT(*) FROM ( " +
+                  "SELECT sa.aluno, sa.semestre_curso, sa.ano, sa.semestre_ano, MAX(sa.versao) as versao_recente " +
+                  "FROM secao_api sa " +
+                  "GROUP BY sa.aluno, sa.semestre_curso, sa.ano, sa.semestre_ano " +
+                  ") AS versoes_recentes " +
+                  "INNER JOIN feedback_api fa ON " +
+                  "  versoes_recentes.aluno = fa.aluno AND " +
+                  "  versoes_recentes.semestre_curso = fa.semestre_curso AND " +
+                  "  versoes_recentes.ano = fa.ano AND " +
+                  "  versoes_recentes.semestre_ano = fa.semestre_ano AND " +
+                  "  versoes_recentes.versao_recente = fa.versao " +
+                  "WHERE fa.status_problema = 'Aprovado' AND fa.status_solucao = 'Aprovado' " +
+                  "AND fa.status_tecnologias = 'Aprovado' AND fa.status_contribuicoes = 'Aprovado' " +
+                  "AND fa.status_hard_skills = 'Aprovado' AND fa.status_soft_skills = 'Aprovado'";
         } else {
-            sql = "SELECT COUNT(DISTINCT CONCAT(aluno, '-', versao)) " +
-                  "FROM feedback_apresentacao " +
-                  "WHERE status_nome = 'Aprovado' AND status_idade = 'Aprovado' " +
-                  "AND status_curso = 'Aprovado' AND status_motivacao = 'Aprovado' " +
-                  "AND status_historico = 'Aprovado' AND status_github = 'Aprovado' " +
-                  "AND status_linkedin = 'Aprovado' AND status_conhecimentos = 'Aprovado'";
+            // Busca apenas a versão mais recente de cada aluno a partir das tabelas de seção, depois verifica o feedback
+            sql = "SELECT COUNT(*) FROM ( " +
+                  "SELECT sa.aluno, MAX(sa.versao) as versao_recente " +
+                  "FROM secao_apresentacao sa " +
+                  "GROUP BY sa.aluno " +
+                  ") AS versoes_recentes " +
+                  "INNER JOIN feedback_apresentacao fa ON " +
+                  "  versoes_recentes.aluno = fa.aluno AND " +
+                  "  versoes_recentes.versao_recente = fa.versao " +
+                  "WHERE fa.status_nome = 'Aprovado' AND fa.status_idade = 'Aprovado' " +
+                  "AND fa.status_curso = 'Aprovado' AND fa.status_motivacao = 'Aprovado' " +
+                  "AND fa.status_historico = 'Aprovado' AND fa.status_github = 'Aprovado' " +
+                  "AND fa.status_linkedin = 'Aprovado' AND fa.status_conhecimentos = 'Aprovado'";
         }
         return contarRegistros(sql, conn);
     }
@@ -233,22 +305,42 @@ public class DashboardProfessorTGController {
     /**
      * Conta seções reprovadas baseado nos status dos feedbacks
      * Uma seção é considerada reprovada quando QUALQUER campo está com status "Revisar"
+     * Este método agora contabiliza apenas a versão mais recente (maior número de versão)
+     * de cada aluno, garantindo que o gráfico reflita o status atual e não versões antigas.
      */
     private int contarSecoesReprovadas(String tipo, Connection conn) throws SQLException {
         String sql;
         if ("api".equals(tipo)) {
-            sql = "SELECT COUNT(DISTINCT CONCAT(aluno, '-', semestre_curso, '-', ano, '-', semestre_ano, '-', versao)) " +
-                  "FROM feedback_api " +
-                  "WHERE status_problema = 'Revisar' OR status_solucao = 'Revisar' " +
-                  "OR status_tecnologias = 'Revisar' OR status_contribuicoes = 'Revisar' " +
-                  "OR status_hard_skills = 'Revisar' OR status_soft_skills = 'Revisar'";
+            // Busca apenas a versão mais recente de cada aluno para cada combinação (semestre_curso, ano, semestre_ano)
+            // a partir das tabelas de seção, depois verifica o feedback
+            sql = "SELECT COUNT(*) FROM ( " +
+                  "SELECT sa.aluno, sa.semestre_curso, sa.ano, sa.semestre_ano, MAX(sa.versao) as versao_recente " +
+                  "FROM secao_api sa " +
+                  "GROUP BY sa.aluno, sa.semestre_curso, sa.ano, sa.semestre_ano " +
+                  ") AS versoes_recentes " +
+                  "INNER JOIN feedback_api fa ON " +
+                  "  versoes_recentes.aluno = fa.aluno AND " +
+                  "  versoes_recentes.semestre_curso = fa.semestre_curso AND " +
+                  "  versoes_recentes.ano = fa.ano AND " +
+                  "  versoes_recentes.semestre_ano = fa.semestre_ano AND " +
+                  "  versoes_recentes.versao_recente = fa.versao " +
+                  "WHERE fa.status_problema = 'Revisar' OR fa.status_solucao = 'Revisar' " +
+                  "OR fa.status_tecnologias = 'Revisar' OR fa.status_contribuicoes = 'Revisar' " +
+                  "OR fa.status_hard_skills = 'Revisar' OR fa.status_soft_skills = 'Revisar'";
         } else {
-            sql = "SELECT COUNT(DISTINCT CONCAT(aluno, '-', versao)) " +
-                  "FROM feedback_apresentacao " +
-                  "WHERE status_nome = 'Revisar' OR status_idade = 'Revisar' " +
-                  "OR status_curso = 'Revisar' OR status_motivacao = 'Revisar' " +
-                  "OR status_historico = 'Revisar' OR status_github = 'Revisar' " +
-                  "OR status_linkedin = 'Revisar' OR status_conhecimentos = 'Revisar'";
+            // Busca apenas a versão mais recente de cada aluno a partir das tabelas de seção, depois verifica o feedback
+            sql = "SELECT COUNT(*) FROM ( " +
+                  "SELECT sa.aluno, MAX(sa.versao) as versao_recente " +
+                  "FROM secao_apresentacao sa " +
+                  "GROUP BY sa.aluno " +
+                  ") AS versoes_recentes " +
+                  "INNER JOIN feedback_apresentacao fa ON " +
+                  "  versoes_recentes.aluno = fa.aluno AND " +
+                  "  versoes_recentes.versao_recente = fa.versao " +
+                  "WHERE fa.status_nome = 'Revisar' OR fa.status_idade = 'Revisar' " +
+                  "OR fa.status_curso = 'Revisar' OR fa.status_motivacao = 'Revisar' " +
+                  "OR fa.status_historico = 'Revisar' OR fa.status_github = 'Revisar' " +
+                  "OR fa.status_linkedin = 'Revisar' OR fa.status_conhecimentos = 'Revisar'";
         }
         return contarRegistros(sql, conn);
     }
@@ -263,6 +355,8 @@ public class DashboardProfessorTGController {
 
     /**
      * Carrega o gráfico de pizza com distribuição de seções
+     * Este método agora contabiliza apenas a versão mais recente (maior número de versão)
+     * de cada aluno, garantindo que o gráfico reflita o status atual e não versões antigas.
      */
     private void carregarPieChartSecoes() {
         try (Connection conn = new Connector().getConnection()) {
