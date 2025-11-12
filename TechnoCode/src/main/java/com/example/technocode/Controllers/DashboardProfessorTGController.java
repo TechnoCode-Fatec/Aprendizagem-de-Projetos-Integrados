@@ -275,7 +275,7 @@ public class DashboardProfessorTGController {
                   "FROM secao_api sa " +
                   "GROUP BY sa.aluno, sa.semestre_curso, sa.ano, sa.semestre_ano " +
                   ") AS versoes_recentes " +
-                  "INNER JOIN feedback_api fa ON " +
+                  "INNER JOIN secao_api fa ON " +
                   "  versoes_recentes.aluno = fa.aluno AND " +
                   "  versoes_recentes.semestre_curso = fa.semestre_curso AND " +
                   "  versoes_recentes.ano = fa.ano AND " +
@@ -291,7 +291,7 @@ public class DashboardProfessorTGController {
                   "FROM secao_apresentacao sa " +
                   "GROUP BY sa.aluno " +
                   ") AS versoes_recentes " +
-                  "INNER JOIN feedback_apresentacao fa ON " +
+                  "INNER JOIN secao_apresentacao fa ON " +
                   "  versoes_recentes.aluno = fa.aluno AND " +
                   "  versoes_recentes.versao_recente = fa.versao " +
                   "WHERE fa.status_nome = 'Aprovado' AND fa.status_idade = 'Aprovado' " +
@@ -318,7 +318,7 @@ public class DashboardProfessorTGController {
                   "FROM secao_api sa " +
                   "GROUP BY sa.aluno, sa.semestre_curso, sa.ano, sa.semestre_ano " +
                   ") AS versoes_recentes " +
-                  "INNER JOIN feedback_api fa ON " +
+                  "INNER JOIN secao_api fa ON " +
                   "  versoes_recentes.aluno = fa.aluno AND " +
                   "  versoes_recentes.semestre_curso = fa.semestre_curso AND " +
                   "  versoes_recentes.ano = fa.ano AND " +
@@ -334,7 +334,7 @@ public class DashboardProfessorTGController {
                   "FROM secao_apresentacao sa " +
                   "GROUP BY sa.aluno " +
                   ") AS versoes_recentes " +
-                  "INNER JOIN feedback_apresentacao fa ON " +
+                  "INNER JOIN secao_apresentacao fa ON " +
                   "  versoes_recentes.aluno = fa.aluno AND " +
                   "  versoes_recentes.versao_recente = fa.versao " +
                   "WHERE fa.status_nome = 'Revisar' OR fa.status_idade = 'Revisar' " +
@@ -453,8 +453,8 @@ public class DashboardProfessorTGController {
                     "FROM aluno a " +
                     "LEFT JOIN secao_apresentacao sa ON a.email = sa.aluno " +
                     "LEFT JOIN secao_api sapi ON a.email = sapi.aluno " +
-                    "LEFT JOIN feedback_apresentacao fa ON a.email = fa.aluno AND sa.versao = fa.versao " +
-                    "LEFT JOIN feedback_api fapi ON a.email = fapi.aluno " +
+                    "LEFT JOIN secao_apresentacao fa ON a.email = fa.aluno AND sa.versao = fa.versao " +
+                    "LEFT JOIN secao_api fapi ON a.email = fapi.aluno " +
                     "GROUP BY a.email, a.nome " +
                     "HAVING total_secoes > 0 " +
                     "ORDER BY aprovadas DESC " +
@@ -530,8 +530,8 @@ public class DashboardProfessorTGController {
                         "LEFT JOIN orientador o ON a.orientador = o.email " +
                         "LEFT JOIN secao_apresentacao sa ON a.email = sa.aluno " +
                         "LEFT JOIN secao_api sapi ON a.email = sapi.aluno " +
-                        "LEFT JOIN feedback_apresentacao fa ON a.email = fa.aluno AND sa.versao = fa.versao " +
-                        "LEFT JOIN feedback_api fapi ON a.email = fapi.aluno " +
+                        "LEFT JOIN secao_apresentacao fa ON a.email = fa.aluno AND sa.versao = fa.versao " +
+                        "LEFT JOIN secao_api fapi ON a.email = fapi.aluno " +
                         "WHERE 1=1 ";
 
             if (filtroOrientador != null && !filtroOrientador.equals("Todos")) {

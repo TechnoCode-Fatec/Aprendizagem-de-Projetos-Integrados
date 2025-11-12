@@ -115,8 +115,9 @@ public class OrientadorCorrigirApresentacaoController {
                 "status_historico, feedback_historico, " +
                 "status_github, feedback_github, " +
                 "status_linkedin, feedback_linkedin, " +
-                "status_conhecimentos, feedback_conhecimentos " +
-                "FROM feedback_apresentacao WHERE aluno = ? AND versao = ?";
+                "status_conhecimentos, feedback_conhecimentos, " +
+                "status_historico_profissional, feedback_historico_profissional " +
+                "FROM secao_apresentacao WHERE aluno = ? AND versao = ?";
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, secaoApresentacao.getEmailAluno());
@@ -131,6 +132,7 @@ public class OrientadorCorrigirApresentacaoController {
                     carregarCampoFeedbackExistente("github", rs, feedbackTextGithub);
                     carregarCampoFeedbackExistente("linkedin", rs, feedbackTextLinkedin);
                     carregarCampoFeedbackExistente("conhecimentos", rs, feedbackTextConhecimentos);
+                    // Nota: historico_profissional não tem campo de feedback no controller atual
                 }
             }
         } catch (SQLException e) {
@@ -264,16 +266,12 @@ public class OrientadorCorrigirApresentacaoController {
         }
     }
 
-    // 3) Enviar feedbacks (INSERT ou UPDATE)
+    // 3) Enviar feedbacks (UPDATE na tabela secao_apresentacao)
     @FXML
     public void enviarFeedback(ActionEvent event) {
-        // Verifica se já existe feedback para esta seção
-        boolean feedbackExiste = verificarFeedbackExistente();
-        
-        String sql;
-        if (feedbackExiste) {
-            // UPDATE se já existe - atualiza horário para o momento atual
-            sql = "UPDATE feedback_apresentacao SET " +
+        // No novo esquema, sempre faz UPDATE na tabela secao_apresentacao
+        // pois a seção já existe quando o feedback é dado
+        String sql = "UPDATE secao_apresentacao SET " +
                     "status_nome = ?, feedback_nome = ?, " +
                     "status_idade = ?, feedback_idade = ?, " +
                     "status_curso = ?, feedback_curso = ?, " +
@@ -281,23 +279,8 @@ public class OrientadorCorrigirApresentacaoController {
                     "status_historico = ?, feedback_historico = ?, " +
                     "status_github = ?, feedback_github = ?, " +
                     "status_linkedin = ?, feedback_linkedin = ?, " +
-                    "status_conhecimentos = ?, feedback_conhecimentos = ?, " +
-                    "horario = CURRENT_TIMESTAMP " +
+                    "status_conhecimentos = ?, feedback_conhecimentos = ? " +
                     "WHERE aluno = ? AND versao = ?";
-        } else {
-            // INSERT se não existe
-            sql = "INSERT INTO feedback_apresentacao (" +
-                    "status_nome, feedback_nome, " +
-                    "status_idade, feedback_idade, " +
-                    "status_curso, feedback_curso, " +
-                    "status_motivacao, feedback_motivacao, " +
-                    "status_historico, feedback_historico, " +
-                    "status_github, feedback_github, " +
-                    "status_linkedin, feedback_linkedin, " +
-                    "status_conhecimentos, feedback_conhecimentos, " +
-                    "aluno, versao) " +
-                    "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-        }
 
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
@@ -319,22 +302,16 @@ public class OrientadorCorrigirApresentacaoController {
             setNullableString(pst, 15, statusPorCampo.get("conhecimentos"));
             setNullableString(pst, 16, textOrNull(feedbackTextConhecimentos));
 
-            if (feedbackExiste) {
-                // Para UPDATE, adiciona WHERE
-                pst.setString(17, secaoApresentacao.getEmailAluno());
-                pst.setInt(18, secaoApresentacao.getVersao());
-            } else {
-                // Para INSERT, adiciona aluno e versao
-                pst.setString(17, secaoApresentacao.getEmailAluno());
-                pst.setInt(18, secaoApresentacao.getVersao());
-            }
+            // Para UPDATE, adiciona WHERE
+            pst.setString(17, secaoApresentacao.getEmailAluno());
+            pst.setInt(18, secaoApresentacao.getVersao());
 
             pst.executeUpdate();
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Sucesso");
             alert.setHeaderText(null);
-            alert.setContentText(feedbackExiste ? "Feedbacks atualizados com sucesso!" : "Feedbacks enviados com sucesso!");
+            alert.setContentText("Feedbacks atualizados com sucesso!");
             alert.showAndWait();
         } catch (SQLException e) {
             mostrarErro("Erro ao enviar feedback", e);
@@ -343,7 +320,10 @@ public class OrientadorCorrigirApresentacaoController {
     
     private boolean verificarFeedbackExistente() {
         if (secaoApresentacao == null || secaoApresentacao.getEmailAluno() == null) return false;
-        String sql = "SELECT COUNT(*) FROM feedback_apresentacao WHERE aluno = ? AND versao = ?";
+        String sql = "SELECT COUNT(*) FROM secao_apresentacao WHERE aluno = ? AND versao = ? " +
+                     "AND (status_nome IS NOT NULL OR status_idade IS NOT NULL OR status_curso IS NOT NULL " +
+                     "OR status_motivacao IS NOT NULL OR status_historico IS NOT NULL OR status_github IS NOT NULL " +
+                     "OR status_linkedin IS NOT NULL OR status_conhecimentos IS NOT NULL OR status_historico_profissional IS NOT NULL)";
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, secaoApresentacao.getEmailAluno());

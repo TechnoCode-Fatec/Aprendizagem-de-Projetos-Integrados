@@ -103,7 +103,7 @@ public class OrientadorCorrigirApiController {
                 "status_contribuicoes, feedback_contribuicoes, " +
                 "status_hard_skills, feedback_hard_skills, " +
                 "status_soft_skills, feedback_soft_skills " +
-                "FROM feedback_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
+                "FROM secao_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, secaoApi.getEmailAluno());
@@ -235,36 +235,20 @@ public class OrientadorCorrigirApiController {
         }
     }
 
-    // 3) Enviar feedbacks (INSERT ou UPDATE)
+    // 3) Enviar feedbacks (UPDATE na tabela secao_api)
     @FXML
     public void enviarFeedback(ActionEvent event) {
-        // Verifica se já existe feedback para esta seção
-        boolean feedbackExiste = verificarFeedbackExistente();
-        
-        String sql;
-        if (feedbackExiste) {
-            // UPDATE se já existe - atualiza horário para o momento atual
-            sql = "UPDATE feedback_api SET " +
+        // No novo esquema, sempre faz UPDATE na tabela secao_api
+        // pois a seção já existe quando o feedback é dado
+        String sql = "UPDATE secao_api SET " +
                     "status_problema = ?, feedback_problema = ?, " +
                     "status_solucao = ?, feedback_solucao = ?, " +
                     "status_tecnologias = ?, feedback_tecnologias = ?, " +
                     "status_contribuicoes = ?, feedback_contribuicoes = ?, " +
                     "status_hard_skills = ?, feedback_hard_skills = ?, " +
                     "status_soft_skills = ?, feedback_soft_skills = ?, " +
-                    "horario = CURRENT_TIMESTAMP " +
+                    "horario_feedback = CURRENT_TIMESTAMP " +
                     "WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
-        } else {
-            // INSERT se não existe
-            sql = "INSERT INTO feedback_api (" +
-                    "status_problema, feedback_problema, " +
-                    "status_solucao, feedback_solucao, " +
-                    "status_tecnologias, feedback_tecnologias, " +
-                    "status_contribuicoes, feedback_contribuicoes, " +
-                    "status_hard_skills, feedback_hard_skills, " +
-                    "status_soft_skills, feedback_soft_skills, " +
-                    "aluno, semestre_curso, ano, semestre_ano, versao) " +
-                    "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-        }
 
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
@@ -282,28 +266,19 @@ public class OrientadorCorrigirApiController {
             setNullableString(pst, 11, statusPorCampo.get("soft_skills"));
             setNullableString(pst, 12, textOrNull(feedbackSoftSkills));
 
-            if (feedbackExiste) {
-                // Para UPDATE, adiciona WHERE
-                pst.setString(13, secaoApi.getEmailAluno());
-                pst.setString(14, secaoApi.getSemestreCurso());
-                pst.setInt(15, secaoApi.getAno());
-                pst.setString(16, secaoApi.getSemestreAno());
-                pst.setInt(17, secaoApi.getVersao());
-            } else {
-                // Para INSERT, adiciona aluno e versao
-                pst.setString(13, secaoApi.getEmailAluno());
-                pst.setString(14, secaoApi.getSemestreCurso());
-                pst.setInt(15, secaoApi.getAno());
-                pst.setString(16, secaoApi.getSemestreAno());
-                pst.setInt(17, secaoApi.getVersao());
-            }
+            // Para UPDATE, adiciona WHERE
+            pst.setString(13, secaoApi.getEmailAluno());
+            pst.setString(14, secaoApi.getSemestreCurso());
+            pst.setInt(15, secaoApi.getAno());
+            pst.setString(16, secaoApi.getSemestreAno());
+            pst.setInt(17, secaoApi.getVersao());
 
             pst.executeUpdate();
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Sucesso");
             alert.setHeaderText(null);
-            alert.setContentText(feedbackExiste ? "Feedbacks atualizados com sucesso!" : "Feedbacks enviados com sucesso!");
+            alert.setContentText("Feedbacks atualizados com sucesso!");
             alert.showAndWait();
         } catch (SQLException e) {
             mostrarErro("Erro ao enviar feedback", e);
@@ -312,7 +287,9 @@ public class OrientadorCorrigirApiController {
     
     private boolean verificarFeedbackExistente() {
         if (secaoApi == null || secaoApi.getEmailAluno() == null) return false;
-        String sql = "SELECT COUNT(*) FROM feedback_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
+        String sql = "SELECT COUNT(*) FROM secao_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ? " +
+                     "AND (status_problema IS NOT NULL OR status_solucao IS NOT NULL OR status_tecnologias IS NOT NULL " +
+                     "OR status_contribuicoes IS NOT NULL OR status_hard_skills IS NOT NULL OR status_soft_skills IS NOT NULL)";
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, secaoApi.getEmailAluno());

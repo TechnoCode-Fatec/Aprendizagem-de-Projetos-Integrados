@@ -40,7 +40,7 @@ public class AlunoFeedbackApiController {
         carregarFeedback();
     }
 
-    // Carrega dados do feedback_api
+    // Carrega dados do feedback da secao_api
     public void carregarFeedback() {
         if (secaoApi == null || secaoApi.getEmailAluno() == null) return;
         String sql = "SELECT status_problema, feedback_problema, " +
@@ -49,7 +49,7 @@ public class AlunoFeedbackApiController {
                 "status_contribuicoes, feedback_contribuicoes, " +
                 "status_hard_skills, feedback_hard_skills, " +
                 "status_soft_skills, feedback_soft_skills " +
-                "FROM feedback_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
+                "FROM secao_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, secaoApi.getEmailAluno());

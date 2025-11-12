@@ -123,7 +123,7 @@ public class CadastroController {
                     txtEmail.getText(),
                     txtSenha.getText(),
                     emailOrientador,
-                    comboBoxCurso.getValue()
+                    null  // curso removido do banco de dados
             );
             aluno.cadastrar();
         } else {

@@ -86,7 +86,7 @@ public class Aluno {
      * Cadastra um novo aluno no banco de dados
      */
     public void cadastrar() {
-        String insertSql = "INSERT INTO aluno (nome, email, senha, orientador, curso) VALUES (?, ?, ?, ?, ?)";
+        String insertSql = "INSERT INTO aluno (nome, email, senha, orientador) VALUES (?, ?, ?, ?)";
 
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(insertSql)) {
@@ -95,7 +95,6 @@ public class Aluno {
             pst.setString(2, this.email);
             pst.setString(3, this.senha);
             pst.setString(4, this.orientador);
-            pst.setString(5, this.curso);
             pst.executeUpdate();
 
         } catch (SQLException ex) {
@@ -110,7 +109,7 @@ public class Aluno {
     public static List<Map<String, String>> buscarPorOrientador(String emailOrientador) {
         List<Map<String, String>> alunos = new ArrayList<>();
         try (Connection conn = new Connector().getConnection()) {
-            String selectAlunos = "SELECT nome, email, curso FROM aluno WHERE orientador = ?";
+            String selectAlunos = "SELECT nome, email FROM aluno WHERE orientador = ?";
             PreparedStatement pst = conn.prepareStatement(selectAlunos);
             pst.setString(1, emailOrientador);
             ResultSet rs = pst.executeQuery();
@@ -118,7 +117,6 @@ public class Aluno {
                 Map<String, String> aluno = new HashMap<>();
                 aluno.put("nome", rs.getString("nome"));
                 aluno.put("email", rs.getString("email"));
-                aluno.put("curso", rs.getString("curso"));
                 alunos.add(aluno);
             }
         } catch (SQLException e) {
@@ -133,7 +131,7 @@ public class Aluno {
     public static Map<String, String> buscarDadosPorEmail(String emailAluno) {
         Map<String, String> dadosAluno = new HashMap<>();
         try (Connection conn = new Connector().getConnection()) {
-            String selectAluno = "SELECT nome, email, curso FROM aluno WHERE email = ?";
+            String selectAluno = "SELECT nome, email FROM aluno WHERE email = ?";
             PreparedStatement pst = conn.prepareStatement(selectAluno);
             pst.setString(1, emailAluno);
             ResultSet rs = pst.executeQuery();
@@ -141,7 +139,6 @@ public class Aluno {
             if (rs.next()) {
                 dadosAluno.put("nome", rs.getString("nome"));
                 dadosAluno.put("email", rs.getString("email"));
-                dadosAluno.put("curso", rs.getString("curso"));
             }
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao buscar dados do aluno", e);

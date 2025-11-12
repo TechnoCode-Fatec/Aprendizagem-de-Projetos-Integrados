@@ -44,7 +44,7 @@ public class AlunoFeedbackApresentacaoController {
         carregarFeedback();
     }
 
-    // Carrega dados do feedback_apresentacao
+    // Carrega dados do feedback da secao_apresentacao
     public void carregarFeedback() {
         if (secaoApresentacao == null || secaoApresentacao.getEmailAluno() == null) return;
         String sql = "SELECT status_nome, feedback_nome, " +
@@ -55,7 +55,7 @@ public class AlunoFeedbackApresentacaoController {
                 "status_github, feedback_github, " +
                 "status_linkedin, feedback_linkedin, " +
                 "status_conhecimentos, feedback_conhecimentos " +
-                "FROM feedback_apresentacao WHERE aluno = ? AND versao = ?";
+                "FROM secao_apresentacao WHERE aluno = ? AND versao = ?";
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, secaoApresentacao.getEmailAluno());
