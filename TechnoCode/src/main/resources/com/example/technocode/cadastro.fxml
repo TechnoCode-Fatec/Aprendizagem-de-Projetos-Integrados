@@ -59,6 +59,7 @@
                         <children>
                             <RadioButton fx:id="radioAluno" onAction="#toggleHboxOrientador" selected="true" text="Aluno" />
                             <RadioButton fx:id="radioOrientador" onAction="#toggleHboxOrientador" text="Orientador" />
+                            <RadioButton fx:id="radioProfessorTG" onAction="#toggleHboxOrientador" text="Professor de TG" />
                         </children>
                     </HBox>
 
@@ -75,6 +76,14 @@
                         <children>
                             <Label prefWidth="62.0" style="-fx-font-weight: bold; -fx-font-size: 12;" text="Disciplina" textFill="#333" />
                             <ComboBox fx:id="comboBoxCurso" prefWidth="160" />
+                        </children>
+                    </HBox>
+
+                    <!-- Disciplina (para Professor de TG) -->
+                    <HBox fx:id="hBoxDisciplina" alignment="CENTER_LEFT" managed="false" spacing="10" visible="false">
+                        <children>
+                            <Label prefWidth="62.0" style="-fx-font-weight: bold; -fx-font-size: 12;" text="Disciplina" textFill="#333" />
+                            <ComboBox fx:id="comboBoxDisciplina" prefWidth="160" />
                         </children>
                     </HBox>
 

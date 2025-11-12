@@ -2,6 +2,7 @@ package com.example.technocode.model.dao;
 
 import com.example.technocode.model.Aluno;
 import com.example.technocode.model.Orientador;
+import com.example.technocode.model.ProfessorTG;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -20,17 +21,21 @@ public class Connector {
     }
 
     /**
-     * Realiza login verificando se é Aluno ou Orientador
+     * Realiza login verificando se é Aluno, Orientador ou Professor de TG
      * @param email Email do usuário
      * @param senha Senha do usuário
-     * @return "Aluno", "Orientador" ou null se não encontrado
+     * @return "Aluno", "Orientador", "ProfessorTG" ou null se não encontrado
      */
     public String login(String email, String senha) {
         // Primeiro verifica se é orientador
         if (Orientador.autenticar(email, senha)) {
             return "Orientador";
         }
-        // Se não for orientador, verifica se é aluno
+        // Se não for orientador, verifica se é professor de TG
+        if (ProfessorTG.autenticar(email, senha)) {
+            return "ProfessorTG";
+        }
+        // Se não for professor de TG, verifica se é aluno
         if (Aluno.autenticar(email, senha)) {
             return "Aluno";
         }

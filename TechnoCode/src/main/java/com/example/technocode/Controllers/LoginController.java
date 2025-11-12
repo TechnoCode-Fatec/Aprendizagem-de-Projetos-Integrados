@@ -65,6 +65,12 @@ public class LoginController {
         }
         if (tipo.equals("Orientador")) {
             NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/Orientador/orientador-principal.fxml", null);
+            return;
+        }
+        if (tipo.equals("ProfessorTG")) {
+            // Verifica se existe tela para professor de TG, caso contrário usa dashboard
+            NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/dashboard-professor-tg.fxml", null);
+            return;
         }
     }
 

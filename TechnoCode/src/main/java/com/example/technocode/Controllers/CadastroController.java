@@ -3,6 +3,7 @@ package com.example.technocode.Controllers;
 import com.example.technocode.Services.NavigationService;
 import com.example.technocode.model.Aluno;
 import com.example.technocode.model.Orientador;
+import com.example.technocode.model.ProfessorTG;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -15,13 +16,13 @@ import java.util.Map;
 public class CadastroController {
 
     @FXML
-    private RadioButton radioAluno, radioOrientador;
+    private RadioButton radioAluno, radioOrientador, radioProfessorTG;
     @FXML
     private TextField txtNome, txtEmail, txtSenha;
     @FXML
-    private HBox hBoxOrientador, hBoxCurso;
+    private HBox hBoxOrientador, hBoxCurso, hBoxDisciplina;
     @FXML
-    private ComboBox<String> comboBoxOrientador, comboBoxCurso;
+    private ComboBox<String> comboBoxOrientador, comboBoxCurso, comboBoxDisciplina;
     @FXML
     private Button btnCadastrar;
 
@@ -34,14 +35,18 @@ public class CadastroController {
         grupoUsuario = new ToggleGroup();
         radioAluno.setToggleGroup(grupoUsuario);
         radioOrientador.setToggleGroup(grupoUsuario);
+        radioProfessorTG.setToggleGroup(grupoUsuario);
         radioAluno.setUserData("Aluno");
         radioOrientador.setUserData("Orientador");
+        radioProfessorTG.setUserData("ProfessorTG");
 
         // Inicialmente invisíveis
         hBoxOrientador.setVisible(false);
         hBoxOrientador.setManaged(false);
         hBoxCurso.setVisible(false);
         hBoxCurso.setManaged(false);
+        hBoxDisciplina.setVisible(false);
+        hBoxDisciplina.setManaged(false);
 
         // Vincula a visibilidade diretamente à seleção do RadioButton "Aluno"
         hBoxOrientador.visibleProperty().bind(radioAluno.selectedProperty());
@@ -49,10 +54,15 @@ public class CadastroController {
         hBoxCurso.visibleProperty().bind(radioAluno.selectedProperty());
         hBoxCurso.managedProperty().bind(radioAluno.selectedProperty());
 
-        // Carrega orientadores e cursos
+        // Vincula a visibilidade do campo Disciplina à seleção do RadioButton "ProfessorTG"
+        hBoxDisciplina.visibleProperty().bind(radioProfessorTG.selectedProperty());
+        hBoxDisciplina.managedProperty().bind(radioProfessorTG.selectedProperty());
+
+        // Carrega orientadores, cursos e disciplinas
         orientadoresMap = Orientador.buscarTodos();
         comboBoxOrientador.getItems().addAll(orientadoresMap.keySet());
         comboBoxCurso.getItems().addAll("TG1", "TG2", "TG1/TG2");
+        comboBoxDisciplina.getItems().addAll("TG1", "TG2", "TG1/TG2");
 
         // Atalho ENTER -> Cadastrar
         btnCadastrar.sceneProperty().addListener((obs, oldScene, newScene) -> {
@@ -85,7 +95,7 @@ public class CadastroController {
     private void cadastrarUsuario(ActionEvent event) throws IOException {
         String tipo = getTipoUsuario();
         if (tipo == null) {
-            mostrarAlertaErro("Tipo de usuário", "Por favor, selecione um tipo de usuário (Aluno ou Orientador).");
+            mostrarAlertaErro("Tipo de usuário", "Por favor, selecione um tipo de usuário (Aluno, Orientador ou Professor de TG).");
             return;
         }
 
@@ -126,7 +136,7 @@ public class CadastroController {
                     null  // curso removido do banco de dados
             );
             aluno.cadastrar();
-        } else {
+        } else if (tipo.equals("Orientador")) {
             Orientador orientador = new Orientador(
                     txtNome.getText(),
                     txtEmail.getText(),
@@ -136,6 +146,19 @@ public class CadastroController {
 
             // Atualiza lista de orientadores após novo cadastro
             comboBoxOrientador.getItems().setAll(Orientador.buscarTodos().keySet());
+        } else if (tipo.equals("ProfessorTG")) {
+            if (comboBoxDisciplina.getValue() == null || comboBoxDisciplina.getValue().isEmpty()) {
+                mostrarAlertaErro("Disciplina obrigatória", "Selecione uma disciplina (TG1, TG2 ou TG1/TG2).");
+                return;
+            }
+
+            ProfessorTG professorTG = new ProfessorTG(
+                    txtNome.getText(),
+                    txtEmail.getText(),
+                    txtSenha.getText(),
+                    comboBoxDisciplina.getValue()
+            );
+            professorTG.cadastrar();
         }
 
         mostrarAlertaSucesso("Cadastro realizado", "Usuário cadastrado com sucesso!");
