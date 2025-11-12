@@ -84,22 +84,36 @@ public class AlunoFeedbackApresentacaoController {
         if (status != null) {
             statusLabel.setText(status);
             if ("Aprovado".equals(status)) {
-                statusLabel.setStyle("-fx-text-fill: #00AA00; -fx-font-weight: bold;");
+                // Badge verde moderno
+                statusLabel.setStyle("-fx-text-fill: #27AE60; -fx-font-weight: bold; " +
+                        "-fx-background-color: #D5F4E6; -fx-background-radius: 12; " +
+                        "-fx-padding: 4 12 4 12; -fx-border-color: #27AE60; -fx-border-width: 1; -fx-border-radius: 12;");
                 textArea.setVisible(false);
                 textArea.setManaged(false);
             } else if ("Revisar".equals(status)) {
-                statusLabel.setStyle("-fx-text-fill: #AA0000; -fx-font-weight: bold;");
+                // Badge vermelho moderno
+                statusLabel.setStyle("-fx-text-fill: #E74C3C; -fx-font-weight: bold; " +
+                        "-fx-background-color: #FADBD8; -fx-background-radius: 12; " +
+                        "-fx-padding: 4 12 4 12; -fx-border-color: #E74C3C; -fx-border-width: 1; -fx-border-radius: 12;");
             }
         } else {
             statusLabel.setText("Sem avaliação");
-            statusLabel.setStyle("-fx-text-fill: #666666; -fx-font-weight: bold;");
+            // Badge cinza moderno
+            statusLabel.setStyle("-fx-text-fill: #95A5A6; -fx-font-weight: bold; " +
+                    "-fx-background-color: #ECF0F1; -fx-background-radius: 12; " +
+                    "-fx-padding: 4 12 4 12; -fx-border-color: #95A5A6; -fx-border-width: 1; -fx-border-radius: 12;");
         }
         
         if (feedback != null && !feedback.trim().isEmpty()) {
             textArea.setText(feedback);
+            textArea.setStyle("-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; " +
+                    "-fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; " +
+                    "-fx-wrap-text: true; -fx-text-fill: #2C3E50;");
         } else {
             textArea.setText("Nenhum feedback disponível para este campo.");
-            textArea.setStyle("-fx-text-fill: #666666; -fx-font-style: italic;");
+            textArea.setStyle("-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; " +
+                    "-fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; " +
+                    "-fx-wrap-text: true; -fx-text-fill: #95A5A6; -fx-font-style: italic;");
         }
     }
 
