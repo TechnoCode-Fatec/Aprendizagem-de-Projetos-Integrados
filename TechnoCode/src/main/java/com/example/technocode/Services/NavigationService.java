@@ -2,6 +2,7 @@ package com.example.technocode.Services;
 
 import com.example.technocode.Controllers.Aluno.PrincipalAlunoController;
 import com.example.technocode.Controllers.Orientador.OrientadorPrincipalController;
+import com.example.technocode.Controllers.ProfessorTG.ProfessorTGPrincipalController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -250,6 +251,19 @@ public class NavigationService {
                 OrientadorPrincipalController orientadorController = OrientadorPrincipalController.getInstance();
                 if (orientadorController != null) {
                     orientadorController.navegarParaTelaDoCenter(fxmlPath, configController);
+                    return true;
+                }
+            } catch (Exception e) {
+                // Se não conseguir acessar o controller principal, continua
+            }
+        }
+        
+        // Verifica se é uma tela do professor de TG e tenta usar navegação interna
+        if (fxmlPath.contains("/ProfessorTG/") || fxmlPath.contains("professor-tg-") || fxmlPath.contains("dashboard-professor-tg")) {
+            try {
+                ProfessorTGPrincipalController professorController = ProfessorTGPrincipalController.getInstance();
+                if (professorController != null) {
+                    professorController.navegarParaTelaDoCenter(fxmlPath, configController);
                     return true;
                 }
             } catch (Exception e) {

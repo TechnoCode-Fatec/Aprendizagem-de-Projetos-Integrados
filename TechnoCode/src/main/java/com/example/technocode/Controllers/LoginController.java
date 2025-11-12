@@ -68,8 +68,7 @@ public class LoginController {
             return;
         }
         if (tipo.equals("ProfessorTG")) {
-            // Verifica se existe tela para professor de TG, caso contrário usa dashboard
-            NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/dashboard-professor-tg.fxml", null);
+            NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/ProfessorTG/professor-tg-principal.fxml", null);
             return;
         }
     }

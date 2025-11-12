@@ -4,23 +4,18 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.chart.XYChart;
-import com.example.technocode.Services.NavigationService;
 import com.example.technocode.model.dao.Connector;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -87,40 +82,23 @@ public class DashboardProfessorTGController {
     @FXML
     private Button btnAtualizar;
 
-    // Labels do cabeçalho do professor
-    @FXML
-    private Label lblNomeProfessor;
-    @FXML
-    private Label lblEmailProfessor;
-
     @FXML
     public void initialize() {
         configurarTabelas();
         carregarFiltros();
-        inicializarDadosProfessor();
         atualizarDashboard();
     }
 
     /**
-     * Inicializa os dados do professor no cabeçalho
-     * Por enquanto, usa valores simulados. No futuro, pode ser substituído por dados de login.
+     * Método público para atualizar o dashboard
+     * Pode ser chamado externamente quando necessário
      */
-    private void inicializarDadosProfessor() {
-        setDadosProfessor("Prof. João da Silva", "joao.silva@fatec.sp.gov.br");
-    }
-
-    /**
-     * Define os dados do professor no cabeçalho
-     * @param nome Nome completo do professor
-     * @param email Email do professor
-     */
-    public void setDadosProfessor(String nome, String email) {
-        if (lblNomeProfessor != null) {
-            lblNomeProfessor.setText("Professor de TG: " + nome);
-        }
-        if (lblEmailProfessor != null) {
-            lblEmailProfessor.setText(email);
-        }
+    @FXML
+    public void atualizarDashboard() {
+        carregarDadosGerais();
+        carregarGraficos();
+        carregarTabelaAlunos();
+        carregarTabelaOrientadores();
     }
 
     /**
@@ -165,16 +143,6 @@ public class DashboardProfessorTGController {
         }
     }
 
-    /**
-     * Atualiza todos os dados do dashboard
-     */
-    @FXML
-    private void atualizarDashboard() {
-        carregarDadosGerais();
-        carregarGraficos();
-        carregarTabelaAlunos();
-        carregarTabelaOrientadores();
-    }
 
     /**
      * Carrega os dados gerais (cards de estatísticas)
@@ -622,13 +590,6 @@ public class DashboardProfessorTGController {
         carregarTabelaAlunos();
     }
 
-    /**
-     * Volta para a tela de login
-     */
-    @FXML
-    private void voltarLogin(ActionEvent event) throws IOException {
-        NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/login.fxml", null);
-    }
 
     /**
      * Mostra mensagem de erro
