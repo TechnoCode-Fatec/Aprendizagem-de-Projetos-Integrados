@@ -71,11 +71,11 @@
                         </children>
                     </HBox>
 
-                    <!-- Curso -->
+                    <!-- Disciplina (para Aluno) -->
                     <HBox fx:id="hBoxCurso" alignment="CENTER_LEFT" managed="true" spacing="10" visible="true">
                         <children>
                             <Label prefWidth="62.0" style="-fx-font-weight: bold; -fx-font-size: 12;" text="Disciplina" textFill="#333" />
-                            <ComboBox fx:id="comboBoxCurso" prefWidth="160" />
+                            <ComboBox fx:id="comboBoxCurso" prefWidth="200" />
                         </children>
                     </HBox>
 

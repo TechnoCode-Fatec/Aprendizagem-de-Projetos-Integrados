@@ -28,6 +28,7 @@ public class CadastroController {
 
     private ToggleGroup grupoUsuario;
     private Map<String, String> orientadoresMap;
+    private Map<String, String> professoresTGMap; // Map com "TG 1 - Nome" -> email
 
     @FXML
     private void initialize() {
@@ -58,10 +59,15 @@ public class CadastroController {
         hBoxDisciplina.visibleProperty().bind(radioProfessorTG.selectedProperty());
         hBoxDisciplina.managedProperty().bind(radioProfessorTG.selectedProperty());
 
-        // Carrega orientadores, cursos e disciplinas
+        // Carrega orientadores, disciplinas com professores e disciplinas simples
         orientadoresMap = Orientador.buscarTodos();
         comboBoxOrientador.getItems().addAll(orientadoresMap.keySet());
-        comboBoxCurso.getItems().addAll("TG1", "TG2", "TG1/TG2");
+        
+        // Carrega disciplinas com professores para o ComboBox do aluno
+        professoresTGMap = ProfessorTG.buscarProfessoresPorDisciplina();
+        comboBoxCurso.getItems().addAll(professoresTGMap.keySet());
+        
+        // Carrega disciplinas simples para o ComboBox do professor de TG
         comboBoxDisciplina.getItems().addAll("TG1", "TG2", "TG1/TG2");
 
         // Atalho ENTER -> Cadastrar
@@ -120,6 +126,11 @@ public class CadastroController {
                 return;
             }
 
+            if (comboBoxCurso.getValue() == null || comboBoxCurso.getValue().isEmpty()) {
+                mostrarAlertaErro("Disciplina obrigatória", "Selecione uma disciplina para o aluno.");
+                return;
+            }
+
             String nomeSelecionado = comboBoxOrientador.getValue();
             String emailOrientador = Orientador.buscarEmailPorNome(nomeSelecionado);
 
@@ -128,11 +139,21 @@ public class CadastroController {
                 return;
             }
 
+            // Extrai o email do professor de TG do texto formatado "TG 1 - Nome Professor"
+            String disciplinaSelecionada = comboBoxCurso.getValue();
+            String emailProfessorTG = professoresTGMap.get(disciplinaSelecionada);
+
+            if (emailProfessorTG == null) {
+                mostrarAlertaErro("Professor inválido", "Não foi possível encontrar o email do professor selecionado.");
+                return;
+            }
+
             Aluno aluno = new Aluno(
                     txtNome.getText(),
                     txtEmail.getText(),
                     txtSenha.getText(),
                     emailOrientador,
+                    emailProfessorTG,
                     null  // curso removido do banco de dados
             );
             aluno.cadastrar();

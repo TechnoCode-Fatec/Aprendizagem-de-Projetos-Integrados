@@ -126,5 +126,57 @@ public class ProfessorTG {
         }
         return dadosProfessor;
     }
+
+    /**
+     * Busca professores de TG agrupados por disciplina
+     * Retorna um Map onde a chave é o formato "TG 1 - Nome Professor" e o valor é o email do professor
+     */
+    public static Map<String, String> buscarProfessoresPorDisciplina() {
+        Map<String, String> professoresMap = new HashMap<>();
+        try (Connection conn = new Connector().getConnection()) {
+            String sql = "SELECT nome, email, disciplina FROM professor_tg ORDER BY disciplina, nome";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            ResultSet rs = pst.executeQuery();
+
+            while (rs.next()) {
+                String nome = rs.getString("nome");
+                String email = rs.getString("email");
+                String disciplina = rs.getString("disciplina");
+                
+                // Formata como "TG 1 - Nome Professor"
+                String chave = formatarDisciplinaComProfessor(disciplina, nome);
+                professoresMap.put(chave, email);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar professores de TG", e);
+        }
+        return professoresMap;
+    }
+
+    /**
+     * Formata a disciplina com o nome do professor no formato "TG 1 - Nome Professor"
+     */
+    private static String formatarDisciplinaComProfessor(String disciplina, String nomeProfessor) {
+        // Converte "TG1" para "TG 1", "TG2" para "TG 2", mantém "TG1/TG2" como está
+        String disciplinaFormatada;
+        if (disciplina.equals("TG1")) {
+            disciplinaFormatada = "TG 1";
+        } else if (disciplina.equals("TG2")) {
+            disciplinaFormatada = "TG 2";
+        } else {
+            disciplinaFormatada = disciplina; // TG1/TG2
+        }
+        
+        return disciplinaFormatada + " - " + nomeProfessor;
+    }
+
+    /**
+     * Extrai o email do professor a partir do texto formatado "TG 1 - Nome Professor"
+     * ou retorna null se não encontrar
+     */
+    public static String extrairEmailDoTextoFormatado(String textoFormatado) {
+        Map<String, String> professoresMap = buscarProfessoresPorDisciplina();
+        return professoresMap.get(textoFormatado);
+    }
 }
 
