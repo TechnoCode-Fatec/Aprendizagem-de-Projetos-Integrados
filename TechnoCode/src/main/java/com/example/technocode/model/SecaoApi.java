@@ -21,6 +21,7 @@ public class SecaoApi {
     private String semestreAno;
     private Integer versao;
     private String empresa;
+    private String descricaoEmpresa;
     private String problema;
     private String solucao;
     private String linkRepositorio;
@@ -33,7 +34,7 @@ public class SecaoApi {
      * Constructor completo para SecaoApi
      */
     public SecaoApi(String emailAluno, String semestreCurso, Integer ano, String semestreAno,
-                    Integer versao, String empresa, String problema, String solucao,
+                    Integer versao, String empresa, String descricaoEmpresa, String problema, String solucao,
                     String linkRepositorio, String tecnologias, String contribuicoes,
                     String hardSkills, String softSkills) {
         this.emailAluno = emailAluno;
@@ -42,6 +43,7 @@ public class SecaoApi {
         this.semestreAno = semestreAno;
         this.versao = versao;
         this.empresa = empresa;
+        this.descricaoEmpresa = descricaoEmpresa;
         this.problema = problema;
         this.solucao = solucao;
         this.linkRepositorio = linkRepositorio;
@@ -109,6 +111,14 @@ public class SecaoApi {
 
     public void setEmpresa(String empresa) {
         this.empresa = empresa;
+    }
+
+    public String getDescricaoEmpresa() {
+        return descricaoEmpresa;
+    }
+
+    public void setDescricaoEmpresa(String descricaoEmpresa) {
+        this.descricaoEmpresa = descricaoEmpresa;
     }
 
     public String getProblema() {
@@ -182,7 +192,7 @@ public class SecaoApi {
             pst.setString(4, this.semestreAno);
             pst.setInt(5, this.versao);
             pst.setString(6, this.empresa);
-            pst.setString(7, null); // descricao_empresa - pode ser null
+            pst.setString(7, this.descricaoEmpresa);
             pst.setString(8, this.problema);
             pst.setString(9, this.solucao);
             pst.setString(10, this.linkRepositorio);

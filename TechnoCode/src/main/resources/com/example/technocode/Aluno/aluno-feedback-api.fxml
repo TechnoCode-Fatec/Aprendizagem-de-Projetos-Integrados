@@ -30,15 +30,15 @@
                                 <Font name="System Bold" size="24.0" />
                             </font>
                         </Label>
-                        <Label text="Visualize os feedbacks do seu projeto de API" textFill="#7F8C8D">
+                        <Label text="Visualize seu projeto e os feedbacks recebidos" textFill="#7F8C8D">
                             <font>
                                 <Font size="12.0" />
                             </font>
                         </Label>
                     </VBox>
-                    <Button mnemonicParsing="false" onAction="#visualizarSecao" prefHeight="40.0" prefWidth="150.0" 
-                            style="-fx-background-color: #3498DB; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.3), 5, 0, 0, 2);" 
-                            text="VISUALIZAR SEÇÃO" textFill="WHITE">
+                    <Button fx:id="btnNovaVersao" mnemonicParsing="false" onAction="#carregarVersaoAnterior" prefHeight="40.0" prefWidth="150.0" 
+                            style="-fx-background-color: #27AE60; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(39,174,96,0.3), 5, 0, 0, 2);" 
+                            text="NOVA VERSÃO" textFill="WHITE">
                         <font>
                             <Font name="System Bold" size="13.0" />
                         </font>
@@ -65,6 +65,41 @@
                                         </Label>
                                     </HBox>
                                     <VBox spacing="15" style="-fx-padding: 10 0 0 0;">
+                                        <!-- Empresa -->
+                                        <VBox spacing="8">
+                                            <Label text="Empresa" textFill="#34495E">
+                                                <font>
+                                                    <Font name="System Bold" size="12.0" />
+                                                </font>
+                                            </Label>
+                                            <TextField fx:id="alunoEmpresa" editable="false" 
+                                                      style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-text-fill: #2C3E50;" />
+                                        </VBox>
+
+                                        <!-- Descrição Empresa -->
+                                        <VBox spacing="8">
+                                            <Label text="Descrição da Empresa" textFill="#34495E">
+                                                <font>
+                                                    <Font name="System Bold" size="12.0" />
+                                                </font>
+                                            </Label>
+                                            <TextArea fx:id="alunoDescricaoEmpresa" editable="false" prefHeight="80.0" 
+                                                      style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
+                                        </VBox>
+
+                                        <!-- Link do Repositório -->
+                                        <VBox spacing="8">
+                                            <Label text="Link do Repositório" textFill="#34495E">
+                                                <font>
+                                                    <Font name="System Bold" size="12.0" />
+                                                </font>
+                                            </Label>
+                                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                                <Hyperlink fx:id="linkRepositorio" style="-fx-text-fill: #3498DB; -fx-font-size: 12px; -fx-underline: true;" />
+                                                <Region HBox.hgrow="ALWAYS" />
+                                            </HBox>
+                                        </VBox>
+
                                         <!-- Problema -->
                                         <VBox spacing="8">
                                             <HBox spacing="10" alignment="CENTER_LEFT">
@@ -78,9 +113,19 @@
                                                         <Font size="11.0" />
                                                     </font>
                                                 </Label>
+                                                <Button fx:id="btnExpandProblema" style="-fx-background-color: transparent; -fx-padding: 0; -fx-cursor: hand;" visible="false" managed="false">
+                                                    <graphic>
+                                                        <Label text="▼" textFill="#3498DB" style="-fx-font-size: 10px;" />
+                                                    </graphic>
+                                                </Button>
                                             </HBox>
-                                            <TextArea fx:id="feedbackProblema" editable="false" prefHeight="100.0" 
+                                            <TextArea fx:id="alunoProblema" editable="false" prefHeight="100.0" 
                                                       style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
+                                            <VBox fx:id="containerFeedbackProblema" visible="false" managed="false" spacing="5">
+                                                <Label text="Feedback:" textFill="#E74C3C" style="-fx-font-weight: bold; -fx-font-size: 11px;" />
+                                                <TextArea fx:id="feedbackProblema" editable="false" prefHeight="80.0" 
+                                                          style="-fx-background-color: #FADBD8; -fx-border-color: #E74C3C; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #C0392B;" wrapText="true" />
+                                            </VBox>
                                         </VBox>
 
                                         <!-- Solução -->
@@ -96,9 +141,19 @@
                                                         <Font size="11.0" />
                                                     </font>
                                                 </Label>
+                                                <Button fx:id="btnExpandSolucao" style="-fx-background-color: transparent; -fx-padding: 0; -fx-cursor: hand;" visible="false" managed="false">
+                                                    <graphic>
+                                                        <Label text="▼" textFill="#3498DB" style="-fx-font-size: 10px;" />
+                                                    </graphic>
+                                                </Button>
                                             </HBox>
-                                            <TextArea fx:id="feedbackSolucao" editable="false" prefHeight="100.0" 
+                                            <TextArea fx:id="alunoSolucao" editable="false" prefHeight="100.0" 
                                                       style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
+                                            <VBox fx:id="containerFeedbackSolucao" visible="false" managed="false" spacing="5">
+                                                <Label text="Feedback:" textFill="#E74C3C" style="-fx-font-weight: bold; -fx-font-size: 11px;" />
+                                                <TextArea fx:id="feedbackSolucao" editable="false" prefHeight="80.0" 
+                                                          style="-fx-background-color: #FADBD8; -fx-border-color: #E74C3C; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #C0392B;" wrapText="true" />
+                                            </VBox>
                                         </VBox>
 
                                         <!-- Tecnologias -->
@@ -114,9 +169,19 @@
                                                         <Font size="11.0" />
                                                     </font>
                                                 </Label>
+                                                <Button fx:id="btnExpandTecnologias" style="-fx-background-color: transparent; -fx-padding: 0; -fx-cursor: hand;" visible="false" managed="false">
+                                                    <graphic>
+                                                        <Label text="▼" textFill="#3498DB" style="-fx-font-size: 10px;" />
+                                                    </graphic>
+                                                </Button>
                                             </HBox>
-                                            <TextArea fx:id="feedbackTecnologias" editable="false" prefHeight="100.0" 
+                                            <TextArea fx:id="alunoTecnologias" editable="false" prefHeight="100.0" 
                                                       style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
+                                            <VBox fx:id="containerFeedbackTecnologias" visible="false" managed="false" spacing="5">
+                                                <Label text="Feedback:" textFill="#E74C3C" style="-fx-font-weight: bold; -fx-font-size: 11px;" />
+                                                <TextArea fx:id="feedbackTecnologias" editable="false" prefHeight="80.0" 
+                                                          style="-fx-background-color: #FADBD8; -fx-border-color: #E74C3C; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #C0392B;" wrapText="true" />
+                                            </VBox>
                                         </VBox>
                                     </VBox>
                                 </children>
@@ -152,9 +217,19 @@
                                                         <Font size="11.0" />
                                                     </font>
                                                 </Label>
+                                                <Button fx:id="btnExpandContribuicoes" style="-fx-background-color: transparent; -fx-padding: 0; -fx-cursor: hand;" visible="false" managed="false">
+                                                    <graphic>
+                                                        <Label text="▼" textFill="#3498DB" style="-fx-font-size: 10px;" />
+                                                    </graphic>
+                                                </Button>
                                             </HBox>
-                                            <TextArea fx:id="feedbackContribuicoes" editable="false" prefHeight="100.0" 
+                                            <TextArea fx:id="alunoContribuicoes" editable="false" prefHeight="100.0" 
                                                       style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
+                                            <VBox fx:id="containerFeedbackContribuicoes" visible="false" managed="false" spacing="5">
+                                                <Label text="Feedback:" textFill="#E74C3C" style="-fx-font-weight: bold; -fx-font-size: 11px;" />
+                                                <TextArea fx:id="feedbackContribuicoes" editable="false" prefHeight="80.0" 
+                                                          style="-fx-background-color: #FADBD8; -fx-border-color: #E74C3C; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #C0392B;" wrapText="true" />
+                                            </VBox>
                                         </VBox>
 
                                         <!-- Hard Skills -->
@@ -170,9 +245,19 @@
                                                         <Font size="11.0" />
                                                     </font>
                                                 </Label>
+                                                <Button fx:id="btnExpandHardSkills" style="-fx-background-color: transparent; -fx-padding: 0; -fx-cursor: hand;" visible="false" managed="false">
+                                                    <graphic>
+                                                        <Label text="▼" textFill="#3498DB" style="-fx-font-size: 10px;" />
+                                                    </graphic>
+                                                </Button>
                                             </HBox>
-                                            <TextArea fx:id="feedbackHardSkills" editable="false" prefHeight="100.0" 
+                                            <TextArea fx:id="alunoHardSkills" editable="false" prefHeight="100.0" 
                                                       style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
+                                            <VBox fx:id="containerFeedbackHardSkills" visible="false" managed="false" spacing="5">
+                                                <Label text="Feedback:" textFill="#E74C3C" style="-fx-font-weight: bold; -fx-font-size: 11px;" />
+                                                <TextArea fx:id="feedbackHardSkills" editable="false" prefHeight="80.0" 
+                                                          style="-fx-background-color: #FADBD8; -fx-border-color: #E74C3C; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #C0392B;" wrapText="true" />
+                                            </VBox>
                                         </VBox>
 
                                         <!-- Soft Skills -->
@@ -188,9 +273,19 @@
                                                         <Font size="11.0" />
                                                     </font>
                                                 </Label>
+                                                <Button fx:id="btnExpandSoftSkills" style="-fx-background-color: transparent; -fx-padding: 0; -fx-cursor: hand;" visible="false" managed="false">
+                                                    <graphic>
+                                                        <Label text="▼" textFill="#3498DB" style="-fx-font-size: 10px;" />
+                                                    </graphic>
+                                                </Button>
                                             </HBox>
-                                            <TextArea fx:id="feedbackSoftSkills" editable="false" prefHeight="100.0" 
+                                            <TextArea fx:id="alunoSoftSkills" editable="false" prefHeight="100.0" 
                                                       style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
+                                            <VBox fx:id="containerFeedbackSoftSkills" visible="false" managed="false" spacing="5">
+                                                <Label text="Feedback:" textFill="#E74C3C" style="-fx-font-weight: bold; -fx-font-size: 11px;" />
+                                                <TextArea fx:id="feedbackSoftSkills" editable="false" prefHeight="80.0" 
+                                                          style="-fx-background-color: #FADBD8; -fx-border-color: #E74C3C; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #C0392B;" wrapText="true" />
+                                            </VBox>
                                         </VBox>
                                     </VBox>
                                 </children>
