@@ -3,6 +3,7 @@ package com.example.technocode.Controllers.ProfessorTG;
 import com.example.technocode.Controllers.LoginController;
 import com.example.technocode.Services.NavigationService;
 import com.example.technocode.model.ProfessorTG;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -45,11 +46,22 @@ public class ProfessorTGPrincipalController {
             rootPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         }
 
-        // Carrega o nome do professor atual
-        carregarNomeProfessor();
+        // Usa Platform.runLater para garantir que a renderização inicial seja concluída
+        // antes de executar operações pesadas (carregamento de dados do banco)
+        // Isso evita que a tela fique branca durante o carregamento
+        Platform.runLater(() -> {
+            // Força uma atualização de layout antes de carregar dados
+            if (rootPane != null) {
+                rootPane.applyCss();
+                rootPane.layout();
+            }
+            
+            // Carrega o nome do professor atual
+            carregarNomeProfessor();
 
-        // Carrega o dashboard no center
-        carregarDashboard();
+            // Carrega o dashboard no center
+            carregarDashboard();
+        });
     }
 
     /**

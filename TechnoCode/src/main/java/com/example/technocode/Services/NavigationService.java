@@ -113,8 +113,8 @@ public class NavigationService {
         Scene scene;
         
         if (fxmlPath.contains("aluno-principal.fxml") || fxmlPath.contains("orientador-principal.fxml") ||
-            fxmlPath.contains("login.fxml") || fxmlPath.contains("cadastro.fxml") ||
-            fxmlPath.contains("tela-inicial-orientador.fxml")) {
+            fxmlPath.contains("professor-tg-principal.fxml") || fxmlPath.contains("login.fxml") || 
+            fxmlPath.contains("cadastro.fxml") || fxmlPath.contains("tela-inicial-orientador.fxml")) {
             // Telas principais: cria com tamanho da tela
             scene = new Scene(root, screenBounds.getWidth(), screenBounds.getHeight());
         } else {
@@ -133,8 +133,8 @@ public class NavigationService {
         
         // Garante maximização após mostrar para telas principais
         if (fxmlPath.contains("aluno-principal.fxml") || fxmlPath.contains("orientador-principal.fxml") ||
-            fxmlPath.contains("login.fxml") || fxmlPath.contains("cadastro.fxml") ||
-            fxmlPath.contains("tela-inicial-orientador.fxml")) {
+            fxmlPath.contains("professor-tg-principal.fxml") || fxmlPath.contains("login.fxml") || 
+            fxmlPath.contains("cadastro.fxml") || fxmlPath.contains("tela-inicial-orientador.fxml")) {
             javafx.application.Platform.runLater(() -> {
                 if (!stage.isMaximized()) {
                     stage.setMaximized(true);
@@ -175,8 +175,8 @@ public class NavigationService {
         Scene scene;
         
         if (fxmlPath.contains("aluno-principal.fxml") || fxmlPath.contains("orientador-principal.fxml") ||
-            fxmlPath.contains("login.fxml") || fxmlPath.contains("cadastro.fxml") ||
-            fxmlPath.contains("tela-inicial-orientador.fxml")) {
+            fxmlPath.contains("professor-tg-principal.fxml") || fxmlPath.contains("login.fxml") || 
+            fxmlPath.contains("cadastro.fxml") || fxmlPath.contains("tela-inicial-orientador.fxml")) {
             // Telas principais: cria com tamanho da tela
             scene = new Scene(root, screenBounds.getWidth(), screenBounds.getHeight());
         } else {
@@ -188,11 +188,14 @@ public class NavigationService {
         stage.setMaximized(true);
         stage.show();
         
-        // Garante maximização após mostrar
+        // Garante maximização após mostrar e força renderização
         javafx.application.Platform.runLater(() -> {
             if (!stage.isMaximized()) {
                 stage.setMaximized(true);
             }
+            // Força uma atualização da cena para garantir renderização completa
+            stage.getScene().getRoot().applyCss();
+            stage.getScene().getRoot().layout();
         });
     }
     
