@@ -65,6 +65,11 @@ public class LoginController {
         }
         if (tipo.equals("Orientador")) {
             NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/Orientador/orientador-principal.fxml", null);
+            return;
+        }
+        if (tipo.equals("ProfessorTG")) {
+            NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/ProfessorTG/professor-tg-principal.fxml", null);
+            return;
         }
     }
 

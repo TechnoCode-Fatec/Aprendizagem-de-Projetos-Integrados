@@ -32,7 +32,7 @@ public class FormularioApiController {
      * para criar uma nova versão baseada na anterior
      */
     public void setDadosVersaoAnterior(String semestreCurso, String ano, String semestre, 
-                                        String empresa, String linkRepositorio, 
+                                        String empresa, String descricaoEmpresa, String linkRepositorio, 
                                         String problema, String solucao, 
                                         String tecnologias, String contribuicoes, 
                                         String hardSkills, String softSkills) {
@@ -56,6 +56,9 @@ public class FormularioApiController {
         }
         
         // Preenche os TextAreas
+        if (descricaoEmpresa != null && !descricaoEmpresa.isEmpty()) {
+            txtDescricaoEmpresa.setText(descricaoEmpresa);
+        }
         if (problema != null && !problema.isEmpty()) {
             txtProblema.setText(problema);
         }
@@ -81,6 +84,7 @@ public class FormularioApiController {
                 (choiceBoxSemestreDoCurso.getValue() == null) ||
                 txtAno.getText().isEmpty() ||
                 txtEmpresa.getText().isEmpty() ||
+                txtDescricaoEmpresa.getText().isEmpty() ||
                 txtLinkRepositorio.getText().isEmpty() ||
                 txtProblema.getText().isEmpty() ||
                 txtSolucao.getText().isEmpty() ||
@@ -105,6 +109,7 @@ public class FormularioApiController {
                 choiceBoxSemestre.getValue(),
                 proximaVersao,
                 txtEmpresa.getText(),
+                txtDescricaoEmpresa.getText(),
                 txtProblema.getText(),
                 txtSolucao.getText(),
                 txtLinkRepositorio.getText(),

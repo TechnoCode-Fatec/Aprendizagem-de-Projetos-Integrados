@@ -21,6 +21,7 @@ public class SecaoApi {
     private String semestreAno;
     private Integer versao;
     private String empresa;
+    private String descricaoEmpresa;
     private String problema;
     private String solucao;
     private String linkRepositorio;
@@ -33,7 +34,7 @@ public class SecaoApi {
      * Constructor completo para SecaoApi
      */
     public SecaoApi(String emailAluno, String semestreCurso, Integer ano, String semestreAno,
-                    Integer versao, String empresa, String problema, String solucao,
+                    Integer versao, String empresa, String descricaoEmpresa, String problema, String solucao,
                     String linkRepositorio, String tecnologias, String contribuicoes,
                     String hardSkills, String softSkills) {
         this.emailAluno = emailAluno;
@@ -42,6 +43,7 @@ public class SecaoApi {
         this.semestreAno = semestreAno;
         this.versao = versao;
         this.empresa = empresa;
+        this.descricaoEmpresa = descricaoEmpresa;
         this.problema = problema;
         this.solucao = solucao;
         this.linkRepositorio = linkRepositorio;
@@ -111,6 +113,14 @@ public class SecaoApi {
         this.empresa = empresa;
     }
 
+    public String getDescricaoEmpresa() {
+        return descricaoEmpresa;
+    }
+
+    public void setDescricaoEmpresa(String descricaoEmpresa) {
+        this.descricaoEmpresa = descricaoEmpresa;
+    }
+
     public String getProblema() {
         return problema;
     }
@@ -174,7 +184,7 @@ public class SecaoApi {
      */
     public void cadastrar() {
         try (Connection con = new Connector().getConnection()) {
-            String insertSql = "INSERT INTO secao_api (aluno, semestre_curso, ano, semestre_ano, versao, empresa, problema, solucao, link_repositorio, tecnologias, contribuicoes, hard_skills, soft_skills) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            String insertSql = "INSERT INTO secao_api (aluno, semestre_curso, ano, semestre_ano, versao, empresa, descricao_empresa, problema, solucao, link_repositorio, tecnologias, contribuicoes, hard_skills, soft_skills) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
             PreparedStatement pst = con.prepareStatement(insertSql);
             pst.setString(1, this.emailAluno);
             pst.setString(2, this.semestreCurso);
@@ -182,13 +192,14 @@ public class SecaoApi {
             pst.setString(4, this.semestreAno);
             pst.setInt(5, this.versao);
             pst.setString(6, this.empresa);
-            pst.setString(7, this.problema);
-            pst.setString(8, this.solucao);
-            pst.setString(9, this.linkRepositorio);
-            pst.setString(10, this.tecnologias);
-            pst.setString(11, this.contribuicoes);
-            pst.setString(12, this.hardSkills);
-            pst.setString(13, this.softSkills);
+            pst.setString(7, this.descricaoEmpresa);
+            pst.setString(8, this.problema);
+            pst.setString(9, this.solucao);
+            pst.setString(10, this.linkRepositorio);
+            pst.setString(11, this.tecnologias);
+            pst.setString(12, this.contribuicoes);
+            pst.setString(13, this.hardSkills);
+            pst.setString(14, this.softSkills);
             pst.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -292,7 +303,9 @@ public class SecaoApi {
      * Verifica se existe feedback para uma seção de API
      */
     public static boolean verificarFeedback(String emailAluno, String semestreCurso, int ano, String semestreAno, int versao) {
-        String sql = "SELECT COUNT(*) as count FROM feedback_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
+        String sql = "SELECT COUNT(*) as count FROM secao_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ? " +
+                     "AND (status_problema IS NOT NULL OR status_solucao IS NOT NULL OR status_tecnologias IS NOT NULL " +
+                     "OR status_contribuicoes IS NOT NULL OR status_hard_skills IS NOT NULL OR status_soft_skills IS NOT NULL)";
         try (Connection c = new Connector().getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, emailAluno);
@@ -315,8 +328,8 @@ public class SecaoApi {
      * @return String formatada com data e hora, ou null se não existir feedback
      */
     public static String buscarHorarioFeedback(String emailAluno, String semestreCurso, String ano, String semestreAno, int versao) {
-        String sql = "SELECT DATE_FORMAT(horario, '%d/%m/%Y às %H:%i') as horario_formatado " +
-                     "FROM feedback_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ? LIMIT 1";
+        String sql = "SELECT DATE_FORMAT(horario_feedback, '%d/%m/%Y às %H:%i') as horario_formatado " +
+                     "FROM secao_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ? LIMIT 1";
         try (Connection con = new Connector().getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, emailAluno);

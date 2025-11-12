@@ -2,6 +2,7 @@ package com.example.technocode.Services;
 
 import com.example.technocode.Controllers.Aluno.PrincipalAlunoController;
 import com.example.technocode.Controllers.Orientador.OrientadorPrincipalController;
+import com.example.technocode.Controllers.ProfessorTG.ProfessorTGPrincipalController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -112,8 +113,8 @@ public class NavigationService {
         Scene scene;
         
         if (fxmlPath.contains("aluno-principal.fxml") || fxmlPath.contains("orientador-principal.fxml") ||
-            fxmlPath.contains("login.fxml") || fxmlPath.contains("cadastro.fxml") ||
-            fxmlPath.contains("tela-inicial-orientador.fxml")) {
+            fxmlPath.contains("professor-tg-principal.fxml") || fxmlPath.contains("login.fxml") || 
+            fxmlPath.contains("cadastro.fxml") || fxmlPath.contains("tela-inicial-orientador.fxml")) {
             // Telas principais: cria com tamanho da tela
             scene = new Scene(root, screenBounds.getWidth(), screenBounds.getHeight());
         } else {
@@ -132,8 +133,8 @@ public class NavigationService {
         
         // Garante maximização após mostrar para telas principais
         if (fxmlPath.contains("aluno-principal.fxml") || fxmlPath.contains("orientador-principal.fxml") ||
-            fxmlPath.contains("login.fxml") || fxmlPath.contains("cadastro.fxml") ||
-            fxmlPath.contains("tela-inicial-orientador.fxml")) {
+            fxmlPath.contains("professor-tg-principal.fxml") || fxmlPath.contains("login.fxml") || 
+            fxmlPath.contains("cadastro.fxml") || fxmlPath.contains("tela-inicial-orientador.fxml")) {
             javafx.application.Platform.runLater(() -> {
                 if (!stage.isMaximized()) {
                     stage.setMaximized(true);
@@ -174,8 +175,8 @@ public class NavigationService {
         Scene scene;
         
         if (fxmlPath.contains("aluno-principal.fxml") || fxmlPath.contains("orientador-principal.fxml") ||
-            fxmlPath.contains("login.fxml") || fxmlPath.contains("cadastro.fxml") ||
-            fxmlPath.contains("tela-inicial-orientador.fxml")) {
+            fxmlPath.contains("professor-tg-principal.fxml") || fxmlPath.contains("login.fxml") || 
+            fxmlPath.contains("cadastro.fxml") || fxmlPath.contains("tela-inicial-orientador.fxml")) {
             // Telas principais: cria com tamanho da tela
             scene = new Scene(root, screenBounds.getWidth(), screenBounds.getHeight());
         } else {
@@ -187,11 +188,14 @@ public class NavigationService {
         stage.setMaximized(true);
         stage.show();
         
-        // Garante maximização após mostrar
+        // Garante maximização após mostrar e força renderização
         javafx.application.Platform.runLater(() -> {
             if (!stage.isMaximized()) {
                 stage.setMaximized(true);
             }
+            // Força uma atualização da cena para garantir renderização completa
+            stage.getScene().getRoot().applyCss();
+            stage.getScene().getRoot().layout();
         });
     }
     
@@ -250,6 +254,19 @@ public class NavigationService {
                 OrientadorPrincipalController orientadorController = OrientadorPrincipalController.getInstance();
                 if (orientadorController != null) {
                     orientadorController.navegarParaTelaDoCenter(fxmlPath, configController);
+                    return true;
+                }
+            } catch (Exception e) {
+                // Se não conseguir acessar o controller principal, continua
+            }
+        }
+        
+        // Verifica se é uma tela do professor de TG e tenta usar navegação interna
+        if (fxmlPath.contains("/ProfessorTG/") || fxmlPath.contains("professor-tg-") || fxmlPath.contains("dashboard-professor-tg")) {
+            try {
+                ProfessorTGPrincipalController professorController = ProfessorTGPrincipalController.getInstance();
+                if (professorController != null) {
+                    professorController.navegarParaTelaDoCenter(fxmlPath, configController);
                     return true;
                 }
             } catch (Exception e) {

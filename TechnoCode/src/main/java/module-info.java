@@ -14,6 +14,7 @@ module com.example.technocode {
     opens com.example.technocode.Controllers.Aluno to javafx.fxml;
     opens com.example.technocode.Controllers.Orientador to javafx.fxml;
     opens com.example.technocode.model to javafx.base;
+    opens com.example.technocode.Controllers.ProfessorTG to javafx.fxml;
 
     // --- Exportação de pacotes (visíveis a outros módulos) ---
     exports com.example.technocode;

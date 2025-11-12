@@ -4,23 +4,18 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.chart.XYChart;
-import com.example.technocode.Services.NavigationService;
 import com.example.technocode.model.dao.Connector;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -87,40 +82,23 @@ public class DashboardProfessorTGController {
     @FXML
     private Button btnAtualizar;
 
-    // Labels do cabeçalho do professor
-    @FXML
-    private Label lblNomeProfessor;
-    @FXML
-    private Label lblEmailProfessor;
-
     @FXML
     public void initialize() {
         configurarTabelas();
         carregarFiltros();
-        inicializarDadosProfessor();
         atualizarDashboard();
     }
 
     /**
-     * Inicializa os dados do professor no cabeçalho
-     * Por enquanto, usa valores simulados. No futuro, pode ser substituído por dados de login.
+     * Método público para atualizar o dashboard
+     * Pode ser chamado externamente quando necessário
      */
-    private void inicializarDadosProfessor() {
-        setDadosProfessor("Prof. João da Silva", "joao.silva@fatec.sp.gov.br");
-    }
-
-    /**
-     * Define os dados do professor no cabeçalho
-     * @param nome Nome completo do professor
-     * @param email Email do professor
-     */
-    public void setDadosProfessor(String nome, String email) {
-        if (lblNomeProfessor != null) {
-            lblNomeProfessor.setText("Professor de TG: " + nome);
-        }
-        if (lblEmailProfessor != null) {
-            lblEmailProfessor.setText(email);
-        }
+    @FXML
+    public void atualizarDashboard() {
+        carregarDadosGerais();
+        carregarGraficos();
+        carregarTabelaAlunos();
+        carregarTabelaOrientadores();
     }
 
     /**
@@ -165,16 +143,6 @@ public class DashboardProfessorTGController {
         }
     }
 
-    /**
-     * Atualiza todos os dados do dashboard
-     */
-    @FXML
-    private void atualizarDashboard() {
-        carregarDadosGerais();
-        carregarGraficos();
-        carregarTabelaAlunos();
-        carregarTabelaOrientadores();
-    }
 
     /**
      * Carrega os dados gerais (cards de estatísticas)
@@ -275,7 +243,7 @@ public class DashboardProfessorTGController {
                   "FROM secao_api sa " +
                   "GROUP BY sa.aluno, sa.semestre_curso, sa.ano, sa.semestre_ano " +
                   ") AS versoes_recentes " +
-                  "INNER JOIN feedback_api fa ON " +
+                  "INNER JOIN secao_api fa ON " +
                   "  versoes_recentes.aluno = fa.aluno AND " +
                   "  versoes_recentes.semestre_curso = fa.semestre_curso AND " +
                   "  versoes_recentes.ano = fa.ano AND " +
@@ -291,7 +259,7 @@ public class DashboardProfessorTGController {
                   "FROM secao_apresentacao sa " +
                   "GROUP BY sa.aluno " +
                   ") AS versoes_recentes " +
-                  "INNER JOIN feedback_apresentacao fa ON " +
+                  "INNER JOIN secao_apresentacao fa ON " +
                   "  versoes_recentes.aluno = fa.aluno AND " +
                   "  versoes_recentes.versao_recente = fa.versao " +
                   "WHERE fa.status_nome = 'Aprovado' AND fa.status_idade = 'Aprovado' " +
@@ -318,7 +286,7 @@ public class DashboardProfessorTGController {
                   "FROM secao_api sa " +
                   "GROUP BY sa.aluno, sa.semestre_curso, sa.ano, sa.semestre_ano " +
                   ") AS versoes_recentes " +
-                  "INNER JOIN feedback_api fa ON " +
+                  "INNER JOIN secao_api fa ON " +
                   "  versoes_recentes.aluno = fa.aluno AND " +
                   "  versoes_recentes.semestre_curso = fa.semestre_curso AND " +
                   "  versoes_recentes.ano = fa.ano AND " +
@@ -334,7 +302,7 @@ public class DashboardProfessorTGController {
                   "FROM secao_apresentacao sa " +
                   "GROUP BY sa.aluno " +
                   ") AS versoes_recentes " +
-                  "INNER JOIN feedback_apresentacao fa ON " +
+                  "INNER JOIN secao_apresentacao fa ON " +
                   "  versoes_recentes.aluno = fa.aluno AND " +
                   "  versoes_recentes.versao_recente = fa.versao " +
                   "WHERE fa.status_nome = 'Revisar' OR fa.status_idade = 'Revisar' " +
@@ -453,8 +421,8 @@ public class DashboardProfessorTGController {
                     "FROM aluno a " +
                     "LEFT JOIN secao_apresentacao sa ON a.email = sa.aluno " +
                     "LEFT JOIN secao_api sapi ON a.email = sapi.aluno " +
-                    "LEFT JOIN feedback_apresentacao fa ON a.email = fa.aluno AND sa.versao = fa.versao " +
-                    "LEFT JOIN feedback_api fapi ON a.email = fapi.aluno " +
+                    "LEFT JOIN secao_apresentacao fa ON a.email = fa.aluno AND sa.versao = fa.versao " +
+                    "LEFT JOIN secao_api fapi ON a.email = fapi.aluno " +
                     "GROUP BY a.email, a.nome " +
                     "HAVING total_secoes > 0 " +
                     "ORDER BY aprovadas DESC " +
@@ -530,8 +498,8 @@ public class DashboardProfessorTGController {
                         "LEFT JOIN orientador o ON a.orientador = o.email " +
                         "LEFT JOIN secao_apresentacao sa ON a.email = sa.aluno " +
                         "LEFT JOIN secao_api sapi ON a.email = sapi.aluno " +
-                        "LEFT JOIN feedback_apresentacao fa ON a.email = fa.aluno AND sa.versao = fa.versao " +
-                        "LEFT JOIN feedback_api fapi ON a.email = fapi.aluno " +
+                        "LEFT JOIN secao_apresentacao fa ON a.email = fa.aluno AND sa.versao = fa.versao " +
+                        "LEFT JOIN secao_api fapi ON a.email = fapi.aluno " +
                         "WHERE 1=1 ";
 
             if (filtroOrientador != null && !filtroOrientador.equals("Todos")) {
@@ -622,13 +590,6 @@ public class DashboardProfessorTGController {
         carregarTabelaAlunos();
     }
 
-    /**
-     * Volta para a tela de login
-     */
-    @FXML
-    private void voltarLogin(ActionEvent event) throws IOException {
-        NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/login.fxml", null);
-    }
 
     /**
      * Mostra mensagem de erro

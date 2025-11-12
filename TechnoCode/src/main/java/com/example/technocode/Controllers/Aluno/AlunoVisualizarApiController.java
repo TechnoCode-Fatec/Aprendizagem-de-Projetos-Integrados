@@ -114,7 +114,7 @@ public class AlunoVisualizarApiController {
     public void carregarVersaoAnterior(ActionEvent event) {
         if (secaoApi == null || secaoApi.getEmailAluno() == null) return;
 
-        String sql = "SELECT semestre_curso, ano, semestre_ano, empresa, link_repositorio, problema, solucao, tecnologias, contribuicoes, hard_skills, soft_skills " +
+        String sql = "SELECT semestre_curso, ano, semestre_ano, empresa, descricao_empresa, link_repositorio, problema, solucao, tecnologias, contribuicoes, hard_skills, soft_skills " +
                      "FROM secao_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
 
         try (Connection con = new Connector().getConnection();
@@ -133,6 +133,7 @@ public class AlunoVisualizarApiController {
                     int ano = rs.getInt("ano");
                     String semestreAno = rs.getString("semestre_ano");
                     String empresa = rs.getString("empresa");
+                    String descricaoEmpresa = rs.getString("descricao_empresa");
                     String repositorio = rs.getString("link_repositorio");
                     String problema = rs.getString("problema");
                     String solucao = rs.getString("solucao");
@@ -146,6 +147,7 @@ public class AlunoVisualizarApiController {
                     final String anoFinal = String.valueOf(ano);
                     final String semestreAnoFinal = semestreAno;
                     final String empresaFinal = empresa;
+                    final String descricaoEmpresaFinal = descricaoEmpresa;
                     final String repositorioFinal = repositorio;
                     final String problemaFinal = problema;
                     final String solucaoFinal = solucao;
@@ -158,7 +160,7 @@ public class AlunoVisualizarApiController {
                         controller -> {
                             if (controller instanceof FormularioApiController) {
                                 ((FormularioApiController) controller).setDadosVersaoAnterior(
-                                    semestreCursoFinal, anoFinal, semestreAnoFinal, empresaFinal,
+                                    semestreCursoFinal, anoFinal, semestreAnoFinal, empresaFinal, descricaoEmpresaFinal,
                                     repositorioFinal, problemaFinal, solucaoFinal, tecnologiasFinal,
                                     contribuicoesFinal, hardSkillsFinal, softSkillsFinal
                                 );
