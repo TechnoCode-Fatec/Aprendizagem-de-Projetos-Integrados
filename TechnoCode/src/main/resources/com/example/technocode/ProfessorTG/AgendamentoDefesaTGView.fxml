@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<ScrollPane id="formulario" fitToWidth="true" prefHeight="800.0" prefWidth="1200.0" style="-fx-background-color: #C4C4C4;" vbarPolicy="ALWAYS" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.ProfessorTG.AgendamentoDefesaTGController">
+    <content>
+        <VBox alignment="TOP_CENTER" prefWidth="1180.0" style="-fx-spacing: 20; -fx-padding: 20;">
+            <children>
+                <!-- Cabeçalho -->
+                <VBox prefWidth="1200.0" style="-fx-background-color: WHITE; -fx-border-color: #c9c9c9; -fx-border-width: 0 0 1 0;">
+                    <children>
+                        <!-- Título -->
+                        <HBox alignment="CENTER" prefHeight="50.0" prefWidth="1200.0" style="-fx-spacing: 25; -fx-padding: 5 20 10 20;">
+                            <children>
+                                <Label alignment="CENTER" prefHeight="47.0" prefWidth="400.0" text="AGENDAMENTO DE DEFESAS DE TG">
+                                    <font>
+                                        <Font name="System Bold" size="24.0" />
+                                    </font>
+                                </Label>
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Button fx:id="btnVoltar" mnemonicParsing="false"  prefHeight="34.0" prefWidth="100.0" style="-fx-background-color: #B82E1A; -fx-background-radius: 8;" text="Voltar" textFill="WHITE">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Button>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+
+                <!-- Formulário de Agendamento -->
+                <VBox alignment="TOP_CENTER" prefWidth="1160.0" style="-fx-spacing: 15; -fx-background-color: #EAEAEA; -fx-background-radius: 8; -fx-padding: 20;">
+                    <children>
+                        <Label style="-fx-font-weight: bold;" text="Novo Agendamento">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
+                        </Label>
+                        
+                        <GridPane hgap="15" style="-fx-background-color: transparent;" vgap="15">
+                            <columnConstraints>
+                                <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" minWidth="200.0" prefWidth="300.0" />
+                                <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" minWidth="200.0" prefWidth="300.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="40.0" prefHeight="40.0" vgrow="NEVER" />
+                                <RowConstraints minHeight="40.0" prefHeight="40.0" vgrow="NEVER" />
+                                <RowConstraints minHeight="40.0" prefHeight="40.0" vgrow="NEVER" />
+                            </rowConstraints>
+
+                            <!-- Aluno -->
+                            <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                <children>
+                                    <Label text="Aluno *" textFill="#34495E">
+                                        <font>
+                                            <Font name="System Bold" size="12.0" />
+                                        </font>
+                                    </Label>
+                                    <ComboBox fx:id="comboAluno" prefHeight="40.0" prefWidth="300.0" 
+                                              style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10;" />
+                                </children>
+                            </VBox>
+
+                            <!-- Data da Defesa -->
+                            <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                <children>
+                                    <Label text="Data da Defesa *" textFill="#34495E">
+                                        <font>
+                                            <Font name="System Bold" size="12.0" />
+                                        </font>
+                                    </Label>
+                                    <DatePicker fx:id="datePickerData" prefHeight="40.0" prefWidth="300.0" 
+                                                style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10;" />
+                                </children>
+                            </VBox>
+
+                            <!-- Horário -->
+                            <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                <children>
+                                    <Label text="Horário * (HH:MM)" textFill="#34495E">
+                                        <font>
+                                            <Font name="System Bold" size="12.0" />
+                                        </font>
+                                    </Label>
+                                    <TextField fx:id="txtHorario" prefHeight="40.0" prefWidth="300.0" 
+                                               promptText="Ex: 14:30" 
+                                               style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-prompt-text-fill: #95A5A6;" />
+                                </children>
+                            </VBox>
+
+                            <!-- Sala -->
+                            <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                <children>
+                                    <Label text="Sala *" textFill="#34495E">
+                                        <font>
+                                            <Font name="System Bold" size="12.0" />
+                                        </font>
+                                    </Label>
+                                    <TextField fx:id="txtSala" prefHeight="40.0" prefWidth="300.0" 
+                                               promptText="Ex: Sala 101" 
+                                               style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-prompt-text-fill: #95A5A6;" />
+                                </children>
+                            </VBox>
+                        </GridPane>
+
+                        <!-- Botões de Ação do Formulário -->
+                        <HBox alignment="CENTER" spacing="15" style="-fx-padding: 15 0 0 0;">
+                            <children>
+                                <Button fx:id="btnAgendar" mnemonicParsing="false" onAction="#agendarDefesa" prefHeight="45.0" prefWidth="180.0" 
+                                        style="-fx-background-color: #B82E1A; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(184,46,26,0.3), 5, 0, 0, 2);" 
+                                        text="AGENDAR DEFESA" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Button>
+                                <Button fx:id="btnLimpar" mnemonicParsing="false" onAction="#limparFormulario" prefHeight="45.0" prefWidth="150.0" 
+                                        style="-fx-background-color: #767676; -fx-background-radius: 8; -fx-cursor: hand;" 
+                                        text="Limpar" textFill="WHITE">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Button>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+
+                <!-- Histórico de Agendamentos -->
+                <VBox alignment="TOP_CENTER" prefWidth="1160.0" style="-fx-spacing: 10; -fx-background-color: #EAEAEA; -fx-background-radius: 8; -fx-padding: 15;">
+                    <children>
+                        <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 5;">
+                            <children>
+                                <Label style="-fx-font-weight: bold;" text="Histórico de Agendamentos">
+                                    <font>
+                                        <Font size="18.0" />
+                                    </font>
+                                </Label>
+                                <Region HBox.hgrow="ALWAYS" />
+                            </children>
+                        </HBox>
+                        <TableView fx:id="tabelaAgendamentos" prefHeight="300.0" prefWidth="1130.0">
+                            <columns>
+                                <TableColumn fx:id="colAluno" minWidth="200.0" prefWidth="250.0" text="Aluno" />
+                                <TableColumn fx:id="colData" minWidth="120.0" prefWidth="150.0" text="Data" />
+                                <TableColumn fx:id="colHorario" minWidth="100.0" prefWidth="120.0" text="Horário" />
+                                <TableColumn fx:id="colSala" minWidth="100.0" prefWidth="150.0" text="Sala" />
+                            </columns>
+                            <columnResizePolicy>
+                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                            </columnResizePolicy>
+                        </TableView>
+                        
+                        <!-- Botões de Ação do Histórico -->
+                        <HBox alignment="CENTER" spacing="15" style="-fx-padding: 10 0 0 0;">
+                            <children>
+                                <Button fx:id="btnEditar" mnemonicParsing="false" onAction="#editarAgendamento" prefHeight="40.0" prefWidth="150.0" 
+                                        style="-fx-background-color: #4CAF50; -fx-background-radius: 8; -fx-cursor: hand;" 
+                                        text="Editar" textFill="WHITE">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Button>
+                                <Button fx:id="btnExcluir" mnemonicParsing="false" onAction="#excluirAgendamento" prefHeight="40.0" prefWidth="150.0" 
+                                        style="-fx-background-color: #F44336; -fx-background-radius: 8; -fx-cursor: hand;" 
+                                        text="Excluir" textFill="WHITE">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Button>
+                                <Button fx:id="btnAtualizar" mnemonicParsing="false" onAction="#atualizarTabela" prefHeight="40.0" prefWidth="150.0" 
+                                        style="-fx-background-color: #3498DB; -fx-background-radius: 8; -fx-cursor: hand;" 
+                                        text="Atualizar" textFill="WHITE">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Button>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+    </content>
+</ScrollPane>
+
