@@ -46,8 +46,12 @@ public class TelaInicialOrientadorController {
 
             tabelaAlunos.getItems().setAll(alunos);
 
-            // Melhora a visualização da tabela
-            tabelaAlunos.setStyle("-fx-control-inner-background: #ffffff; -fx-text-background-color: black;");
+            // A tabela será estilizada via CSS (estilo.css)
+            // Configura alinhamento das colunas
+            colNome.setStyle("-fx-alignment: CENTER-LEFT;");
+            colEmail.setStyle("-fx-alignment: CENTER-LEFT;");
+            colMatriculado.setStyle("-fx-alignment: CENTER-LEFT;");
+            colAnalisar.setStyle("-fx-alignment: CENTER;");
 
             // Adiciona os botões de "Analisar"
             addButtonToTable();
@@ -68,10 +72,42 @@ public class TelaInicialOrientadorController {
                     public TableCell<Map<String, String>, Void> call(final TableColumn<Map<String, String>, Void> param) {
                         return new TableCell<>() {
 
-                            private final Button btn = new Button("analisar");
+                            private final Button btn = new Button("Analisar");
 
                             {
-                                btn.setStyle("-fx-background-color: black; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 5;");
+                                btn.setStyle(
+                                    "-fx-background-color: #3498DB; " +
+                                    "-fx-text-fill: white; " +
+                                    "-fx-font-weight: bold; " +
+                                    "-fx-font-size: 12px; " +
+                                    "-fx-cursor: hand; " +
+                                    "-fx-background-radius: 6; " +
+                                    "-fx-padding: 6 15 6 15; " +
+                                    "-fx-effect: dropshadow(gaussian, rgba(52,152,219,0.3), 4, 0, 0, 2);"
+                                );
+                                
+                                // Efeito hover
+                                btn.setOnMouseEntered(e -> btn.setStyle(
+                                    "-fx-background-color: #2980B9; " +
+                                    "-fx-text-fill: white; " +
+                                    "-fx-font-weight: bold; " +
+                                    "-fx-font-size: 12px; " +
+                                    "-fx-cursor: hand; " +
+                                    "-fx-background-radius: 6; " +
+                                    "-fx-padding: 6 15 6 15; " +
+                                    "-fx-effect: dropshadow(gaussian, rgba(41,128,185,0.4), 6, 0, 0, 3);"
+                                ));
+                                btn.setOnMouseExited(e -> btn.setStyle(
+                                    "-fx-background-color: #3498DB; " +
+                                    "-fx-text-fill: white; " +
+                                    "-fx-font-weight: bold; " +
+                                    "-fx-font-size: 12px; " +
+                                    "-fx-cursor: hand; " +
+                                    "-fx-background-radius: 6; " +
+                                    "-fx-padding: 6 15 6 15; " +
+                                    "-fx-effect: dropshadow(gaussian, rgba(52,152,219,0.3), 4, 0, 0, 2);"
+                                ));
+                                
                                 btn.setOnAction(event -> {
                                     Map<String, String> item = getTableView().getItems().get(getIndex());
                                     String emailAluno = item.getOrDefault("email", null);

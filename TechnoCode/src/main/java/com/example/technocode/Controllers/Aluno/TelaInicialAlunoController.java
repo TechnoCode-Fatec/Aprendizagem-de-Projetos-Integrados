@@ -89,20 +89,31 @@ public class TelaInicialAlunoController {
     }
     
     private VBox criarCardSecao(Map<String, String> secao, String tipo) {
-        // Container principal do card
+        // Container principal do card moderno
         VBox card = new VBox();
-        card.setPrefHeight(80.0); // Aumentado para acomodar a linha do horário
-        card.setPrefWidth(600.0);
-        card.setStyle("-fx-background-color: #EAEAEA; -fx-background-radius: 5; -fx-padding: 10; -fx-cursor: hand;");
+        card.setPrefWidth(Region.USE_COMPUTED_SIZE);
+        card.setMaxWidth(Double.MAX_VALUE);
+        card.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-padding: 18; -fx-cursor: hand; " +
+                     "-fx-border-color: #E0E0E0; -fx-border-width: 1; -fx-border-radius: 10; " +
+                     "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 5, 0, 0, 2);");
+        
+        // Hover effect será aplicado via código
+        card.setOnMouseEntered(e -> card.setStyle("-fx-background-color: #F8F9FA; -fx-background-radius: 10; -fx-padding: 18; -fx-cursor: hand; " +
+                                                  "-fx-border-color: #B82E1A; -fx-border-width: 1.5; -fx-border-radius: 10; " +
+                                                  "-fx-effect: dropshadow(gaussian, rgba(184,46,26,0.15), 8, 0, 0, 3);"));
+        card.setOnMouseExited(e -> card.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-padding: 18; -fx-cursor: hand; " +
+                                                 "-fx-border-color: #E0E0E0; -fx-border-width: 1; -fx-border-radius: 10; " +
+                                                 "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 5, 0, 0, 2);"));
         
         // HBox para organizar conteúdo horizontalmente
         HBox contentBox = new HBox();
         contentBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-        contentBox.setSpacing(10);
+        contentBox.setSpacing(15);
         
         // VBox para título e subtítulo (lado esquerdo)
         VBox textBox = new VBox();
-        textBox.setSpacing(2);
+        textBox.setSpacing(4);
+        HBox.setHgrow(textBox, javafx.scene.layout.Priority.ALWAYS);
         
         Label titulo = new Label();
         Label subtitulo = new Label();
@@ -115,8 +126,8 @@ public class TelaInicialAlunoController {
             subtitulo.setText(secao.get("empresa"));
         }
         
-        titulo.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
-        subtitulo.setStyle("-fx-font-size: 14px; -fx-text-fill: #666;");
+        titulo.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2C3E50;");
+        subtitulo.setStyle("-fx-font-size: 13px; -fx-text-fill: #7F8C8D;");
         
         textBox.getChildren().addAll(titulo, subtitulo);
         
@@ -137,31 +148,31 @@ public class TelaInicialAlunoController {
         
         // Se existe feedback, adiciona label com o horário
         if (horarioFeedback != null) {
-            Label labelHorario = new Label("Feedback recebido em: " + horarioFeedback);
-            labelHorario.setStyle("-fx-font-size: 11px; -fx-text-fill: #3e3e3e; -fx-font-style: italic;");
+            Label labelHorario = new Label("✓ Feedback recebido em: " + horarioFeedback);
+            labelHorario.setStyle("-fx-font-size: 11px; -fx-text-fill: #27AE60; -fx-font-weight: bold;");
             textBox.getChildren().add(labelHorario);
         }
         
-        // Region para empurrar o botão para a direita
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
-        
         // Botão de feedback (lado direito)
         Button btnFeedback = new Button();
-        btnFeedback.setPrefHeight(30.0);
-        btnFeedback.setPrefWidth(100.0);
-        btnFeedback.setStyle("-fx-background-color: #5E5555; -fx-text-fill: white; -fx-background-radius: 5;");
+        btnFeedback.setPrefHeight(36.0);
+        btnFeedback.setPrefWidth(120.0);
+        btnFeedback.setStyle("-fx-background-color: #3498DB; -fx-text-fill: white; -fx-background-radius: 6; " +
+                            "-fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.3), 4, 0, 0, 2);");
         btnFeedback.setText("Ver Feedback");
         btnFeedback.setFont(new javafx.scene.text.Font(12.0));
 
         // Desativa por padrão
         btnFeedback.setDisable(true);
+        btnFeedback.setStyle("-fx-background-color: #BDC3C7; -fx-text-fill: white; -fx-background-radius: 6; -fx-cursor: default;");
 
-// Verifica se existe feedback para esta seção
+        // Verifica se existe feedback para esta seção
         if ("apresentacao".equals(tipo)) {
             int versao = Integer.parseInt(secao.get("versao"));
             if (SecaoApresentacao.verificarFeedback(emailAluno, versao)) {
                 btnFeedback.setDisable(false);
+                btnFeedback.setStyle("-fx-background-color: #3498DB; -fx-text-fill: white; -fx-background-radius: 6; " +
+                                    "-fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.3), 4, 0, 0, 2);");
             }
         } else {
             String semestreCurso = secao.get("semestre_curso");
@@ -172,9 +183,10 @@ public class TelaInicialAlunoController {
             String anoExtraido = ano.split("-")[0];
             if (SecaoApi.verificarFeedback(emailAluno, semestreCurso, Integer.parseInt(anoExtraido), semestreAno, versao)) {
                 btnFeedback.setDisable(false);
+                btnFeedback.setStyle("-fx-background-color: #3498DB; -fx-text-fill: white; -fx-background-radius: 6; " +
+                                    "-fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.3), 4, 0, 0, 2);");
             }
         }
-
 
         // Evento do botão de feedback
         btnFeedback.setOnAction(event -> {
@@ -190,7 +202,7 @@ public class TelaInicialAlunoController {
         });
         
         // Adiciona componentes ao HBox
-        contentBox.getChildren().addAll(textBox, spacer, btnFeedback);
+        contentBox.getChildren().addAll(textBox, btnFeedback);
         
         // Adiciona o HBox ao card
         card.getChildren().add(contentBox);

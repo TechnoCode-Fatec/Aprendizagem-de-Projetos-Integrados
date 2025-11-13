@@ -5,7 +5,7 @@
 <?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 
-<ScrollPane id="feedback" fitToWidth="true" style="-fx-background-color: #F8F9FA; -fx-background: transparent;"
+<ScrollPane id="telas-aluno" fitToWidth="true" style="-fx-background-color: #F8F9FA; -fx-background: transparent;"
             vbarPolicy="AS_NEEDED" hbarPolicy="NEVER"
             stylesheets="@../css/estilo.css"
             xmlns="http://javafx.com/javafx/17.0.12"
