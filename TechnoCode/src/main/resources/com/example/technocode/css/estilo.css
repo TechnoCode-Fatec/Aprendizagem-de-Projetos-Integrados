@@ -70,3 +70,57 @@
 #telas-aluno .label {
     -fx-text-fill: #2C3E50;
 }
+
+/* Estilos para TableView moderna */
+.table-view {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E0E0E0;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-control-inner-background: #FFFFFF;
+    -fx-text-background-color: #2C3E50;
+    -fx-table-header-border-color: transparent;
+    -fx-table-cell-border-color: #F0F0F0;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #F8F9FA;
+    -fx-background-radius: 8 8 0 0;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: #E0E0E0;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 10;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #2C3E50;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+.table-view .table-cell {
+    -fx-border-color: transparent;
+    -fx-padding: 10;
+    -fx-text-fill: #2C3E50;
+}
+
+.table-row-cell {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: transparent;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #F8F9FA;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #E3F2FD;
+    -fx-text-background-color: #1976D2;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #F0F0F0;
+}
