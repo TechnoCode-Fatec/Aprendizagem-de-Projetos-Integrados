@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
@@ -43,14 +44,12 @@ public class AlunoHistoricoController {
     }
     
     private void exibirHistoricoApresentacoes(List<Map<String, String>> historico) {
-        // Remove o label de título se existir
-        if (containerApresentacoes.getChildren().size() > 1) {
-            containerApresentacoes.getChildren().remove(1, containerApresentacoes.getChildren().size());
-        }
+        // Remove todos os filhos exceto o label de título (se existir)
+        containerApresentacoes.getChildren().clear();
         
         if (historico.isEmpty()) {
             Label semDados = new Label("Nenhuma apresentação cadastrada");
-            semDados.setStyle("-fx-text-fill: #666; -fx-font-style: italic;");
+            semDados.setStyle("-fx-text-fill: #95A5A6; -fx-font-style: italic; -fx-font-size: 14px; -fx-padding: 20;");
             containerApresentacoes.getChildren().add(semDados);
         } else {
             for (Map<String, String> versao : historico) {
@@ -61,14 +60,12 @@ public class AlunoHistoricoController {
     }
     
     private void exibirHistoricoApis(List<Map<String, String>> historico) {
-        // Remove o label de título se existir
-        if (containerApis.getChildren().size() > 1) {
-            containerApis.getChildren().remove(1, containerApis.getChildren().size());
-        }
+        // Remove todos os filhos exceto o label de título (se existir)
+        containerApis.getChildren().clear();
         
         if (historico.isEmpty()) {
             Label semDados = new Label("Nenhuma API cadastrada");
-            semDados.setStyle("-fx-text-fill: #666; -fx-font-style: italic;");
+            semDados.setStyle("-fx-text-fill: #95A5A6; -fx-font-style: italic; -fx-font-size: 14px; -fx-padding: 20;");
             containerApis.getChildren().add(semDados);
         } else {
             for (Map<String, String> versao : historico) {
@@ -79,10 +76,22 @@ public class AlunoHistoricoController {
     }
     
     private VBox criarCardVersao(Map<String, String> versao, String tipo) {
+        // Container principal do card moderno
         VBox card = new VBox();
-        card.setPrefHeight(60.0);
-        card.setPrefWidth(700.0);
-        card.setStyle("-fx-background-color: #EAEAEA; -fx-background-radius: 5; -fx-padding: 15; -fx-cursor: hand;");
+        card.setPrefWidth(Region.USE_COMPUTED_SIZE);
+        card.setMaxWidth(Double.MAX_VALUE);
+        card.setSpacing(6);
+        card.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-padding: 18; -fx-cursor: hand; " +
+                     "-fx-border-color: #E0E0E0; -fx-border-width: 1; -fx-border-radius: 10; " +
+                     "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 5, 0, 0, 2);");
+        
+        // Hover effect será aplicado via código
+        card.setOnMouseEntered(e -> card.setStyle("-fx-background-color: #F8F9FA; -fx-background-radius: 10; -fx-padding: 18; -fx-cursor: hand; " +
+                                                  "-fx-border-color: #B82E1A; -fx-border-width: 1.5; -fx-border-radius: 10; " +
+                                                  "-fx-effect: dropshadow(gaussian, rgba(184,46,26,0.15), 8, 0, 0, 3);"));
+        card.setOnMouseExited(e -> card.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-padding: 18; -fx-cursor: hand; " +
+                                                 "-fx-border-color: #E0E0E0; -fx-border-width: 1; -fx-border-radius: 10; " +
+                                                 "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 5, 0, 0, 2);"));
         
         Label titulo = new Label();
         Label subtitulo = new Label();
@@ -99,13 +108,13 @@ public class AlunoHistoricoController {
             String empresa = versao.get("empresa");
             
             titulo.setText(semestreCurso + " " + ano + "/" + semestreAno);
-            subtitulo.setText(empresa);
+            subtitulo.setText(empresa != null ? empresa : "");
             versaoLabel.setText("Versão " + versao.get("versao"));
         }
         
-        titulo.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-        subtitulo.setStyle("-fx-font-size: 14px; -fx-text-fill: #666;");
-        versaoLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #888; -fx-font-weight: bold;");
+        titulo.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2C3E50;");
+        subtitulo.setStyle("-fx-font-size: 13px; -fx-text-fill: #7F8C8D;");
+        versaoLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #95A5A6; -fx-font-weight: bold; -fx-padding: 4 8 0 0;");
         
         card.getChildren().addAll(titulo, subtitulo, versaoLabel);
         

@@ -6,7 +6,7 @@
 <?import javafx.geometry.Insets?>
 
 <?import java.lang.String?>
-<ScrollPane id="formulario" fitToWidth="true" style="-fx-background-color: #F8F9FA; -fx-background: transparent;"
+<ScrollPane id="telas-aluno" fitToWidth="true" style="-fx-background-color: #F8F9FA; -fx-background: transparent;"
             vbarPolicy="AS_NEEDED" hbarPolicy="NEVER"
             stylesheets="@../css/estilo.css"
             styleClass="formulario-container"

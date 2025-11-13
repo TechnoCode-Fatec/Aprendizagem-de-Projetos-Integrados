@@ -67,9 +67,6 @@
     -fx-scale-y: 1.0;
 }
 
-#formulario .label {
-    -fx-text-fill: #2C3E50;
-}
-#feedback .label {
+#telas-aluno .label {
     -fx-text-fill: #2C3E50;
 }
