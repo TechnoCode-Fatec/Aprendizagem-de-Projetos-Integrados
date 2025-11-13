@@ -4,192 +4,243 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox alignment="TOP_CENTER" prefHeight="700.0" prefWidth="800.0" style="-fx-background-color: C4C4C4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.Orientador.OrientadorCorrigirApiController">
-    <children>
-        <HBox alignment="CENTER" prefHeight="60.0" prefWidth="800.0" style="-fx-spacing: 25; -fx-padding: 10 20 10 20;">
-            <children>
-                <Button mnemonicParsing="false" onAction="#voltarTelaOrientador" prefHeight="34.0" prefWidth="130.0" style="-fx-background-color: B82E1A;" text="Voltar" textFill="WHITE">
-                    <font>
-                        <Font size="14.0" />
-                    </font>
-                </Button>
-                <Label fx:id="labelTitulo" alignment="CENTER" prefHeight="47.0" prefWidth="400.0" text="ANÁLISE DO ALUNO - API">
-                    <font>
-                        <Font name="System Bold" size="24.0" />
-                    </font>
-                </Label>
-            </children>
-        </HBox>
+<ScrollPane id="telas-orientador" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: #F8F9FA; -fx-background: transparent;" stylesheets="@../css/estilo.css" vbarPolicy="AS_NEEDED" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.Orientador.OrientadorCorrigirApiController">
+    <content>
+        <VBox maxWidth="Infinity" spacing="20" style="-fx-background-color: #F8F9FA; -fx-padding: 25;">
 
-        <ScrollPane fitToWidth="true" prefHeight="560.0" prefWidth="780.0" style="-fx-background-color: transparent;" vbarPolicy="ALWAYS">
-            <content>
-                <VBox alignment="TOP_CENTER" prefWidth="760.0" style="-fx-spacing: 15; -fx-padding: 20;">
-                    <children>
-                        <GridPane hgap="20" style="-fx-background-color: EAEAEA; -fx-padding: 20; -fx-background-radius: 8;" vgap="18">
-                            <columnConstraints>
-                                <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" minWidth="360.0" prefWidth="380.0" />
-                                <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" minWidth="320.0" prefWidth="360.0" />
-                            </columnConstraints>
-                            <rowConstraints>
-                                <RowConstraints valignment="TOP" vgrow="NEVER" />
-                                <RowConstraints valignment="TOP" vgrow="NEVER" />
-                                <RowConstraints valignment="TOP" vgrow="NEVER" />
-                                <RowConstraints valignment="TOP" vgrow="NEVER" />
-                                <RowConstraints valignment="TOP" vgrow="NEVER" />
-                                <RowConstraints valignment="TOP" vgrow="NEVER" />
-                            </rowConstraints>
+            <!-- Header Moderno -->
+            <HBox alignment="CENTER" spacing="20" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);">
+                <children>
+                    <Button mnemonicParsing="false" onAction="#voltarTelaOrientador" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #B82E1A; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(184,46,26,0.3), 5, 0, 0, 2);" text="← VOLTAR" textFill="WHITE">
+                        <font>
+                            <Font name="System Bold" size="13.0" />
+                        </font>
+                    </Button>
+                    <VBox alignment="CENTER" spacing="5" HBox.hgrow="ALWAYS">
+                        <Label fx:id="labelTitulo" text="ANÁLISE DO ALUNO - API" textFill="#2C3E50">
+                            <font>
+                                <Font name="System Bold" size="24.0" />
+                            </font>
+                        </Label>
+                        <Label text="Analise e forneça feedback sobre a API do aluno" textFill="#7F8C8D">
+                            <font>
+                                <Font size="12.0" />
+                            </font>
+                        </Label>
+                    </VBox>
+                </children>
+            </HBox>
 
-                            <!-- Problema -->
-                            <VBox style="-fx-spacing: 8;" GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <!-- Card Principal com Dados -->
+            <VBox spacing="20" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);">
+                <children>
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Region prefHeight="28" prefWidth="4" style="-fx-background-color: #3498DB; -fx-background-radius: 4;" />
+                        <Label text="Dados da API" textFill="#2C3E50">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
+                        </Label>
+                    </HBox>
+
+                    <VBox spacing="20" style="-fx-padding: 20 0 0 0;">
+                        <!-- Empresa -->
+                        <VBox spacing="8">
+                            <Label text="Empresa" textFill="#34495E">
+                                <font>
+                                    <Font name="System Bold" size="12.0" />
+                                </font>
+                            </Label>
+                            <HBox spacing="10">
                                 <children>
-                                    <Label text="Problema">
-                                        <font>
-                                            <Font name="System Bold" size="16.0" />
-                                        </font>
-                                    </Label>
-                                    <TextArea fx:id="alunoProblema" editable="false" prefHeight="130.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" wrapText="true" />
-                                </children>
-                            </VBox>
-                            <VBox style="-fx-spacing: 8;" GridPane.columnIndex="1" GridPane.rowIndex="0">
-                                <children>
-                                    <HBox spacing="10">
+                                    <TextArea fx:id="alunoEmpresa" editable="false" prefHeight="60.0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" HBox.hgrow="ALWAYS" />
+                                    <VBox spacing="5">
                                         <children>
-                                            <Button fx:id="aprovarProblema" onAction="#aprovarProblema" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" text="✔" />
-                                            <Button fx:id="revisarProblema" onAction="#revisarProblema" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" text="✖" />
+                                            <Button fx:id="aprovarEmpresa" onAction="#aprovarEmpresa" prefHeight="37.0" prefWidth="53.0" style="-fx-background-color: #27AE60; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✔" />
+                                            <Button fx:id="revisarEmpresa" onAction="#revisarEmpresa" prefHeight="37.0" prefWidth="53.0" style="-fx-background-color: #E74C3C; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✖" />
                                         </children>
-                                    </HBox>
-                                    <TextArea fx:id="feedbackProblema" prefHeight="100.0" promptText="Digite seu feedback..." visible="false" wrapText="true" />
+                                    </VBox>
                                 </children>
-                            </VBox>
+                            </HBox>
+                            <TextArea fx:id="feedbackEmpresa" prefHeight="80.0" promptText="Digite seu feedback..." style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" visible="false" wrapText="true" />
+                        </VBox>
 
-                            <!-- Solução -->
-                            <VBox style="-fx-spacing: 8;" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                        <!-- Descrição da Empresa -->
+                        <VBox spacing="8">
+                            <Label text="Descrição da Empresa" textFill="#34495E">
+                                <font>
+                                    <Font name="System Bold" size="12.0" />
+                                </font>
+                            </Label>
+                            <HBox spacing="10">
                                 <children>
-                                    <Label text="Solução">
-                                        <font>
-                                            <Font name="System Bold" size="16.0" />
-                                        </font>
-                                    </Label>
-                                    <TextArea fx:id="alunoSolucao" editable="false" prefHeight="130.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" wrapText="true" />
-                                </children>
-                            </VBox>
-                            <VBox style="-fx-spacing: 8;" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                                <children>
-                                    <HBox spacing="10">
+                                    <TextArea fx:id="alunoDescricaoEmpresa" editable="false" prefHeight="100.0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" HBox.hgrow="ALWAYS" />
+                                    <VBox spacing="5">
                                         <children>
-                                            <Button fx:id="aprovarSolucao" onAction="#aprovarSolucao" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" text="✔" />
-                                            <Button fx:id="revisarSolucao" onAction="#revisarSolucao" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" text="✖" />
+                                            <Button fx:id="aprovarDescricaoEmpresa" onAction="#aprovarDescricaoEmpresa" prefHeight="37.0" prefWidth="53.0" style="-fx-background-color: #27AE60; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✔" />
+                                            <Button fx:id="revisarDescricaoEmpresa" onAction="#revisarDescricaoEmpresa" prefHeight="37.0" prefWidth="53.0" style="-fx-background-color: #E74C3C; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✖" />
                                         </children>
-                                    </HBox>
-                                    <TextArea fx:id="feedbackSolucao" prefHeight="100.0" promptText="Digite seu feedback..." visible="false" wrapText="true" />
+                                    </VBox>
                                 </children>
-                            </VBox>
+                            </HBox>
+                            <TextArea fx:id="feedbackDescricaoEmpresa" prefHeight="80.0" promptText="Digite seu feedback..." style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" visible="false" wrapText="true" />
+                        </VBox>
 
-                            <!-- Tecnologias utilizadas -->
-                            <VBox style="-fx-spacing: 8;" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                        <!-- Problema -->
+                        <VBox spacing="8">
+                            <Label text="Problema" textFill="#34495E">
+                                <font>
+                                    <Font name="System Bold" size="12.0" />
+                                </font>
+                            </Label>
+                            <HBox spacing="10">
                                 <children>
-                                    <Label text="Tecnologias Utilizadas">
-                                        <font>
-                                            <Font name="System Bold" size="16.0" />
-                                        </font>
-                                    </Label>
-                                    <TextArea fx:id="alunoTecnologias" editable="false" prefHeight="130.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" wrapText="true" />
-                                </children>
-                            </VBox>
-                            <VBox style="-fx-spacing: 8;" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                                <children>
-                                    <HBox spacing="10">
+                                    <TextArea fx:id="alunoProblema" editable="false" prefHeight="100.0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" HBox.hgrow="ALWAYS" />
+                                    <VBox spacing="5">
                                         <children>
-                                            <Button fx:id="aprovarTecnologias" onAction="#aprovarTecnologias" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" text="✔" />
-                                            <Button fx:id="revisarTecnologias" onAction="#revisarTecnologias" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" text="✖" />
+                                            <Button fx:id="aprovarProblema" onAction="#aprovarProblema" prefHeight="37.0" prefWidth="53.0" style="-fx-background-color: #27AE60; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✔" />
+                                            <Button fx:id="revisarProblema" onAction="#revisarProblema" prefHeight="37.0" prefWidth="53.0" style="-fx-background-color: #E74C3C; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✖" />
                                         </children>
-                                    </HBox>
-                                    <TextArea fx:id="feedbackTecnologias" prefHeight="100.0" promptText="Digite seu feedback..." visible="false" wrapText="true" />
+                                    </VBox>
                                 </children>
-                            </VBox>
+                            </HBox>
+                            <TextArea fx:id="feedbackProblema" prefHeight="80.0" promptText="Digite seu feedback..." style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" visible="false" wrapText="true" />
+                        </VBox>
 
-                            <!-- Contribuições pessoais -->
-                            <VBox style="-fx-spacing: 8;" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                        <!-- Solução -->
+                        <VBox spacing="8">
+                            <Label text="Solução" textFill="#34495E">
+                                <font>
+                                    <Font name="System Bold" size="12.0" />
+                                </font>
+                            </Label>
+                            <HBox spacing="10">
                                 <children>
-                                    <Label text="Contribuições Pessoais">
-                                        <font>
-                                            <Font name="System Bold" size="16.0" />
-                                        </font>
-                                    </Label>
-                                    <TextArea fx:id="alunoContribuicoes" editable="false" prefHeight="130.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" wrapText="true" />
-                                </children>
-                            </VBox>
-                            <VBox style="-fx-spacing: 8;" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                                <children>
-                                    <HBox spacing="10">
+                                    <TextArea fx:id="alunoSolucao" editable="false" prefHeight="100.0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" HBox.hgrow="ALWAYS" />
+                                    <VBox spacing="5">
                                         <children>
-                                            <Button fx:id="aprovarContribuicoes" onAction="#aprovarContribuicoes" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" text="✔" />
-                                            <Button fx:id="revisarContribuicoes" onAction="#revisarContribuicoes" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" text="✖" />
+                                            <Button fx:id="aprovarSolucao" onAction="#aprovarSolucao" prefHeight="37.0" prefWidth="53.0" style="-fx-background-color: #27AE60; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✔" />
+                                            <Button fx:id="revisarSolucao" onAction="#revisarSolucao" prefHeight="37.0" prefWidth="53.0" style="-fx-background-color: #E74C3C; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✖" />
                                         </children>
-                                    </HBox>
-                                    <TextArea fx:id="feedbackContribuicoes" prefHeight="100.0" promptText="Digite seu feedback..." visible="false" wrapText="true" />
+                                    </VBox>
                                 </children>
-                            </VBox>
+                            </HBox>
+                            <TextArea fx:id="feedbackSolucao" prefHeight="80.0" promptText="Digite seu feedback..." style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" visible="false" wrapText="true" />
+                        </VBox>
 
-                            <!-- Hard Skills -->
-                            <VBox style="-fx-spacing: 8;" GridPane.columnIndex="0" GridPane.rowIndex="4">
+                        <!-- Link do Repositório -->
+                        <VBox spacing="8">
+                            <Label text="Link do Repositório" textFill="#34495E">
+                                <font>
+                                    <Font name="System Bold" size="12.0" />
+                                </font>
+                            </Label>
+                            <HBox spacing="10">
                                 <children>
-                                    <Label text="Hard Skills">
-                                        <font>
-                                            <Font name="System Bold" size="16.0" />
-                                        </font>
-                                    </Label>
-                                    <TextArea fx:id="alunoHardSkills" editable="false" prefHeight="130.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" wrapText="true" />
+                                    <TextArea fx:id="alunoLinkRepositorio" editable="false" prefHeight="60.0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" HBox.hgrow="ALWAYS" />
                                 </children>
-                            </VBox>
-                            <VBox style="-fx-spacing: 8;" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                            </HBox>
+                        </VBox>
+
+                        <!-- Tecnologias utilizadas -->
+                        <VBox spacing="8">
+                            <Label text="Tecnologias Utilizadas" textFill="#34495E">
+                                <font>
+                                    <Font name="System Bold" size="12.0" />
+                                </font>
+                            </Label>
+                            <HBox spacing="10">
                                 <children>
-                                    <HBox spacing="10">
+                                    <TextArea fx:id="alunoTecnologias" editable="false" prefHeight="100.0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" HBox.hgrow="ALWAYS" />
+                                    <VBox spacing="5">
                                         <children>
-                                            <Button fx:id="aprovarHardSkills" onAction="#aprovarHardSkills" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" text="✔" />
-                                            <Button fx:id="revisarHardSkills" onAction="#revisarHardSkills" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" text="✖" />
+                                            <Button fx:id="aprovarTecnologias" onAction="#aprovarTecnologias" prefHeight="37.0" prefWidth="53.0" style="-fx-background-color: #27AE60; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✔" />
+                                            <Button fx:id="revisarTecnologias" onAction="#revisarTecnologias" prefHeight="37.0" prefWidth="53.0" style="-fx-background-color: #E74C3C; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✖" />
                                         </children>
-                                    </HBox>
-                                    <TextArea fx:id="feedbackHardSkills" prefHeight="100.0" promptText="Digite seu feedback..." visible="false" wrapText="true" />
+                                    </VBox>
                                 </children>
-                            </VBox>
+                            </HBox>
+                            <TextArea fx:id="feedbackTecnologias" prefHeight="80.0" promptText="Digite seu feedback..." style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" visible="false" wrapText="true" />
+                        </VBox>
 
-                            <!-- Soft Skills -->
-                            <VBox style="-fx-spacing: 8;" GridPane.columnIndex="0" GridPane.rowIndex="5">
+                        <!-- Contribuições pessoais -->
+                        <VBox prefWidth="492.0" spacing="8">
+                            <Label text="Contribuições Pessoais" textFill="#34495E">
+                                <font>
+                                    <Font name="System Bold" size="12.0" />
+                                </font>
+                            </Label>
+                            <HBox spacing="10">
                                 <children>
-                                    <Label text="Soft Skills">
-                                        <font>
-                                            <Font name="System Bold" size="16.0" />
-                                        </font>
-                                    </Label>
-                                    <TextArea fx:id="alunoSoftSkills" editable="false" prefHeight="130.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" wrapText="true" />
-                                </children>
-                            </VBox>
-                            <VBox style="-fx-spacing: 8;" GridPane.columnIndex="1" GridPane.rowIndex="5">
-                                <children>
-                                    <HBox spacing="10">
+                                    <TextArea fx:id="alunoContribuicoes" editable="false" prefHeight="100.0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" HBox.hgrow="ALWAYS" />
+                                    <VBox prefHeight="100.0" prefWidth="64.0" spacing="5">
                                         <children>
-                                            <Button fx:id="aprovarSoftSkills" onAction="#aprovarSoftSkills" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" text="✔" />
-                                            <Button fx:id="revisarSoftSkills" onAction="#revisarSoftSkills" prefWidth="40.0" style="-fx-background-color: #5E5555; -fx-text-fill: white;" text="✖" />
+                                            <Button fx:id="aprovarContribuicoes" onAction="#aprovarContribuicoes" prefHeight="38.0" prefWidth="51.0" style="-fx-background-color: #27AE60; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✔" />
+                                            <Button fx:id="revisarContribuicoes" onAction="#revisarContribuicoes" prefHeight="37.0" prefWidth="53.0" style="-fx-background-color: #E74C3C; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✖" />
                                         </children>
-                                    </HBox>
-                                    <TextArea fx:id="feedbackSoftSkills" prefHeight="100.0" promptText="Digite seu feedback..." visible="false" wrapText="true" />
+                                    </VBox>
                                 </children>
-                            </VBox>
-                        </GridPane>
+                            </HBox>
+                            <TextArea fx:id="feedbackContribuicoes" prefHeight="80.0" promptText="Digite seu feedback..." style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" visible="false" wrapText="true" />
+                        </VBox>
 
-                        <HBox alignment="CENTER" style="-fx-padding: 10;">
+                        <!-- Hard Skills e Soft Skills -->
+                        <HBox spacing="15">
                             <children>
-                                <Button mnemonicParsing="false" onAction="#enviarFeedback" prefHeight="34.0" prefWidth="160.0" style="-fx-background-color: #5E5555;" text="Enviar Feedback" textFill="WHITE">
-                                    <font>
-                                        <Font size="14.0" />
-                                    </font>
-                                </Button>
+                                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                    <Label text="Hard Skills" textFill="#34495E">
+                                        <font>
+                                            <Font name="System Bold" size="12.0" />
+                                        </font>
+                                    </Label>
+                                    <VBox spacing="5">
+                                        <children>
+                                            <TextArea fx:id="alunoHardSkills" editable="false" prefHeight="100.0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
+                                            <HBox spacing="10">
+                                                <children>
+                                                    <Button fx:id="aprovarHardSkills" onAction="#aprovarHardSkills" prefHeight="37.0" prefWidth="53.0" style="-fx-background-color: #27AE60; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✔" />
+                                                    <Button fx:id="revisarHardSkills" onAction="#revisarHardSkills" prefHeight="37.0" prefWidth="53.0" style="-fx-background-color: #E74C3C; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✖" />
+                                                </children>
+                                            </HBox>
+                                            <TextArea fx:id="feedbackHardSkills" prefHeight="80.0" promptText="Digite seu feedback..." style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" visible="false" wrapText="true" />
+                                        </children>
+                                    </VBox>
+                                </VBox>
+                                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                    <Label text="Soft Skills" textFill="#34495E">
+                                        <font>
+                                            <Font name="System Bold" size="12.0" />
+                                        </font>
+                                    </Label>
+                                    <VBox spacing="5">
+                                        <children>
+                                            <TextArea fx:id="alunoSoftSkills" editable="false" prefHeight="100.0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
+                                            <HBox spacing="10">
+                                                <children>
+                                                    <Button fx:id="aprovarSoftSkills" onAction="#aprovarSoftSkills" prefHeight="37.0" prefWidth="53.0" style="-fx-background-color: #27AE60; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✔" />
+                                                    <Button fx:id="revisarSoftSkills" onAction="#revisarSoftSkills" prefHeight="37.0" prefWidth="53.0" style="-fx-background-color: #E74C3C; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✖" />
+                                                </children>
+                                            </HBox>
+                                            <TextArea fx:id="feedbackSoftSkills" prefHeight="80.0" promptText="Digite seu feedback..." style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" visible="false" wrapText="true" />
+                                        </children>
+                                    </VBox>
+                                </VBox>
                             </children>
                         </HBox>
-                    </children>
-                </VBox>
-            </content>
-        </ScrollPane>
-    </children>
-</VBox>
+                    </VBox>
+                </children>
+            </VBox>
+
+            <!-- Botão Enviar Feedback -->
+            <HBox alignment="CENTER" style="-fx-padding: 10;">
+                <children>
+                    <Button mnemonicParsing="false" onAction="#enviarFeedback" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: #27AE60; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(39,174,96,0.3), 5, 0, 0, 2);" text="ENVIAR FEEDBACK" textFill="WHITE">
+                        <font>
+                            <Font name="System Bold" size="14.0" />
+                        </font>
+                    </Button>
+                </children>
+            </HBox>
+        </VBox>
+    </content>
+</ScrollPane>

@@ -44,6 +44,7 @@ public class AlunoFeedbackApresentacaoController {
     @FXML private TextArea feedbackCurso;
     @FXML private TextArea feedbackMotivacao;
     @FXML private TextArea feedbackHistorico;
+    @FXML private TextArea feedbackHistoricoProfissional;
     @FXML private TextArea feedbackGithub;
     @FXML private TextArea feedbackLinkedin;
     @FXML private TextArea feedbackConhecimentos;
@@ -54,6 +55,7 @@ public class AlunoFeedbackApresentacaoController {
     @FXML private Label statusCurso;
     @FXML private Label statusMotivacao;
     @FXML private Label statusHistorico;
+    @FXML private Label statusHistoricoProfissional;
     @FXML private Label statusGithub;
     @FXML private Label statusLinkedin;
     @FXML private Label statusConhecimentos;
@@ -64,6 +66,7 @@ public class AlunoFeedbackApresentacaoController {
     @FXML private VBox containerFeedbackCurso;
     @FXML private VBox containerFeedbackMotivacao;
     @FXML private VBox containerFeedbackHistorico;
+    @FXML private VBox containerFeedbackHistoricoProfissional;
     @FXML private VBox containerFeedbackGithub;
     @FXML private VBox containerFeedbackLinkedin;
     @FXML private VBox containerFeedbackConhecimentos;
@@ -74,6 +77,7 @@ public class AlunoFeedbackApresentacaoController {
     @FXML private Button btnExpandCurso;
     @FXML private Button btnExpandMotivacao;
     @FXML private Button btnExpandHistorico;
+    @FXML private Button btnExpandHistoricoProfissional;
     @FXML private Button btnExpandGithub;
     @FXML private Button btnExpandLinkedin;
     @FXML private Button btnExpandConhecimentos;
@@ -184,6 +188,7 @@ public class AlunoFeedbackApresentacaoController {
                 "status_curso, feedback_curso, " +
                 "status_motivacao, feedback_motivacao, " +
                 "status_historico, feedback_historico, " +
+                "status_historico_profissional, feedback_historico_profissional, " +
                 "status_github, feedback_github, " +
                 "status_linkedin, feedback_linkedin, " +
                 "status_conhecimentos, feedback_conhecimentos " +
@@ -199,6 +204,7 @@ public class AlunoFeedbackApresentacaoController {
                     carregarCampoFeedback("curso", rs, feedbackCurso, statusCurso, containerFeedbackCurso, btnExpandCurso);
                     carregarCampoFeedback("motivacao", rs, feedbackMotivacao, statusMotivacao, containerFeedbackMotivacao, btnExpandMotivacao);
                     carregarCampoFeedback("historico", rs, feedbackHistorico, statusHistorico, containerFeedbackHistorico, btnExpandHistorico);
+                    carregarCampoFeedback("historico_profissional", rs, feedbackHistoricoProfissional, statusHistoricoProfissional, containerFeedbackHistoricoProfissional, btnExpandHistoricoProfissional);
                     carregarCampoFeedback("github", rs, feedbackGithub, statusGithub, containerFeedbackGithub, btnExpandGithub);
                     carregarCampoFeedback("linkedin", rs, feedbackLinkedin, statusLinkedin, containerFeedbackLinkedin, btnExpandLinkedin);
                     carregarCampoFeedback("conhecimentos", rs, feedbackConhecimentos, statusConhecimentos, containerFeedbackConhecimentos, btnExpandConhecimentos);

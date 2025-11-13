@@ -38,6 +38,8 @@ public class AlunoFeedbackApiController {
     @FXML private TextArea alunoSoftSkills;
 
     // TextAreas com feedbacks
+    @FXML private TextArea feedbackEmpresa;
+    @FXML private TextArea feedbackDescricaoEmpresa;
     @FXML private TextArea feedbackProblema;
     @FXML private TextArea feedbackSolucao;
     @FXML private TextArea feedbackTecnologias;
@@ -46,6 +48,8 @@ public class AlunoFeedbackApiController {
     @FXML private TextArea feedbackSoftSkills;
 
     // Labels de status
+    @FXML private Label statusEmpresa;
+    @FXML private Label statusDescricaoEmpresa;
     @FXML private Label statusProblema;
     @FXML private Label statusSolucao;
     @FXML private Label statusTecnologias;
@@ -54,6 +58,8 @@ public class AlunoFeedbackApiController {
     @FXML private Label statusSoftSkills;
 
     // Containers de feedback expansíveis
+    @FXML private VBox containerFeedbackEmpresa;
+    @FXML private VBox containerFeedbackDescricaoEmpresa;
     @FXML private VBox containerFeedbackProblema;
     @FXML private VBox containerFeedbackSolucao;
     @FXML private VBox containerFeedbackTecnologias;
@@ -62,6 +68,8 @@ public class AlunoFeedbackApiController {
     @FXML private VBox containerFeedbackSoftSkills;
 
     // Botões de expandir
+    @FXML private Button btnExpandEmpresa;
+    @FXML private Button btnExpandDescricaoEmpresa;
     @FXML private Button btnExpandProblema;
     @FXML private Button btnExpandSolucao;
     @FXML private Button btnExpandTecnologias;
@@ -152,7 +160,9 @@ public class AlunoFeedbackApiController {
     // Carrega dados do feedback da secao_api
     private void carregarFeedback() {
         if (secaoApi == null || secaoApi.getEmailAluno() == null) return;
-        String sql = "SELECT status_problema, feedback_problema, " +
+        String sql = "SELECT status_empresa, feedback_empresa, " +
+                "status_descricao_empresa, feedback_descricao_empresa, " +
+                "status_problema, feedback_problema, " +
                 "status_solucao, feedback_solucao, " +
                 "status_tecnologias, feedback_tecnologias, " +
                 "status_contribuicoes, feedback_contribuicoes, " +
@@ -168,6 +178,8 @@ public class AlunoFeedbackApiController {
             pst.setInt(5, secaoApi.getVersao());
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
+                    carregarCampoFeedback("empresa", rs, feedbackEmpresa, statusEmpresa, containerFeedbackEmpresa, btnExpandEmpresa);
+                    carregarCampoFeedback("descricao_empresa", rs, feedbackDescricaoEmpresa, statusDescricaoEmpresa, containerFeedbackDescricaoEmpresa, btnExpandDescricaoEmpresa);
                     carregarCampoFeedback("problema", rs, feedbackProblema, statusProblema, containerFeedbackProblema, btnExpandProblema);
                     carregarCampoFeedback("solucao", rs, feedbackSolucao, statusSolucao, containerFeedbackSolucao, btnExpandSolucao);
                     carregarCampoFeedback("tecnologias", rs, feedbackTecnologias, statusTecnologias, containerFeedbackTecnologias, btnExpandTecnologias);

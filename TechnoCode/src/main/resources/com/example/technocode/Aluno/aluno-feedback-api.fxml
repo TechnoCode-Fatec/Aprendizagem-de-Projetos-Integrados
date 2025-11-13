@@ -67,24 +67,58 @@
                                     <VBox spacing="15" style="-fx-padding: 10 0 0 0;">
                                         <!-- Empresa -->
                                         <VBox spacing="8">
-                                            <Label text="Empresa" textFill="#34495E">
-                                                <font>
-                                                    <Font name="System Bold" size="12.0" />
-                                                </font>
-                                            </Label>
+                                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                                <Label text="Empresa" textFill="#34495E">
+                                                    <font>
+                                                        <Font name="System Bold" size="12.0" />
+                                                    </font>
+                                                </Label>
+                                                <Label fx:id="statusEmpresa" style="-fx-font-weight: bold; -fx-padding: 4 12 4 12; -fx-background-radius: 12;" text="Status">
+                                                    <font>
+                                                        <Font size="11.0" />
+                                                    </font>
+                                                </Label>
+                                                <Button fx:id="btnExpandEmpresa" style="-fx-background-color: transparent; -fx-padding: 0; -fx-cursor: hand;" visible="false" managed="false">
+                                                    <graphic>
+                                                        <Label text="▼" textFill="#3498DB" style="-fx-font-size: 10px;" />
+                                                    </graphic>
+                                                </Button>
+                                            </HBox>
                                             <TextField fx:id="alunoEmpresa" editable="false" 
                                                       style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-text-fill: #2C3E50;" />
+                                            <VBox fx:id="containerFeedbackEmpresa" visible="false" managed="false" spacing="5">
+                                                <Label text="Feedback:" textFill="#E74C3C" style="-fx-font-weight: bold; -fx-font-size: 11px;" />
+                                                <TextArea fx:id="feedbackEmpresa" editable="false" prefHeight="80.0" 
+                                                          style="-fx-background-color: #FADBD8; -fx-border-color: #E74C3C; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #C0392B;" wrapText="true" />
+                                            </VBox>
                                         </VBox>
 
                                         <!-- Descrição Empresa -->
                                         <VBox spacing="8">
-                                            <Label text="Descrição da Empresa" textFill="#34495E">
-                                                <font>
-                                                    <Font name="System Bold" size="12.0" />
-                                                </font>
-                                            </Label>
+                                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                                <Label text="Descrição da Empresa" textFill="#34495E">
+                                                    <font>
+                                                        <Font name="System Bold" size="12.0" />
+                                                    </font>
+                                                </Label>
+                                                <Label fx:id="statusDescricaoEmpresa" style="-fx-font-weight: bold; -fx-padding: 4 12 4 12; -fx-background-radius: 12;" text="Status">
+                                                    <font>
+                                                        <Font size="11.0" />
+                                                    </font>
+                                                </Label>
+                                                <Button fx:id="btnExpandDescricaoEmpresa" style="-fx-background-color: transparent; -fx-padding: 0; -fx-cursor: hand;" visible="false" managed="false">
+                                                    <graphic>
+                                                        <Label text="▼" textFill="#3498DB" style="-fx-font-size: 10px;" />
+                                                    </graphic>
+                                                </Button>
+                                            </HBox>
                                             <TextArea fx:id="alunoDescricaoEmpresa" editable="false" prefHeight="80.0" 
                                                       style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
+                                            <VBox fx:id="containerFeedbackDescricaoEmpresa" visible="false" managed="false" spacing="5">
+                                                <Label text="Feedback:" textFill="#E74C3C" style="-fx-font-weight: bold; -fx-font-size: 11px;" />
+                                                <TextArea fx:id="feedbackDescricaoEmpresa" editable="false" prefHeight="80.0" 
+                                                          style="-fx-background-color: #FADBD8; -fx-border-color: #E74C3C; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #C0392B;" wrapText="true" />
+                                            </VBox>
                                         </VBox>
 
                                         <!-- Link do Repositório -->

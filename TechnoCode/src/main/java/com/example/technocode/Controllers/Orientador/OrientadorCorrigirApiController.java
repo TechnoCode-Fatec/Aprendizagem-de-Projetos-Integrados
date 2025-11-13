@@ -31,6 +31,9 @@ public class OrientadorCorrigirApiController {
     private final Map<String, String> statusPorCampo = new HashMap<>();
 
     // TextAreas de conteúdo do aluno (coluna esquerda)
+    @FXML private TextArea alunoEmpresa;
+    @FXML private TextArea alunoDescricaoEmpresa;
+    @FXML private TextArea alunoLinkRepositorio;
     @FXML private TextArea alunoProblema;
     @FXML private TextArea alunoSolucao;
     @FXML private TextArea alunoTecnologias;
@@ -39,6 +42,8 @@ public class OrientadorCorrigirApiController {
     @FXML private TextArea alunoSoftSkills;
 
     // TextAreas de feedback (coluna direita)
+    @FXML private TextArea feedbackEmpresa;
+    @FXML private TextArea feedbackDescricaoEmpresa;
     @FXML private TextArea feedbackProblema;
     @FXML private TextArea feedbackSolucao;
     @FXML private TextArea feedbackTecnologias;
@@ -49,6 +54,8 @@ public class OrientadorCorrigirApiController {
     @FXML
     public void initialize() {
         // Todos feedbacks começam ocultos
+        if (feedbackEmpresa != null) feedbackEmpresa.setVisible(false);
+        if (feedbackDescricaoEmpresa != null) feedbackDescricaoEmpresa.setVisible(false);
         if (feedbackProblema != null) feedbackProblema.setVisible(false);
         if (feedbackSolucao != null) feedbackSolucao.setVisible(false);
         if (feedbackTecnologias != null) feedbackTecnologias.setVisible(false);
@@ -67,7 +74,7 @@ public class OrientadorCorrigirApiController {
     // 1) Carrega dados da secao_api
     public void carregarSecaoAluno() {
         if (secaoApi == null || secaoApi.getEmailAluno() == null) return;
-        String sql = "SELECT problema, solucao, tecnologias, contribuicoes, hard_skills, soft_skills " +
+        String sql = "SELECT empresa, descricao_empresa, link_repositorio, problema, solucao, tecnologias, contribuicoes, hard_skills, soft_skills " +
                 "FROM secao_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
@@ -78,12 +85,25 @@ public class OrientadorCorrigirApiController {
             pst.setInt(5, secaoApi.getVersao());
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
-                    if (alunoProblema != null) alunoProblema.setText(rs.getString("problema"));
-                    if (alunoSolucao != null) alunoSolucao.setText(rs.getString("solucao"));
-                    if (alunoTecnologias != null) alunoTecnologias.setText(rs.getString("tecnologias"));
-                    if (alunoContribuicoes != null) alunoContribuicoes.setText(rs.getString("contribuicoes"));
-                    if (alunoHardSkills != null) alunoHardSkills.setText(rs.getString("hard_skills"));
-                    if (alunoSoftSkills != null) alunoSoftSkills.setText(rs.getString("soft_skills"));
+                    String empresa = rs.getString("empresa");
+                    String descricaoEmpresa = rs.getString("descricao_empresa");
+                    String linkRepo = rs.getString("link_repositorio");
+                    String problema = rs.getString("problema");
+                    String solucao = rs.getString("solucao");
+                    String tecnologias = rs.getString("tecnologias");
+                    String contribuicoes = rs.getString("contribuicoes");
+                    String hardSkills = rs.getString("hard_skills");
+                    String softSkills = rs.getString("soft_skills");
+                    
+                    if (alunoEmpresa != null) alunoEmpresa.setText(empresa != null ? empresa : "");
+                    if (alunoDescricaoEmpresa != null) alunoDescricaoEmpresa.setText(descricaoEmpresa != null ? descricaoEmpresa : "");
+                    if (alunoLinkRepositorio != null) alunoLinkRepositorio.setText(linkRepo != null ? linkRepo : "");
+                    if (alunoProblema != null) alunoProblema.setText(problema != null ? problema : "");
+                    if (alunoSolucao != null) alunoSolucao.setText(solucao != null ? solucao : "");
+                    if (alunoTecnologias != null) alunoTecnologias.setText(tecnologias != null ? tecnologias : "");
+                    if (alunoContribuicoes != null) alunoContribuicoes.setText(contribuicoes != null ? contribuicoes : "");
+                    if (alunoHardSkills != null) alunoHardSkills.setText(hardSkills != null ? hardSkills : "");
+                    if (alunoSoftSkills != null) alunoSoftSkills.setText(softSkills != null ? softSkills : "");
                 }
             }
         } catch (SQLException e) {
@@ -97,7 +117,9 @@ public class OrientadorCorrigirApiController {
     // Carrega feedback existente do orientador
     private void carregarFeedbackExistente() {
         if (secaoApi == null || secaoApi.getEmailAluno() == null) return;
-        String sql = "SELECT status_problema, feedback_problema, " +
+        String sql = "SELECT status_empresa, feedback_empresa, " +
+                "status_descricao_empresa, feedback_descricao_empresa, " +
+                "status_problema, feedback_problema, " +
                 "status_solucao, feedback_solucao, " +
                 "status_tecnologias, feedback_tecnologias, " +
                 "status_contribuicoes, feedback_contribuicoes, " +
@@ -113,43 +135,99 @@ public class OrientadorCorrigirApiController {
             pst.setInt(5, secaoApi.getVersao());
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
-                    carregarCampoFeedbackExistente("problema", rs, feedbackProblema);
-                    carregarCampoFeedbackExistente("solucao", rs, feedbackSolucao);
-                    carregarCampoFeedbackExistente("tecnologias", rs, feedbackTecnologias);
-                    carregarCampoFeedbackExistente("contribuicoes", rs, feedbackContribuicoes);
-                    carregarCampoFeedbackExistente("hard_skills", rs, feedbackHardSkills);
-                    carregarCampoFeedbackExistente("soft_skills", rs, feedbackSoftSkills);
+                    try {
+                        carregarCampoFeedbackExistente("empresa", rs, feedbackEmpresa);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback empresa: " + e.getMessage());
+                    }
+                    try {
+                        carregarCampoFeedbackExistente("descricao_empresa", rs, feedbackDescricaoEmpresa);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback descricao_empresa: " + e.getMessage());
+                    }
+                    try {
+                        carregarCampoFeedbackExistente("problema", rs, feedbackProblema);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback problema: " + e.getMessage());
+                    }
+                    try {
+                        carregarCampoFeedbackExistente("solucao", rs, feedbackSolucao);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback solucao: " + e.getMessage());
+                    }
+                    try {
+                        carregarCampoFeedbackExistente("tecnologias", rs, feedbackTecnologias);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback tecnologias: " + e.getMessage());
+                    }
+                    try {
+                        carregarCampoFeedbackExistente("contribuicoes", rs, feedbackContribuicoes);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback contribuicoes: " + e.getMessage());
+                    }
+                    try {
+                        carregarCampoFeedbackExistente("hard_skills", rs, feedbackHardSkills);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback hard_skills: " + e.getMessage());
+                    }
+                    try {
+                        carregarCampoFeedbackExistente("soft_skills", rs, feedbackSoftSkills);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback soft_skills: " + e.getMessage());
+                    }
                 }
             }
         } catch (SQLException e) {
-            // Não é erro crítico se não houver feedback existente
+            // Não é erro crítico se não houver feedback existente, mas loga o erro
+            System.err.println("Erro ao carregar feedback existente: " + e.getMessage());
         }
     }
     
     private void carregarCampoFeedbackExistente(String campo, ResultSet rs, TextArea feedbackArea) throws SQLException {
-        String status = rs.getString("status_" + campo);
-        String feedback = rs.getString("feedback_" + campo);
+        // Busca o nome correto da coluna no banco (com underscore se necessário)
+        String colunaStatus = "status_" + campo;
+        String colunaFeedback = "feedback_" + campo;
+        
+        String status = rs.getString(colunaStatus);
+        String feedback = rs.getString(colunaFeedback);
         
         if (status != null) {
             statusPorCampo.put(campo, status);
             
-            if ("Revisar".equals(status) && feedback != null && !feedback.trim().isEmpty()) {
-                // Se foi marcado para revisar e tem feedback, mostra o campo
-                if (feedbackArea != null) {
+            if (feedbackArea != null) {
+                if ("Revisar".equals(status)) {
+                    // Se foi marcado para revisar, mostra o campo de feedback
                     feedbackArea.setVisible(true);
-                    feedbackArea.setText(feedback);
+                    if (feedback != null && !feedback.trim().isEmpty()) {
+                        feedbackArea.setText(feedback);
+                    }
                     feedbackArea.setPrefHeight(100);
                     feedbackArea.setWrapText(true);
+                } else if ("Aprovado".equals(status)) {
+                    // Se foi aprovado, esconde o campo de feedback
+                    feedbackArea.setVisible(false);
+                    feedbackArea.clear();
                 }
             }
             
             // Atualiza as cores dos botões baseado no status carregado
             // Usa Platform.runLater para garantir que a cena esteja carregada
-            Platform.runLater(() -> atualizarCorBotoes(campo, status));
+            Platform.runLater(() -> {
+                try {
+                    atualizarCorBotoes(campo, status);
+                } catch (Exception e) {
+                    // Ignora erros ao atualizar botões (pode ser que a cena ainda não esteja totalmente carregada)
+                    System.err.println("Erro ao atualizar botões para campo " + campo + ": " + e.getMessage());
+                }
+            });
         }
     }
 
     // 2) Aprovar/Revisar por campo (handlers dos botões)
+    @FXML private void aprovarEmpresa(ActionEvent e) { aprovarCampo("empresa", feedbackEmpresa); }
+    @FXML private void revisarEmpresa(ActionEvent e) { revisarCampo("empresa", feedbackEmpresa); }
+    @FXML private void aprovarDescricaoEmpresa(ActionEvent e) { aprovarCampo("descricao_empresa", feedbackDescricaoEmpresa); }
+    @FXML private void revisarDescricaoEmpresa(ActionEvent e) { revisarCampo("descricao_empresa", feedbackDescricaoEmpresa); }
     @FXML private void aprovarProblema(ActionEvent e) { aprovarCampo("problema", feedbackProblema); }
     @FXML private void revisarProblema(ActionEvent e) { revisarCampo("problema", feedbackProblema); }
     @FXML private void aprovarSolucao(ActionEvent e) { aprovarCampo("solucao", feedbackSolucao); }
@@ -193,44 +271,94 @@ public class OrientadorCorrigirApiController {
     }
     
     private void atualizarCorBotoes(String campo, String status) {
-        // Mapeia campos para seus respectivos botões
+        // Mapeia campos para seus respectivos botões usando lookup direto na cena
         Button btnAprovar = null;
         Button btnRevisar = null;
         
+        // Obtém a cena de qualquer componente disponível
+        javafx.scene.Node node = null;
         switch (campo) {
+            case "empresa":
+                node = alunoEmpresa;
+                break;
+            case "descricao_empresa":
+                node = alunoDescricaoEmpresa;
+                break;
             case "problema":
-                btnAprovar = (Button) alunoProblema.getScene().lookup("#aprovarProblema");
-                btnRevisar = (Button) alunoProblema.getScene().lookup("#revisarProblema");
+                node = alunoProblema;
                 break;
             case "solucao":
-                btnAprovar = (Button) alunoSolucao.getScene().lookup("#aprovarSolucao");
-                btnRevisar = (Button) alunoSolucao.getScene().lookup("#revisarSolucao");
+                node = alunoSolucao;
                 break;
             case "tecnologias":
-                btnAprovar = (Button) alunoTecnologias.getScene().lookup("#aprovarTecnologias");
-                btnRevisar = (Button) alunoTecnologias.getScene().lookup("#revisarTecnologias");
+                node = alunoTecnologias;
                 break;
             case "contribuicoes":
-                btnAprovar = (Button) alunoContribuicoes.getScene().lookup("#aprovarContribuicoes");
-                btnRevisar = (Button) alunoContribuicoes.getScene().lookup("#revisarContribuicoes");
+                node = alunoContribuicoes;
                 break;
             case "hard_skills":
-                btnAprovar = (Button) alunoHardSkills.getScene().lookup("#aprovarHardSkills");
-                btnRevisar = (Button) alunoHardSkills.getScene().lookup("#revisarHardSkills");
+                node = alunoHardSkills;
                 break;
             case "soft_skills":
-                btnAprovar = (Button) alunoSoftSkills.getScene().lookup("#aprovarSoftSkills");
-                btnRevisar = (Button) alunoSoftSkills.getScene().lookup("#revisarSoftSkills");
+                node = alunoSoftSkills;
+                break;
+        }
+        
+        if (node == null || node.getScene() == null) {
+            return; // Cena ainda não está pronta
+        }
+        
+        // Busca os botões pelo ID
+        switch (campo) {
+            case "empresa":
+                btnAprovar = (Button) node.getScene().lookup("#aprovarEmpresa");
+                btnRevisar = (Button) node.getScene().lookup("#revisarEmpresa");
+                break;
+            case "descricao_empresa":
+                btnAprovar = (Button) node.getScene().lookup("#aprovarDescricaoEmpresa");
+                btnRevisar = (Button) node.getScene().lookup("#revisarDescricaoEmpresa");
+                break;
+            case "problema":
+                btnAprovar = (Button) node.getScene().lookup("#aprovarProblema");
+                btnRevisar = (Button) node.getScene().lookup("#revisarProblema");
+                break;
+            case "solucao":
+                btnAprovar = (Button) node.getScene().lookup("#aprovarSolucao");
+                btnRevisar = (Button) node.getScene().lookup("#revisarSolucao");
+                break;
+            case "tecnologias":
+                btnAprovar = (Button) node.getScene().lookup("#aprovarTecnologias");
+                btnRevisar = (Button) node.getScene().lookup("#revisarTecnologias");
+                break;
+            case "contribuicoes":
+                btnAprovar = (Button) node.getScene().lookup("#aprovarContribuicoes");
+                btnRevisar = (Button) node.getScene().lookup("#revisarContribuicoes");
+                break;
+            case "hard_skills":
+                btnAprovar = (Button) node.getScene().lookup("#aprovarHardSkills");
+                btnRevisar = (Button) node.getScene().lookup("#revisarHardSkills");
+                break;
+            case "soft_skills":
+                btnAprovar = (Button) node.getScene().lookup("#aprovarSoftSkills");
+                btnRevisar = (Button) node.getScene().lookup("#revisarSoftSkills");
                 break;
         }
         
         if (btnAprovar != null && btnRevisar != null) {
             if ("Aprovado".equals(status)) {
-                btnAprovar.setStyle("-fx-background-color: #00AA00; -fx-text-fill: white;");
-                btnRevisar.setStyle("-fx-background-color: #5E5555; -fx-text-fill: white;");
+                // Botão aprovar selecionado (destacado)
+                btnAprovar.setStyle("-fx-background-color: #229954; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white; -fx-border-color: #1E8449; -fx-border-width: 3px; -fx-border-radius: 6; -fx-effect: dropshadow(gaussian, rgba(39,174,96,0.5), 8, 0, 0, 2);");
+                // Botão revisar não selecionado (normal)
+                btnRevisar.setStyle("-fx-background-color: #E74C3C; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white; -fx-border-color: transparent; -fx-border-width: 0px; -fx-effect: null;");
             } else if ("Revisar".equals(status)) {
-                btnAprovar.setStyle("-fx-background-color: #5E5555; -fx-text-fill: white;");
-                btnRevisar.setStyle("-fx-background-color: #AA0000; -fx-text-fill: white;");
+                // Botão aprovar não selecionado (normal)
+                btnAprovar.setStyle("-fx-background-color: #27AE60; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white; -fx-border-color: transparent; -fx-border-width: 0px; -fx-effect: null;");
+                // Botão revisar selecionado (destacado)
+                btnRevisar.setStyle("-fx-background-color: #C0392B; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white; -fx-border-color: #A93226; -fx-border-width: 3px; -fx-border-radius: 6; -fx-effect: dropshadow(gaussian, rgba(231,76,60,0.5), 8, 0, 0, 2);");
+            } else {
+                // Nenhum selecionado (estado inicial)
+                btnAprovar.setStyle("-fx-background-color: #27AE60; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white; -fx-border-color: transparent; -fx-border-width: 0px; -fx-effect: null;");
+                btnRevisar.setStyle("-fx-background-color: #E74C3C; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white; -fx-border-color: transparent; -fx-border-width: 0px; -fx-effect: null;");
             }
         }
     }
@@ -241,6 +369,8 @@ public class OrientadorCorrigirApiController {
         // No novo esquema, sempre faz UPDATE na tabela secao_api
         // pois a seção já existe quando o feedback é dado
         String sql = "UPDATE secao_api SET " +
+                    "status_empresa = ?, feedback_empresa = ?, " +
+                    "status_descricao_empresa = ?, feedback_descricao_empresa = ?, " +
                     "status_problema = ?, feedback_problema = ?, " +
                     "status_solucao = ?, feedback_solucao = ?, " +
                     "status_tecnologias = ?, feedback_tecnologias = ?, " +
@@ -253,25 +383,29 @@ public class OrientadorCorrigirApiController {
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
 
-            setNullableString(pst, 1, statusPorCampo.get("problema"));
-            setNullableString(pst, 2, textOrNull(feedbackProblema));
-            setNullableString(pst, 3, statusPorCampo.get("solucao"));
-            setNullableString(pst, 4, textOrNull(feedbackSolucao));
-            setNullableString(pst, 5, statusPorCampo.get("tecnologias"));
-            setNullableString(pst, 6, textOrNull(feedbackTecnologias));
-            setNullableString(pst, 7, statusPorCampo.get("contribuicoes"));
-            setNullableString(pst, 8, textOrNull(feedbackContribuicoes));
-            setNullableString(pst, 9, statusPorCampo.get("hard_skills"));
-            setNullableString(pst, 10, textOrNull(feedbackHardSkills));
-            setNullableString(pst, 11, statusPorCampo.get("soft_skills"));
-            setNullableString(pst, 12, textOrNull(feedbackSoftSkills));
+            setNullableString(pst, 1, statusPorCampo.get("empresa"));
+            setNullableString(pst, 2, textOrNull(feedbackEmpresa));
+            setNullableString(pst, 3, statusPorCampo.get("descricao_empresa"));
+            setNullableString(pst, 4, textOrNull(feedbackDescricaoEmpresa));
+            setNullableString(pst, 5, statusPorCampo.get("problema"));
+            setNullableString(pst, 6, textOrNull(feedbackProblema));
+            setNullableString(pst, 7, statusPorCampo.get("solucao"));
+            setNullableString(pst, 8, textOrNull(feedbackSolucao));
+            setNullableString(pst, 9, statusPorCampo.get("tecnologias"));
+            setNullableString(pst, 10, textOrNull(feedbackTecnologias));
+            setNullableString(pst, 11, statusPorCampo.get("contribuicoes"));
+            setNullableString(pst, 12, textOrNull(feedbackContribuicoes));
+            setNullableString(pst, 13, statusPorCampo.get("hard_skills"));
+            setNullableString(pst, 14, textOrNull(feedbackHardSkills));
+            setNullableString(pst, 15, statusPorCampo.get("soft_skills"));
+            setNullableString(pst, 16, textOrNull(feedbackSoftSkills));
 
             // Para UPDATE, adiciona WHERE
-            pst.setString(13, secaoApi.getEmailAluno());
-            pst.setString(14, secaoApi.getSemestreCurso());
-            pst.setInt(15, secaoApi.getAno());
-            pst.setString(16, secaoApi.getSemestreAno());
-            pst.setInt(17, secaoApi.getVersao());
+            pst.setString(17, secaoApi.getEmailAluno());
+            pst.setString(18, secaoApi.getSemestreCurso());
+            pst.setInt(19, secaoApi.getAno());
+            pst.setString(20, secaoApi.getSemestreAno());
+            pst.setInt(21, secaoApi.getVersao());
 
             pst.executeUpdate();
 
@@ -288,7 +422,7 @@ public class OrientadorCorrigirApiController {
     private boolean verificarFeedbackExistente() {
         if (secaoApi == null || secaoApi.getEmailAluno() == null) return false;
         String sql = "SELECT COUNT(*) FROM secao_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ? " +
-                     "AND (status_problema IS NOT NULL OR status_solucao IS NOT NULL OR status_tecnologias IS NOT NULL " +
+                     "AND (status_empresa IS NOT NULL OR status_descricao_empresa IS NOT NULL OR status_problema IS NOT NULL OR status_solucao IS NOT NULL OR status_tecnologias IS NOT NULL " +
                      "OR status_contribuicoes IS NOT NULL OR status_hard_skills IS NOT NULL OR status_soft_skills IS NOT NULL)";
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {

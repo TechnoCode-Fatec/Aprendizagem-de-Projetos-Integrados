@@ -71,6 +71,10 @@
     -fx-text-fill: #2C3E50;
 }
 
+#telas-orientador .label {
+    -fx-text-fill: #2C3E50;
+}
+
 /* Estilos para TableView moderna */
 .table-view {
     -fx-background-color: #FFFFFF;
