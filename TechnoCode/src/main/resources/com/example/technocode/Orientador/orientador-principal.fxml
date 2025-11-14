@@ -77,6 +77,17 @@
                         </ImageView>
                     </graphic>
                 </Button>
+
+                <!-- Botão Solicitações -->
+                <Button contentDisplay="LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarSolicitacoes" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Solicitações">
+                    <graphic>
+                        <ImageView fitHeight="18" fitWidth="18" preserveRatio="true">
+                            <image>
+                                <Image url="@../imagens/doc.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Button>
                 
                 <!-- Espaçador para empurrar o rodapé para baixo -->
                 <Region VBox.vgrow="ALWAYS" />

@@ -121,6 +121,17 @@
                       </ImageView>
                   </graphic>
               </Button>
+
+              <!-- Botão Solicitar Orientação -->
+              <Button contentDisplay="LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarSolicitarOrientacao" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Solicitar Orientação">
+                  <graphic>
+                      <ImageView fitHeight="18" fitWidth="18" preserveRatio="true">
+                          <image>
+                              <Image url="@../imagens/doc.png" />
+                          </image>
+                      </ImageView>
+                  </graphic>
+              </Button>
               
               <!-- Espaçador para empurrar o rodapé para baixo -->
               <Region VBox.vgrow="ALWAYS" />

@@ -126,6 +126,19 @@ public class OrientadorPrincipalController {
     }
 
     /**
+     * Botão Solicitações - carrega a tela de solicitações de orientação
+     */
+    @FXML
+    private void navegarSolicitacoes() {
+        navegarParaTela("/com/example/technocode/Orientador/solicitacoes-orientacao.fxml",
+                controller -> {
+                    if (controller instanceof SolicitacoesOrientacaoController) {
+                        ((SolicitacoesOrientacaoController) controller).recarregarSolicitacoes();
+                    }
+                });
+    }
+
+    /**
      * Método público para ser chamado por outras telas quando precisarem navegar
      * Mantém a estrutura principal mas troca o conteúdo do center
      */

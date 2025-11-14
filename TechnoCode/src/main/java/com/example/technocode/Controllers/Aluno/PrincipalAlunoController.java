@@ -166,6 +166,19 @@ public class PrincipalAlunoController {
     }
 
     /**
+     * Botão Solicitar Orientação - carrega a tela de solicitar orientação
+     */
+    @FXML
+    private void navegarSolicitarOrientacao() {
+        navegarParaTela("/com/example/technocode/Aluno/solicitar-orientacao.fxml",
+                controller -> {
+                    if (controller instanceof SolicitarOrientacaoController) {
+                        ((SolicitarOrientacaoController) controller).recarregarDados();
+                    }
+                });
+    }
+
+    /**
      * Método público para ser chamado por outras telas quando precisarem navegar
      * Mantém a estrutura principal mas troca o conteúdo do center
      */
