@@ -73,15 +73,39 @@ public class OrientadorCorrigirApiController {
 
     @FXML
     public void initialize() {
-        // Todos feedbacks começam ocultos
-        if (feedbackEmpresa != null) feedbackEmpresa.setVisible(false);
-        if (feedbackDescricaoEmpresa != null) feedbackDescricaoEmpresa.setVisible(false);
-        if (feedbackProblema != null) feedbackProblema.setVisible(false);
-        if (feedbackSolucao != null) feedbackSolucao.setVisible(false);
-        if (feedbackTecnologias != null) feedbackTecnologias.setVisible(false);
-        if (feedbackContribuicoes != null) feedbackContribuicoes.setVisible(false);
-        if (feedbackHardSkills != null) feedbackHardSkills.setVisible(false);
-        if (feedbackSoftSkills != null) feedbackSoftSkills.setVisible(false);
+        // Todos feedbacks começam ocultos e desabilitados (não ocupam espaço)
+        if (feedbackEmpresa != null) {
+            feedbackEmpresa.setVisible(false);
+            feedbackEmpresa.setManaged(false);
+        }
+        if (feedbackDescricaoEmpresa != null) {
+            feedbackDescricaoEmpresa.setVisible(false);
+            feedbackDescricaoEmpresa.setManaged(false);
+        }
+        if (feedbackProblema != null) {
+            feedbackProblema.setVisible(false);
+            feedbackProblema.setManaged(false);
+        }
+        if (feedbackSolucao != null) {
+            feedbackSolucao.setVisible(false);
+            feedbackSolucao.setManaged(false);
+        }
+        if (feedbackTecnologias != null) {
+            feedbackTecnologias.setVisible(false);
+            feedbackTecnologias.setManaged(false);
+        }
+        if (feedbackContribuicoes != null) {
+            feedbackContribuicoes.setVisible(false);
+            feedbackContribuicoes.setManaged(false);
+        }
+        if (feedbackHardSkills != null) {
+            feedbackHardSkills.setVisible(false);
+            feedbackHardSkills.setManaged(false);
+        }
+        if (feedbackSoftSkills != null) {
+            feedbackSoftSkills.setVisible(false);
+            feedbackSoftSkills.setManaged(false);
+        }
     }
 
     // Recebe identificador da secao e carrega dados
@@ -223,14 +247,16 @@ public class OrientadorCorrigirApiController {
                 if ("Revisar".equals(status)) {
                     // Se foi marcado para revisar, mostra o campo de feedback
                     feedbackArea.setVisible(true);
+                    feedbackArea.setManaged(true);
                     if (feedback != null && !feedback.trim().isEmpty()) {
                         feedbackArea.setText(feedback);
                     }
                     feedbackArea.setPrefHeight(100);
                     feedbackArea.setWrapText(true);
                 } else if ("Aprovado".equals(status)) {
-                    // Se foi aprovado, esconde o campo de feedback
+                    // Se foi aprovado, esconde o campo de feedback e desabilita (não ocupa espaço)
                     feedbackArea.setVisible(false);
+                    feedbackArea.setManaged(false);
                     feedbackArea.clear();
                 }
             }
@@ -284,6 +310,7 @@ public class OrientadorCorrigirApiController {
         statusPorCampo.put(campo, "Aprovado");
         if (areaFeedback != null) {
             areaFeedback.setVisible(false);
+            areaFeedback.setManaged(false); // Não ocupa espaço quando invisível
             areaFeedback.clear();
         }
         atualizarCorBotoes(campo, "Aprovado");
@@ -294,6 +321,7 @@ public class OrientadorCorrigirApiController {
         statusPorCampo.put(campo, "Revisar");
         if (areaFeedback != null) {
             areaFeedback.setVisible(true);
+            areaFeedback.setManaged(true); // Ocupa espaço quando visível
             areaFeedback.setPromptText("Digite seu feedback aqui...");
             areaFeedback.setPrefHeight(100);
             areaFeedback.setWrapText(true);
