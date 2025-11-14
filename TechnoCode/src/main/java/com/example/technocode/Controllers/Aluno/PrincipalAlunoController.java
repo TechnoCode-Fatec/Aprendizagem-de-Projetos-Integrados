@@ -83,10 +83,10 @@ public class PrincipalAlunoController {
     }
 
     /**
-     * Carrega a tela inicial no center
+     * Carrega a tela inicial (dashboard) no center
      */
     private void carregarTelaInicial() {
-        navegarParaTela("/com/example/technocode/Aluno/tela-inicial-aluno.fxml", null);
+        navegarParaTela("/com/example/technocode/Aluno/dashboard-aluno.fxml", null);
     }
 
     /**
@@ -115,15 +115,15 @@ public class PrincipalAlunoController {
     }
 
     /**
-     * Botão Início - carrega a tela inicial
+     * Botão Início - carrega o dashboard
      */
     @FXML
     private void navegarInicio() {
-        navegarParaTela("/com/example/technocode/Aluno/tela-inicial-aluno.fxml",
+        navegarParaTela("/com/example/technocode/Aluno/dashboard-aluno.fxml",
                 controller -> {
-                    if (controller instanceof com.example.technocode.Controllers.Aluno.TelaInicialAlunoController) {
-                        // Recarrega as seções quando volta para a tela inicial
-                        ((com.example.technocode.Controllers.Aluno.TelaInicialAlunoController) controller).recarregarSecoes();
+                    if (controller instanceof com.example.technocode.Controllers.Aluno.DashboardAlunoController) {
+                        // Recarrega as estatísticas quando volta para o dashboard
+                        ((com.example.technocode.Controllers.Aluno.DashboardAlunoController) controller).atualizarEstatisticas();
                     }
                 });
     }
@@ -142,6 +142,19 @@ public class PrincipalAlunoController {
     @FXML
     private void navegarEnviarApresentacao() {
         navegarParaTela("/com/example/technocode/Aluno/formulario-apresentacao.fxml", null);
+    }
+
+    /**
+     * Botão Sessões Atuais - carrega a tela de sessões atuais
+     */
+    @FXML
+    private void navegarSessoesAtuais() {
+        navegarParaTela("/com/example/technocode/Aluno/sessoes-atuais.fxml",
+                controller -> {
+                    if (controller instanceof SessoesAtuaisAlunoController) {
+                        ((SessoesAtuaisAlunoController) controller).recarregarSecoes();
+                    }
+                });
     }
 
     /**

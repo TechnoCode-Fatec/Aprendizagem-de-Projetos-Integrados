@@ -7,7 +7,7 @@
 <ScrollPane id="telas-aluno" fitToWidth="true" style="-fx-background-color: #F8F9FA; -fx-background: transparent;"
             vbarPolicy="AS_NEEDED" hbarPolicy="NEVER"
             stylesheets="@../css/estilo.css"
-            xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.Aluno.TelaInicialAlunoController">
+            xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.Aluno.SessoesAtuaisAlunoController">
    <content>
       <VBox alignment="TOP_CENTER" style="-fx-background-color: #F8F9FA; -fx-padding: 25;" spacing="20" maxWidth="1.7976931348623157E308">
          
@@ -15,7 +15,7 @@
          <HBox alignment="CENTER" spacing="30" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);">
             <children>
                <VBox alignment="CENTER_LEFT" spacing="5" HBox.hgrow="ALWAYS">
-                  <Label text="INTERFACE ALUNO" textFill="#2C3E50">
+                  <Label text="SESSÕES ATUAIS" textFill="#2C3E50">
                      <font>
                         <Font name="System Bold" size="26.0" />
                      </font>
@@ -86,3 +86,4 @@
       </VBox>
    </content>
 </ScrollPane>
+

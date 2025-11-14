@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-public class TelaInicialAlunoController {
+public class SessoesAtuaisAlunoController {
     
     @FXML
     private VBox containerApresentacoes;
@@ -357,3 +357,4 @@ public class TelaInicialAlunoController {
 
 
 }
+

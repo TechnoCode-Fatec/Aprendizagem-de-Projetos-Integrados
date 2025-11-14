@@ -100,6 +100,17 @@
                   </graphic>
               </Button>
 
+              <!-- Botão Sessões Atuais -->
+              <Button contentDisplay="LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarSessoesAtuais" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Sessões Atuais">
+                  <graphic>
+                      <ImageView fitHeight="18" fitWidth="18" preserveRatio="true">
+                          <image>
+                              <Image url="@../imagens/doc.png" />
+                          </image>
+                      </ImageView>
+                  </graphic>
+              </Button>
+
               <!-- Botão Histórico -->
               <Button contentDisplay="LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarHistorico" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Histórico">
                   <graphic>
