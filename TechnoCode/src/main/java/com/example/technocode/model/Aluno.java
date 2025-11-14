@@ -121,7 +121,10 @@ public class Aluno {
     public static List<Map<String, String>> buscarPorOrientador(String emailOrientador) {
         List<Map<String, String>> alunos = new ArrayList<>();
         try (Connection conn = new Connector().getConnection()) {
-            String selectAlunos = "SELECT nome, email FROM aluno WHERE orientador = ?";
+            String selectAlunos = "SELECT a.nome, a.email, COALESCE(pt.disciplina, 'N/A') as disciplina " +
+                    "FROM aluno a " +
+                    "LEFT JOIN professor_tg pt ON a.professor_tg = pt.email " +
+                    "WHERE a.orientador = ?";
             PreparedStatement pst = conn.prepareStatement(selectAlunos);
             pst.setString(1, emailOrientador);
             ResultSet rs = pst.executeQuery();
@@ -129,12 +132,28 @@ public class Aluno {
                 Map<String, String> aluno = new HashMap<>();
                 aluno.put("nome", rs.getString("nome"));
                 aluno.put("email", rs.getString("email"));
+                String disciplina = rs.getString("disciplina");
+                // Formata a disciplina para exibição (TG1 -> TG 1, TG2 -> TG 2)
+                String disciplinaFormatada = formatarDisciplina(disciplina);
+                aluno.put("professor_tg", disciplinaFormatada);
                 alunos.add(aluno);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return alunos;
+    }
+    
+    /**
+     * Formata a disciplina para exibição
+     * TG1 -> TG 1, TG2 -> TG 2, TG1/TG2 -> TG 1/TG 2
+     */
+    private static String formatarDisciplina(String disciplina) {
+        if (disciplina == null || disciplina.equals("N/A")) {
+            return disciplina;
+        }
+        // Converte "TG1" para "TG 1", "TG2" para "TG 2", "TG1/TG2" para "TG 1/TG 2"
+        return disciplina.replace("TG1", "TG 1").replace("TG2", "TG 2");
     }
 
     /**

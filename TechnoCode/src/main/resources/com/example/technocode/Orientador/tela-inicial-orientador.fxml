@@ -4,19 +4,14 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<ScrollPane id="telas-aluno" fitToWidth="true" style="-fx-background-color: #F8F9FA; -fx-background: transparent;"
-            vbarPolicy="AS_NEEDED" hbarPolicy="NEVER"
-            stylesheets="@../css/estilo.css"
-            xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.Orientador.TelaInicialOrientadorController">
+<ScrollPane id="telas-aluno" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: #F8F9FA; -fx-background: transparent;" stylesheets="@../css/estilo.css" vbarPolicy="AS_NEEDED" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.Orientador.TelaInicialOrientadorController">
     <content>
-        <VBox alignment="TOP_CENTER" style="-fx-background-color: #F8F9FA; -fx-padding: 25;" spacing="20" maxWidth="1.7976931348623157E308">
+        <VBox alignment="TOP_CENTER" maxWidth="1.7976931348623157E308" spacing="20" style="-fx-background-color: #F8F9FA; -fx-padding: 25;">
             
             <!-- Header Moderno -->
             <HBox alignment="CENTER" spacing="30" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);">
                 <children>
-                    <Button mnemonicParsing="false" onAction="#voltarLogin" prefHeight="40.0" prefWidth="120.0" 
-                            style="-fx-background-color: #B82E1A; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(184,46,26,0.3), 5, 0, 0, 2);" 
-                            text="← VOLTAR" textFill="WHITE">
+                    <Button mnemonicParsing="false" onAction="#voltarLogin" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #B82E1A; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(184,46,26,0.3), 5, 0, 0, 2);" text="← VOLTAR" textFill="WHITE">
                         <font>
                             <Font name="System Bold" size="13.0" />
                         </font>
@@ -40,7 +35,7 @@
             <VBox spacing="15" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);">
                 <children>
                     <HBox alignment="CENTER_LEFT" spacing="10">
-                        <Region style="-fx-background-color: #9B59B6; -fx-background-radius: 4;" prefWidth="4" prefHeight="24" />
+                        <Region prefHeight="24" prefWidth="4" style="-fx-background-color: #9B59B6; -fx-background-radius: 4;" />
                         <Label text="Alunos Orientados" textFill="#2C3E50">
                             <font>
                                 <Font name="System Bold" size="18.0" />
@@ -48,11 +43,11 @@
                         </Label>
                     </HBox>
                     
-                    <TableView fx:id="tabelaAlunos" prefHeight="400.0" maxWidth="1.7976931348623157E308">
+                    <TableView fx:id="tabelaAlunos" maxWidth="1.7976931348623157E308" prefHeight="400.0">
                         <columns>
                             <TableColumn fx:id="colNome" prefWidth="200.0" text="Nome" />
                             <TableColumn fx:id="colEmail" prefWidth="250.0" text="Email" />
-                            <TableColumn fx:id="colMatriculado" prefWidth="200.0" text="Matéria" />
+                            <TableColumn fx:id="colDisciplina" prefWidth="200.0" text="Disciplina" />
                             <TableColumn fx:id="colAnalisar" prefWidth="150.0" text="Ações" />
                         </columns>
                         <columnResizePolicy>

@@ -50,6 +50,26 @@ public class OrientadorCorrigirApiController {
     @FXML private TextArea feedbackContribuicoes;
     @FXML private TextArea feedbackHardSkills;
     @FXML private TextArea feedbackSoftSkills;
+    
+    // TextAreas de feedback da versão anterior
+    @FXML private TextArea feedbackAnteriorEmpresa;
+    @FXML private TextArea feedbackAnteriorDescricaoEmpresa;
+    @FXML private TextArea feedbackAnteriorProblema;
+    @FXML private TextArea feedbackAnteriorSolucao;
+    @FXML private TextArea feedbackAnteriorTecnologias;
+    @FXML private TextArea feedbackAnteriorContribuicoes;
+    @FXML private TextArea feedbackAnteriorHardSkills;
+    @FXML private TextArea feedbackAnteriorSoftSkills;
+    
+    // Containers para feedback anterior
+    @FXML private javafx.scene.layout.VBox containerFeedbackAnteriorEmpresa;
+    @FXML private javafx.scene.layout.VBox containerFeedbackAnteriorDescricaoEmpresa;
+    @FXML private javafx.scene.layout.VBox containerFeedbackAnteriorProblema;
+    @FXML private javafx.scene.layout.VBox containerFeedbackAnteriorSolucao;
+    @FXML private javafx.scene.layout.VBox containerFeedbackAnteriorTecnologias;
+    @FXML private javafx.scene.layout.VBox containerFeedbackAnteriorContribuicoes;
+    @FXML private javafx.scene.layout.VBox containerFeedbackAnteriorHardSkills;
+    @FXML private javafx.scene.layout.VBox containerFeedbackAnteriorSoftSkills;
 
     @FXML
     public void initialize() {
@@ -112,6 +132,11 @@ public class OrientadorCorrigirApiController {
         
         // Carrega feedback existente se houver
         carregarFeedbackExistente();
+        
+        // Se não for a primeira versão, carrega feedback da versão anterior
+        if (secaoApi.getVersao() > 1) {
+            carregarFeedbackVersaoAnterior();
+        }
     }
     
     // Carrega feedback existente do orientador
@@ -210,11 +235,16 @@ public class OrientadorCorrigirApiController {
                 }
             }
             
-            // Atualiza as cores dos botões baseado no status carregado
+            // Atualiza as cores dos botões e bordas baseado no status carregado
             // Usa Platform.runLater para garantir que a cena esteja carregada
             Platform.runLater(() -> {
                 try {
                     atualizarCorBotoes(campo, status);
+                    if ("Aprovado".equals(status)) {
+                        aplicarBordaVerdeCampo(campo);
+                    } else {
+                        removerBordaVerdeCampo(campo);
+                    }
                 } catch (Exception e) {
                     // Ignora erros ao atualizar botões (pode ser que a cena ainda não esteja totalmente carregada)
                     System.err.println("Erro ao atualizar botões para campo " + campo + ": " + e.getMessage());
@@ -257,6 +287,7 @@ public class OrientadorCorrigirApiController {
             areaFeedback.clear();
         }
         atualizarCorBotoes(campo, "Aprovado");
+        aplicarBordaVerdeCampo(campo);
     }
 
     private void revisarCampo(String campo, TextArea areaFeedback) {
@@ -268,6 +299,44 @@ public class OrientadorCorrigirApiController {
             areaFeedback.setWrapText(true);
         }
         atualizarCorBotoes(campo, "Revisar");
+        removerBordaVerdeCampo(campo);
+    }
+    
+    private void aplicarBordaVerdeCampo(String campo) {
+        TextArea textArea = obterTextAreaAluno(campo);
+        if (textArea != null) {
+            textArea.setStyle("-fx-background-color: #F8F9FA; -fx-border-color: #27AE60; -fx-border-width: 2px; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;");
+        }
+    }
+    
+    private void removerBordaVerdeCampo(String campo) {
+        TextArea textArea = obterTextAreaAluno(campo);
+        if (textArea != null) {
+            textArea.setStyle("-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;");
+        }
+    }
+    
+    private TextArea obterTextAreaAluno(String campo) {
+        switch (campo) {
+            case "empresa":
+                return alunoEmpresa;
+            case "descricao_empresa":
+                return alunoDescricaoEmpresa;
+            case "problema":
+                return alunoProblema;
+            case "solucao":
+                return alunoSolucao;
+            case "tecnologias":
+                return alunoTecnologias;
+            case "contribuicoes":
+                return alunoContribuicoes;
+            case "hard_skills":
+                return alunoHardSkills;
+            case "soft_skills":
+                return alunoSoftSkills;
+            default:
+                return null;
+        }
     }
     
     private void atualizarCorBotoes(String campo, String status) {
@@ -416,6 +485,83 @@ public class OrientadorCorrigirApiController {
             alert.showAndWait();
         } catch (SQLException e) {
             mostrarErro("Erro ao enviar feedback", e);
+        }
+    }
+    
+    // Carrega feedback da versão anterior (versao - 1)
+    private void carregarFeedbackVersaoAnterior() {
+        if (secaoApi == null || secaoApi.getEmailAluno() == null) return;
+        
+        int versaoAnterior = secaoApi.getVersao() - 1;
+        if (versaoAnterior < 1) return; // Não há versão anterior
+        
+        String sql = "SELECT status_empresa, feedback_empresa, " +
+                "status_descricao_empresa, feedback_descricao_empresa, " +
+                "status_problema, feedback_problema, " +
+                "status_solucao, feedback_solucao, " +
+                "status_tecnologias, feedback_tecnologias, " +
+                "status_contribuicoes, feedback_contribuicoes, " +
+                "status_hard_skills, feedback_hard_skills, " +
+                "status_soft_skills, feedback_soft_skills " +
+                "FROM secao_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
+        
+        try (Connection con = new Connector().getConnection();
+             PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, secaoApi.getEmailAluno());
+            pst.setString(2, secaoApi.getSemestreCurso());
+            pst.setInt(3, secaoApi.getAno());
+            pst.setString(4, secaoApi.getSemestreAno());
+            pst.setInt(5, versaoAnterior);
+            
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    // Carrega feedback e status de cada campo
+                    carregarFeedbackAnteriorCampo("empresa", rs.getString("status_empresa"), rs.getString("feedback_empresa"), 
+                            alunoEmpresa, feedbackAnteriorEmpresa, containerFeedbackAnteriorEmpresa);
+                    carregarFeedbackAnteriorCampo("descricao_empresa", rs.getString("status_descricao_empresa"), rs.getString("feedback_descricao_empresa"), 
+                            alunoDescricaoEmpresa, feedbackAnteriorDescricaoEmpresa, containerFeedbackAnteriorDescricaoEmpresa);
+                    carregarFeedbackAnteriorCampo("problema", rs.getString("status_problema"), rs.getString("feedback_problema"), 
+                            alunoProblema, feedbackAnteriorProblema, containerFeedbackAnteriorProblema);
+                    carregarFeedbackAnteriorCampo("solucao", rs.getString("status_solucao"), rs.getString("feedback_solucao"), 
+                            alunoSolucao, feedbackAnteriorSolucao, containerFeedbackAnteriorSolucao);
+                    carregarFeedbackAnteriorCampo("tecnologias", rs.getString("status_tecnologias"), rs.getString("feedback_tecnologias"), 
+                            alunoTecnologias, feedbackAnteriorTecnologias, containerFeedbackAnteriorTecnologias);
+                    carregarFeedbackAnteriorCampo("contribuicoes", rs.getString("status_contribuicoes"), rs.getString("feedback_contribuicoes"), 
+                            alunoContribuicoes, feedbackAnteriorContribuicoes, containerFeedbackAnteriorContribuicoes);
+                    carregarFeedbackAnteriorCampo("hard_skills", rs.getString("status_hard_skills"), rs.getString("feedback_hard_skills"), 
+                            alunoHardSkills, feedbackAnteriorHardSkills, containerFeedbackAnteriorHardSkills);
+                    carregarFeedbackAnteriorCampo("soft_skills", rs.getString("status_soft_skills"), rs.getString("feedback_soft_skills"), 
+                            alunoSoftSkills, feedbackAnteriorSoftSkills, containerFeedbackAnteriorSoftSkills);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao carregar feedback da versão anterior: " + e.getMessage());
+        }
+    }
+    
+    private void carregarFeedbackAnteriorCampo(String campo, String status, String feedback, 
+            TextArea textAreaAluno, TextArea textAreaFeedback, javafx.scene.layout.VBox container) {
+        if (status == null) return;
+        
+        // Se foi aprovado, aplica borda verde e seleciona botão
+        if ("Aprovado".equals(status)) {
+            // Atualiza status e botões
+            statusPorCampo.put(campo, "Aprovado");
+            Platform.runLater(() -> {
+                try {
+                    atualizarCorBotoes(campo, "Aprovado");
+                    aplicarBordaVerdeCampo(campo);
+                } catch (Exception e) {
+                    System.err.println("Erro ao atualizar botões para campo " + campo + ": " + e.getMessage());
+                }
+            });
+        }
+        
+        // Se tem feedback, exibe o container de feedback anterior
+        if (feedback != null && !feedback.trim().isEmpty() && textAreaFeedback != null && container != null) {
+            textAreaFeedback.setText(feedback);
+            container.setVisible(true);
+            container.setManaged(true);
         }
     }
     

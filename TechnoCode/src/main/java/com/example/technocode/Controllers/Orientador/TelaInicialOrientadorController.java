@@ -21,7 +21,7 @@ public class TelaInicialOrientadorController {
     @FXML
     private TableColumn<Map<String, String>, String> colEmail;
     @FXML
-    private TableColumn<Map<String, String>, String> colMatriculado;
+    private TableColumn<Map<String, String>, String> colDisciplina;
     @FXML
     private TableColumn<Map<String, String>, Void> colAnalisar;
 
@@ -39,8 +39,8 @@ public class TelaInicialOrientadorController {
             colEmail.setCellValueFactory(data ->
                     new SimpleStringProperty(data.getValue().get("email"))
             );
-            colMatriculado.setCellValueFactory(data ->
-                    new SimpleStringProperty(data.getValue().get("curso"))
+            colDisciplina.setCellValueFactory(data ->
+                    new SimpleStringProperty(data.getValue().get("professor_tg"))
             );
             List<Map<String, String>> alunos = Aluno.buscarPorOrientador(LoginController.getEmailLogado());
 
@@ -50,7 +50,7 @@ public class TelaInicialOrientadorController {
             // Configura alinhamento das colunas
             colNome.setStyle("-fx-alignment: CENTER-LEFT;");
             colEmail.setStyle("-fx-alignment: CENTER-LEFT;");
-            colMatriculado.setStyle("-fx-alignment: CENTER-LEFT;");
+            colDisciplina.setStyle("-fx-alignment: CENTER-LEFT;");
             colAnalisar.setStyle("-fx-alignment: CENTER;");
 
             // Adiciona os botões de "Analisar"
