@@ -49,6 +49,28 @@ public class OrientadorCorrigirApresentacaoController {
     @FXML private TextArea feedbackTextGithub;
     @FXML private TextArea feedbackTextLinkedin;
     @FXML private TextArea feedbackTextConhecimentos;
+    
+    // Containers para feedback
+    @FXML private javafx.scene.layout.VBox containerFeedbackNome;
+    @FXML private javafx.scene.layout.VBox containerFeedbackIdade;
+    @FXML private javafx.scene.layout.VBox containerFeedbackCurso;
+    @FXML private javafx.scene.layout.VBox containerFeedbackMotivacao;
+    @FXML private javafx.scene.layout.VBox containerFeedbackHistorico;
+    @FXML private javafx.scene.layout.VBox containerFeedbackHistoricoProfissional;
+    @FXML private javafx.scene.layout.VBox containerFeedbackGithub;
+    @FXML private javafx.scene.layout.VBox containerFeedbackLinkedin;
+    @FXML private javafx.scene.layout.VBox containerFeedbackConhecimentos;
+    
+    // Labels para indicar versão do feedback
+    @FXML private javafx.scene.control.Label labelVersaoNome;
+    @FXML private javafx.scene.control.Label labelVersaoIdade;
+    @FXML private javafx.scene.control.Label labelVersaoCurso;
+    @FXML private javafx.scene.control.Label labelVersaoMotivacao;
+    @FXML private javafx.scene.control.Label labelVersaoHistorico;
+    @FXML private javafx.scene.control.Label labelVersaoHistoricoProfissional;
+    @FXML private javafx.scene.control.Label labelVersaoGithub;
+    @FXML private javafx.scene.control.Label labelVersaoLinkedin;
+    @FXML private javafx.scene.control.Label labelVersaoConhecimentos;
 
     @FXML
     public void initialize() {
@@ -142,52 +164,72 @@ public class OrientadorCorrigirApresentacaoController {
             pst.setString(1, secaoApresentacao.getEmailAluno());
             pst.setInt(2, secaoApresentacao.getVersao());
             try (ResultSet rs = pst.executeQuery()) {
+                boolean temFeedbackAtual = false;
                 if (rs.next()) {
-                    try {
-                        carregarCampoFeedbackExistente("nome", rs, feedbackTextNome);
-                    } catch (Exception e) {
-                        System.err.println("Erro ao carregar feedback nome: " + e.getMessage());
+                    // Verifica se há algum feedback na versão atual
+                    String[] statusFields = {"status_nome", "status_idade", "status_curso", "status_motivacao", 
+                                             "status_historico", "status_historico_profissional", 
+                                             "status_github", "status_linkedin", "status_conhecimentos"};
+                    for (String field : statusFields) {
+                        if (rs.getString(field) != null) {
+                            temFeedbackAtual = true;
+                            break;
+                        }
                     }
-                    try {
-                        carregarCampoFeedbackExistente("idade", rs, feedbackTextIdade);
-                    } catch (Exception e) {
-                        System.err.println("Erro ao carregar feedback idade: " + e.getMessage());
+                    
+                    if (temFeedbackAtual) {
+                        // Carrega feedback da versão atual
+                        try {
+                            carregarCampoFeedbackExistente("nome", rs, feedbackTextNome, false, secaoApresentacao.getVersao());
+                        } catch (Exception e) {
+                            System.err.println("Erro ao carregar feedback nome: " + e.getMessage());
+                        }
+                        try {
+                            carregarCampoFeedbackExistente("idade", rs, feedbackTextIdade, false, secaoApresentacao.getVersao());
+                        } catch (Exception e) {
+                            System.err.println("Erro ao carregar feedback idade: " + e.getMessage());
+                        }
+                        try {
+                            carregarCampoFeedbackExistente("curso", rs, feedbackTextCurso, false, secaoApresentacao.getVersao());
+                        } catch (Exception e) {
+                            System.err.println("Erro ao carregar feedback curso: " + e.getMessage());
+                        }
+                        try {
+                            carregarCampoFeedbackExistente("motivacao", rs, feedbackTextMotivacao, false, secaoApresentacao.getVersao());
+                        } catch (Exception e) {
+                            System.err.println("Erro ao carregar feedback motivacao: " + e.getMessage());
+                        }
+                        try {
+                            carregarCampoFeedbackExistente("historico", rs, feedbackTextHistorico, false, secaoApresentacao.getVersao());
+                        } catch (Exception e) {
+                            System.err.println("Erro ao carregar feedback historico: " + e.getMessage());
+                        }
+                        try {
+                            carregarCampoFeedbackExistente("historico_profissional", rs, feedbackTextHistoricoProfissional, false, secaoApresentacao.getVersao());
+                        } catch (Exception e) {
+                            System.err.println("Erro ao carregar feedback historico_profissional: " + e.getMessage());
+                        }
+                        try {
+                            carregarCampoFeedbackExistente("github", rs, feedbackTextGithub, false, secaoApresentacao.getVersao());
+                        } catch (Exception e) {
+                            System.err.println("Erro ao carregar feedback github: " + e.getMessage());
+                        }
+                        try {
+                            carregarCampoFeedbackExistente("linkedin", rs, feedbackTextLinkedin, false, secaoApresentacao.getVersao());
+                        } catch (Exception e) {
+                            System.err.println("Erro ao carregar feedback linkedin: " + e.getMessage());
+                        }
+                        try {
+                            carregarCampoFeedbackExistente("conhecimentos", rs, feedbackTextConhecimentos, false, secaoApresentacao.getVersao());
+                        } catch (Exception e) {
+                            System.err.println("Erro ao carregar feedback conhecimentos: " + e.getMessage());
+                        }
                     }
-                    try {
-                        carregarCampoFeedbackExistente("curso", rs, feedbackTextCurso);
-                    } catch (Exception e) {
-                        System.err.println("Erro ao carregar feedback curso: " + e.getMessage());
-                    }
-                    try {
-                        carregarCampoFeedbackExistente("motivacao", rs, feedbackTextMotivacao);
-                    } catch (Exception e) {
-                        System.err.println("Erro ao carregar feedback motivacao: " + e.getMessage());
-                    }
-                    try {
-                        carregarCampoFeedbackExistente("historico", rs, feedbackTextHistorico);
-                    } catch (Exception e) {
-                        System.err.println("Erro ao carregar feedback historico: " + e.getMessage());
-                    }
-                    try {
-                        carregarCampoFeedbackExistente("historico_profissional", rs, feedbackTextHistoricoProfissional);
-                    } catch (Exception e) {
-                        System.err.println("Erro ao carregar feedback historico_profissional: " + e.getMessage());
-                    }
-                    try {
-                        carregarCampoFeedbackExistente("github", rs, feedbackTextGithub);
-                    } catch (Exception e) {
-                        System.err.println("Erro ao carregar feedback github: " + e.getMessage());
-                    }
-                    try {
-                        carregarCampoFeedbackExistente("linkedin", rs, feedbackTextLinkedin);
-                    } catch (Exception e) {
-                        System.err.println("Erro ao carregar feedback linkedin: " + e.getMessage());
-                    }
-                    try {
-                        carregarCampoFeedbackExistente("conhecimentos", rs, feedbackTextConhecimentos);
-                    } catch (Exception e) {
-                        System.err.println("Erro ao carregar feedback conhecimentos: " + e.getMessage());
-                    }
+                }
+                
+                // Se não há feedback na versão atual, carrega da versão anterior
+                if (!temFeedbackAtual && secaoApresentacao.getVersao() > 1) {
+                    carregarFeedbackVersaoAnteriorParaReuso();
                 }
             }
         } catch (SQLException e) {
@@ -196,7 +238,89 @@ public class OrientadorCorrigirApresentacaoController {
         }
     }
     
+    // Carrega feedback da versão anterior para reutilização quando não há feedback na versão atual
+    private void carregarFeedbackVersaoAnteriorParaReuso() {
+        if (secaoApresentacao == null || secaoApresentacao.getEmailAluno() == null || secaoApresentacao.getVersao() <= 1) {
+            return;
+        }
+        
+        int versaoAnterior = secaoApresentacao.getVersao() - 1;
+        // Indica que estamos carregando feedback da versão anterior
+        boolean isVersaoAnterior = true;
+        String sql = "SELECT status_nome, feedback_nome, " +
+                "status_idade, feedback_idade, " +
+                "status_curso, feedback_curso, " +
+                "status_motivacao, feedback_motivacao, " +
+                "status_historico, feedback_historico, " +
+                "status_github, feedback_github, " +
+                "status_linkedin, feedback_linkedin, " +
+                "status_conhecimentos, feedback_conhecimentos, " +
+                "status_historico_profissional, feedback_historico_profissional " +
+                "FROM secao_apresentacao WHERE aluno = ? AND versao = ?";
+        try (Connection con = new Connector().getConnection();
+             PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, secaoApresentacao.getEmailAluno());
+            pst.setInt(2, versaoAnterior);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    // Carrega feedback da versão anterior
+                    try {
+                        carregarCampoFeedbackExistente("nome", rs, feedbackTextNome, isVersaoAnterior, versaoAnterior);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback nome da versão anterior: " + e.getMessage());
+                    }
+                    try {
+                        carregarCampoFeedbackExistente("idade", rs, feedbackTextIdade, isVersaoAnterior, versaoAnterior);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback idade da versão anterior: " + e.getMessage());
+                    }
+                    try {
+                        carregarCampoFeedbackExistente("curso", rs, feedbackTextCurso, isVersaoAnterior, versaoAnterior);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback curso da versão anterior: " + e.getMessage());
+                    }
+                    try {
+                        carregarCampoFeedbackExistente("motivacao", rs, feedbackTextMotivacao, isVersaoAnterior, versaoAnterior);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback motivacao da versão anterior: " + e.getMessage());
+                    }
+                    try {
+                        carregarCampoFeedbackExistente("historico", rs, feedbackTextHistorico, isVersaoAnterior, versaoAnterior);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback historico da versão anterior: " + e.getMessage());
+                    }
+                    try {
+                        carregarCampoFeedbackExistente("historico_profissional", rs, feedbackTextHistoricoProfissional, isVersaoAnterior, versaoAnterior);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback historico_profissional da versão anterior: " + e.getMessage());
+                    }
+                    try {
+                        carregarCampoFeedbackExistente("github", rs, feedbackTextGithub, isVersaoAnterior, versaoAnterior);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback github da versão anterior: " + e.getMessage());
+                    }
+                    try {
+                        carregarCampoFeedbackExistente("linkedin", rs, feedbackTextLinkedin, isVersaoAnterior, versaoAnterior);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback linkedin da versão anterior: " + e.getMessage());
+                    }
+                    try {
+                        carregarCampoFeedbackExistente("conhecimentos", rs, feedbackTextConhecimentos, isVersaoAnterior, versaoAnterior);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback conhecimentos da versão anterior: " + e.getMessage());
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao carregar feedback da versão anterior: " + e.getMessage());
+        }
+    }
+    
     private void carregarCampoFeedbackExistente(String campo, ResultSet rs, TextArea feedbackArea) throws SQLException {
+        carregarCampoFeedbackExistente(campo, rs, feedbackArea, false, secaoApresentacao != null ? secaoApresentacao.getVersao() : 1);
+    }
+    
+    private void carregarCampoFeedbackExistente(String campo, ResultSet rs, TextArea feedbackArea, boolean isVersaoAnterior, int versao) throws SQLException {
         // Busca o nome correto da coluna no banco (com underscore se necessário)
         String colunaStatus = "status_" + campo;
         String colunaFeedback = "feedback_" + campo;
@@ -207,32 +331,87 @@ public class OrientadorCorrigirApresentacaoController {
         if (status != null) {
             statusPorCampo.put(campo, status);
             
+            javafx.scene.layout.VBox container = obterContainerFeedback(campo);
+            javafx.scene.control.Label labelVersao = obterLabelVersao(campo);
+            
+            // Atualiza label de versão se for da versão anterior
+            if (isVersaoAnterior && labelVersao != null) {
+                labelVersao.setText("(v." + versao + ")");
+                labelVersao.setVisible(true);
+                labelVersao.setManaged(true);
+            } else if (labelVersao != null) {
+                labelVersao.setVisible(false);
+                labelVersao.setManaged(false);
+            }
+            
             if (feedbackArea != null) {
                 if ("Revisar".equals(status)) {
                     // Se foi marcado para revisar, mostra o campo de feedback
+                    if (container != null) {
+                        container.setVisible(true);
+                        container.setManaged(true);
+                    }
                     feedbackArea.setVisible(true);
+                    feedbackArea.setManaged(true);
                     if (feedback != null && !feedback.trim().isEmpty()) {
                         feedbackArea.setText(feedback);
                     }
-                    feedbackArea.setPrefHeight(100);
+                    feedbackArea.setPrefHeight(80);
                     feedbackArea.setWrapText(true);
                 } else if ("Aprovado".equals(status)) {
                     // Se foi aprovado, esconde o campo de feedback
+                    if (container != null) {
+                        container.setVisible(false);
+                        container.setManaged(false);
+                    }
                     feedbackArea.setVisible(false);
+                    feedbackArea.setManaged(false);
                     feedbackArea.clear();
                 }
             }
             
-            // Atualiza as cores dos botões baseado no status carregado
+            // Atualiza as cores dos botões e bordas baseado no status carregado
             // Usa Platform.runLater para garantir que a cena esteja carregada
             Platform.runLater(() -> {
                 try {
                     atualizarCorBotoes(campo, status);
+                    if ("Aprovado".equals(status)) {
+                        aplicarBordaVerdeCampo(campo);
+                    } else if ("Revisar".equals(status)) {
+                        aplicarBordaVermelhaCampo(campo);
+                    } else {
+                        removerBordaCampo(campo);
+                    }
                 } catch (Exception e) {
                     // Ignora erros ao atualizar botões (pode ser que a cena ainda não esteja totalmente carregada)
                     System.err.println("Erro ao atualizar botões para campo " + campo + ": " + e.getMessage());
                 }
             });
+        }
+    }
+    
+    private javafx.scene.control.Label obterLabelVersao(String campo) {
+        switch (campo) {
+            case "nome":
+                return labelVersaoNome;
+            case "idade":
+                return labelVersaoIdade;
+            case "curso":
+                return labelVersaoCurso;
+            case "motivacao":
+                return labelVersaoMotivacao;
+            case "historico":
+                return labelVersaoHistorico;
+            case "historico_profissional":
+                return labelVersaoHistoricoProfissional;
+            case "github":
+                return labelVersaoGithub;
+            case "linkedin":
+                return labelVersaoLinkedin;
+            case "conhecimentos":
+                return labelVersaoConhecimentos;
+            default:
+                return null;
         }
     }
 
@@ -272,22 +451,123 @@ public class OrientadorCorrigirApresentacaoController {
 
     private void aprovarCampo(String campo, TextArea areaFeedback) {
         statusPorCampo.put(campo, "Aprovado");
+        javafx.scene.layout.VBox container = obterContainerFeedback(campo);
+        javafx.scene.control.Label labelVersao = obterLabelVersao(campo);
+        
+        // Oculta label de versão quando aprovar (agora é feedback da versão atual)
+        if (labelVersao != null) {
+            labelVersao.setVisible(false);
+            labelVersao.setManaged(false);
+        }
+        
+        if (container != null) {
+            container.setVisible(false);
+            container.setManaged(false);
+        }
         if (areaFeedback != null) {
             areaFeedback.setVisible(false);
+            areaFeedback.setManaged(false);
             areaFeedback.clear();
         }
         atualizarCorBotoes(campo, "Aprovado");
+        aplicarBordaVerdeCampo(campo);
     }
 
     private void revisarCampo(String campo, TextArea areaFeedback) {
         statusPorCampo.put(campo, "Revisar");
+        javafx.scene.layout.VBox container = obterContainerFeedback(campo);
+        javafx.scene.control.Label labelVersao = obterLabelVersao(campo);
+        
+        // Oculta label de versão quando revisar (agora é feedback da versão atual)
+        if (labelVersao != null) {
+            labelVersao.setVisible(false);
+            labelVersao.setManaged(false);
+        }
+        
+        if (container != null) {
+            container.setVisible(true);
+            container.setManaged(true);
+        }
         if (areaFeedback != null) {
             areaFeedback.setVisible(true);
+            areaFeedback.setManaged(true);
             areaFeedback.setPromptText("Digite seu feedback aqui...");
-            areaFeedback.setPrefHeight(100);
+            areaFeedback.setPrefHeight(80);
             areaFeedback.setWrapText(true);
         }
         atualizarCorBotoes(campo, "Revisar");
+        aplicarBordaVermelhaCampo(campo);
+    }
+    
+    private void aplicarBordaVerdeCampo(String campo) {
+        TextArea textArea = obterTextAreaAluno(campo);
+        if (textArea != null) {
+            textArea.setStyle("-fx-background-color: #F8F9FA; -fx-border-color: #27AE60; -fx-border-width: 2px; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;");
+        }
+    }
+    
+    private void aplicarBordaVermelhaCampo(String campo) {
+        TextArea textArea = obterTextAreaAluno(campo);
+        if (textArea != null) {
+            textArea.setStyle("-fx-background-color: #F8F9FA; -fx-border-color: #E74C3C; -fx-border-width: 2px; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;");
+        }
+    }
+    
+    private void removerBordaCampo(String campo) {
+        TextArea textArea = obterTextAreaAluno(campo);
+        if (textArea != null) {
+            textArea.setStyle("-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;");
+        }
+    }
+    
+    private TextArea obterTextAreaAluno(String campo) {
+        switch (campo) {
+            case "nome":
+                return alunoTextNome;
+            case "idade":
+                return alunoTextIdade;
+            case "curso":
+                return alunoTextCurso;
+            case "motivacao":
+                return alunoTextMotivacao;
+            case "historico":
+                return alunoTextHistorico;
+            case "historico_profissional":
+                return alunoTextHistoricoProfissional;
+            case "github":
+                return alunoTextGithub;
+            case "linkedin":
+                return alunoTextLinkedin;
+            case "conhecimentos":
+                return alunoTextConhecimentos;
+            default:
+                return null;
+        }
+    }
+    
+    private javafx.scene.layout.VBox obterContainerFeedback(String campo) {
+        switch (campo) {
+            case "nome":
+                return containerFeedbackNome;
+            case "idade":
+                return containerFeedbackIdade;
+            case "curso":
+                return containerFeedbackCurso;
+            case "motivacao":
+                return containerFeedbackMotivacao;
+            case "historico":
+                return containerFeedbackHistorico;
+            case "historico_profissional":
+                return containerFeedbackHistoricoProfissional;
+            case "github":
+                return containerFeedbackGithub;
+            case "linkedin":
+                return containerFeedbackLinkedin;
+            case "conhecimentos":
+                return containerFeedbackConhecimentos;
+            default:
+                return null;
+        }
     }
     
     private void atualizarCorBotoes(String campo, String status) {

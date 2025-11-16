@@ -89,9 +89,10 @@
 
                     <TableView fx:id="tabelaSecao" prefHeight="350.0" maxWidth="1.7976931348623157E308" style="-fx-background-radius: 8; -fx-border-radius: 8;">
                         <columns>
-                            <TableColumn fx:id="colNomeSecao" prefWidth="250" text="Nome da Seção" />
-                            <TableColumn fx:id="colDescricao" prefWidth="300" text="Descrição" />
-                            <TableColumn fx:id="colStatusFeedback" prefWidth="250" text="Status" />
+                            <TableColumn fx:id="colNomeSecao" prefWidth="200" text="Nome da Seção" />
+                            <TableColumn fx:id="colDescricao" prefWidth="250" text="Descrição" />
+                            <TableColumn fx:id="colItensAprovados" prefWidth="200" text="Itens Aprovados" />
+                            <TableColumn fx:id="colStatusFeedback" prefWidth="200" text="Status" />
                             <TableColumn fx:id="colAnalisar" prefWidth="150" text="Analisar" />
                         </columns>
                         <columnResizePolicy>

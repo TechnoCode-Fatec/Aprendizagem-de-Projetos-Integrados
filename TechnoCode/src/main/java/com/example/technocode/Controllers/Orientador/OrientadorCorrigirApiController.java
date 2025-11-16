@@ -73,6 +73,28 @@ public class OrientadorCorrigirApiController {
     @FXML private javafx.scene.layout.VBox containerFeedbackAnteriorContribuicoes;
     @FXML private javafx.scene.layout.VBox containerFeedbackAnteriorHardSkills;
     @FXML private javafx.scene.layout.VBox containerFeedbackAnteriorSoftSkills;
+    
+    // Containers para feedback
+    @FXML private javafx.scene.layout.VBox containerFeedbackEmpresa;
+    @FXML private javafx.scene.layout.VBox containerFeedbackDescricaoEmpresa;
+    @FXML private javafx.scene.layout.VBox containerFeedbackRepositorio;
+    @FXML private javafx.scene.layout.VBox containerFeedbackProblema;
+    @FXML private javafx.scene.layout.VBox containerFeedbackSolucao;
+    @FXML private javafx.scene.layout.VBox containerFeedbackTecnologias;
+    @FXML private javafx.scene.layout.VBox containerFeedbackContribuicoes;
+    @FXML private javafx.scene.layout.VBox containerFeedbackHardSkills;
+    @FXML private javafx.scene.layout.VBox containerFeedbackSoftSkills;
+    
+    // Labels para indicar versão do feedback
+    @FXML private javafx.scene.control.Label labelVersaoEmpresa;
+    @FXML private javafx.scene.control.Label labelVersaoDescricaoEmpresa;
+    @FXML private javafx.scene.control.Label labelVersaoRepositorio;
+    @FXML private javafx.scene.control.Label labelVersaoProblema;
+    @FXML private javafx.scene.control.Label labelVersaoSolucao;
+    @FXML private javafx.scene.control.Label labelVersaoTecnologias;
+    @FXML private javafx.scene.control.Label labelVersaoContribuicoes;
+    @FXML private javafx.scene.control.Label labelVersaoHardSkills;
+    @FXML private javafx.scene.control.Label labelVersaoSoftSkills;
 
     @FXML
     public void initialize() {
@@ -191,52 +213,72 @@ public class OrientadorCorrigirApiController {
             pst.setString(4, secaoApi.getSemestreAno());
             pst.setInt(5, secaoApi.getVersao());
             try (ResultSet rs = pst.executeQuery()) {
+                boolean temFeedbackAtual = false;
                 if (rs.next()) {
-                    try {
-                        carregarCampoFeedbackExistente("empresa", rs, feedbackEmpresa);
-                    } catch (Exception e) {
-                        System.err.println("Erro ao carregar feedback empresa: " + e.getMessage());
+                    // Verifica se há algum feedback na versão atual
+                    String[] statusFields = {"status_empresa", "status_descricao_empresa", "status_repositorio", 
+                                             "status_problema", "status_solucao", "status_tecnologias", 
+                                             "status_contribuicoes", "status_hard_skills", "status_soft_skills"};
+                    for (String field : statusFields) {
+                        if (rs.getString(field) != null) {
+                            temFeedbackAtual = true;
+                            break;
+                        }
                     }
-                    try {
-                        carregarCampoFeedbackExistente("descricao_empresa", rs, feedbackDescricaoEmpresa);
-                    } catch (Exception e) {
-                        System.err.println("Erro ao carregar feedback descricao_empresa: " + e.getMessage());
+                    
+                    if (temFeedbackAtual) {
+                        // Carrega feedback da versão atual
+                        try {
+                            carregarCampoFeedbackExistente("empresa", rs, feedbackEmpresa, false, secaoApi.getVersao());
+                        } catch (Exception e) {
+                            System.err.println("Erro ao carregar feedback empresa: " + e.getMessage());
+                        }
+                        try {
+                            carregarCampoFeedbackExistente("descricao_empresa", rs, feedbackDescricaoEmpresa, false, secaoApi.getVersao());
+                        } catch (Exception e) {
+                            System.err.println("Erro ao carregar feedback descricao_empresa: " + e.getMessage());
+                        }
+                        try {
+                            carregarCampoFeedbackExistente("repositorio", rs, feedbackRepositorio, false, secaoApi.getVersao());
+                        } catch (Exception e) {
+                            System.err.println("Erro ao carregar feedback repositorio: " + e.getMessage());
+                        }
+                        try {
+                            carregarCampoFeedbackExistente("problema", rs, feedbackProblema, false, secaoApi.getVersao());
+                        } catch (Exception e) {
+                            System.err.println("Erro ao carregar feedback problema: " + e.getMessage());
+                        }
+                        try {
+                            carregarCampoFeedbackExistente("solucao", rs, feedbackSolucao, false, secaoApi.getVersao());
+                        } catch (Exception e) {
+                            System.err.println("Erro ao carregar feedback solucao: " + e.getMessage());
+                        }
+                        try {
+                            carregarCampoFeedbackExistente("tecnologias", rs, feedbackTecnologias, false, secaoApi.getVersao());
+                        } catch (Exception e) {
+                            System.err.println("Erro ao carregar feedback tecnologias: " + e.getMessage());
+                        }
+                        try {
+                            carregarCampoFeedbackExistente("contribuicoes", rs, feedbackContribuicoes, false, secaoApi.getVersao());
+                        } catch (Exception e) {
+                            System.err.println("Erro ao carregar feedback contribuicoes: " + e.getMessage());
+                        }
+                        try {
+                            carregarCampoFeedbackExistente("hard_skills", rs, feedbackHardSkills, false, secaoApi.getVersao());
+                        } catch (Exception e) {
+                            System.err.println("Erro ao carregar feedback hard_skills: " + e.getMessage());
+                        }
+                        try {
+                            carregarCampoFeedbackExistente("soft_skills", rs, feedbackSoftSkills, false, secaoApi.getVersao());
+                        } catch (Exception e) {
+                            System.err.println("Erro ao carregar feedback soft_skills: " + e.getMessage());
+                        }
                     }
-                    try {
-                        carregarCampoFeedbackExistente("repositorio", rs, feedbackRepositorio);
-                    } catch (Exception e) {
-                        System.err.println("Erro ao carregar feedback repositorio: " + e.getMessage());
-                    }
-                    try {
-                        carregarCampoFeedbackExistente("problema", rs, feedbackProblema);
-                    } catch (Exception e) {
-                        System.err.println("Erro ao carregar feedback problema: " + e.getMessage());
-                    }
-                    try {
-                        carregarCampoFeedbackExistente("solucao", rs, feedbackSolucao);
-                    } catch (Exception e) {
-                        System.err.println("Erro ao carregar feedback solucao: " + e.getMessage());
-                    }
-                    try {
-                        carregarCampoFeedbackExistente("tecnologias", rs, feedbackTecnologias);
-                    } catch (Exception e) {
-                        System.err.println("Erro ao carregar feedback tecnologias: " + e.getMessage());
-                    }
-                    try {
-                        carregarCampoFeedbackExistente("contribuicoes", rs, feedbackContribuicoes);
-                    } catch (Exception e) {
-                        System.err.println("Erro ao carregar feedback contribuicoes: " + e.getMessage());
-                    }
-                    try {
-                        carregarCampoFeedbackExistente("hard_skills", rs, feedbackHardSkills);
-                    } catch (Exception e) {
-                        System.err.println("Erro ao carregar feedback hard_skills: " + e.getMessage());
-                    }
-                    try {
-                        carregarCampoFeedbackExistente("soft_skills", rs, feedbackSoftSkills);
-                    } catch (Exception e) {
-                        System.err.println("Erro ao carregar feedback soft_skills: " + e.getMessage());
-                    }
+                }
+                
+                // Se não há feedback na versão atual, carrega da versão anterior
+                if (!temFeedbackAtual && secaoApi.getVersao() > 1) {
+                    carregarFeedbackVersaoAnteriorParaReuso();
                 }
             }
         } catch (SQLException e) {
@@ -245,7 +287,92 @@ public class OrientadorCorrigirApiController {
         }
     }
     
+    // Carrega feedback da versão anterior para reutilização quando não há feedback na versão atual
+    private void carregarFeedbackVersaoAnteriorParaReuso() {
+        if (secaoApi == null || secaoApi.getEmailAluno() == null || secaoApi.getVersao() <= 1) {
+            return;
+        }
+        
+        int versaoAnterior = secaoApi.getVersao() - 1;
+        // Indica que estamos carregando feedback da versão anterior
+        boolean isVersaoAnterior = true;
+        String sql = "SELECT status_empresa, feedback_empresa, " +
+                "status_descricao_empresa, feedback_descricao_empresa, " +
+                "status_repositorio, feedback_repositorio, " +
+                "status_problema, feedback_problema, " +
+                "status_solucao, feedback_solucao, " +
+                "status_tecnologias, feedback_tecnologias, " +
+                "status_contribuicoes, feedback_contribuicoes, " +
+                "status_hard_skills, feedback_hard_skills, " +
+                "status_soft_skills, feedback_soft_skills " +
+                "FROM secao_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
+        try (Connection con = new Connector().getConnection();
+             PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, secaoApi.getEmailAluno());
+            pst.setString(2, secaoApi.getSemestreCurso());
+            pst.setInt(3, secaoApi.getAno());
+            pst.setString(4, secaoApi.getSemestreAno());
+            pst.setInt(5, versaoAnterior);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    // Carrega feedback da versão anterior
+                    try {
+                        carregarCampoFeedbackExistente("empresa", rs, feedbackEmpresa, isVersaoAnterior, versaoAnterior);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback empresa da versão anterior: " + e.getMessage());
+                    }
+                    try {
+                        carregarCampoFeedbackExistente("descricao_empresa", rs, feedbackDescricaoEmpresa, isVersaoAnterior, versaoAnterior);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback descricao_empresa da versão anterior: " + e.getMessage());
+                    }
+                    try {
+                        carregarCampoFeedbackExistente("repositorio", rs, feedbackRepositorio, isVersaoAnterior, versaoAnterior);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback repositorio da versão anterior: " + e.getMessage());
+                    }
+                    try {
+                        carregarCampoFeedbackExistente("problema", rs, feedbackProblema, isVersaoAnterior, versaoAnterior);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback problema da versão anterior: " + e.getMessage());
+                    }
+                    try {
+                        carregarCampoFeedbackExistente("solucao", rs, feedbackSolucao, isVersaoAnterior, versaoAnterior);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback solucao da versão anterior: " + e.getMessage());
+                    }
+                    try {
+                        carregarCampoFeedbackExistente("tecnologias", rs, feedbackTecnologias, isVersaoAnterior, versaoAnterior);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback tecnologias da versão anterior: " + e.getMessage());
+                    }
+                    try {
+                        carregarCampoFeedbackExistente("contribuicoes", rs, feedbackContribuicoes, isVersaoAnterior, versaoAnterior);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback contribuicoes da versão anterior: " + e.getMessage());
+                    }
+                    try {
+                        carregarCampoFeedbackExistente("hard_skills", rs, feedbackHardSkills, isVersaoAnterior, versaoAnterior);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback hard_skills da versão anterior: " + e.getMessage());
+                    }
+                    try {
+                        carregarCampoFeedbackExistente("soft_skills", rs, feedbackSoftSkills, isVersaoAnterior, versaoAnterior);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback soft_skills da versão anterior: " + e.getMessage());
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao carregar feedback da versão anterior: " + e.getMessage());
+        }
+    }
+    
     private void carregarCampoFeedbackExistente(String campo, ResultSet rs, TextArea feedbackArea) throws SQLException {
+        carregarCampoFeedbackExistente(campo, rs, feedbackArea, false, secaoApi != null ? secaoApi.getVersao() : 1);
+    }
+    
+    private void carregarCampoFeedbackExistente(String campo, ResultSet rs, TextArea feedbackArea, boolean isVersaoAnterior, int versao) throws SQLException {
         // Busca o nome correto da coluna no banco (com underscore se necessário)
         String colunaStatus = "status_" + campo;
         String colunaFeedback = "feedback_" + campo;
@@ -256,18 +383,39 @@ public class OrientadorCorrigirApiController {
         if (status != null) {
             statusPorCampo.put(campo, status);
             
+            javafx.scene.layout.VBox container = obterContainerFeedback(campo);
+            javafx.scene.control.Label labelVersao = obterLabelVersao(campo);
+            
+            // Atualiza label de versão se for da versão anterior
+            if (isVersaoAnterior && labelVersao != null) {
+                labelVersao.setText("(v." + versao + ")");
+                labelVersao.setVisible(true);
+                labelVersao.setManaged(true);
+            } else if (labelVersao != null) {
+                labelVersao.setVisible(false);
+                labelVersao.setManaged(false);
+            }
+            
             if (feedbackArea != null) {
                 if ("Revisar".equals(status)) {
                     // Se foi marcado para revisar, mostra o campo de feedback
+                    if (container != null) {
+                        container.setVisible(true);
+                        container.setManaged(true);
+                    }
                     feedbackArea.setVisible(true);
                     feedbackArea.setManaged(true);
                     if (feedback != null && !feedback.trim().isEmpty()) {
                         feedbackArea.setText(feedback);
                     }
-                    feedbackArea.setPrefHeight(100);
+                    feedbackArea.setPrefHeight(80);
                     feedbackArea.setWrapText(true);
                 } else if ("Aprovado".equals(status)) {
                     // Se foi aprovado, esconde o campo de feedback e desabilita (não ocupa espaço)
+                    if (container != null) {
+                        container.setVisible(false);
+                        container.setManaged(false);
+                    }
                     feedbackArea.setVisible(false);
                     feedbackArea.setManaged(false);
                     feedbackArea.clear();
@@ -281,6 +429,8 @@ public class OrientadorCorrigirApiController {
                     atualizarCorBotoes(campo, status);
                     if ("Aprovado".equals(status)) {
                         aplicarBordaVerdeCampo(campo);
+                    } else if ("Revisar".equals(status)) {
+                        aplicarBordaVermelhaCampo(campo);
                     } else {
                         removerBordaVerdeCampo(campo);
                     }
@@ -289,6 +439,31 @@ public class OrientadorCorrigirApiController {
                     System.err.println("Erro ao atualizar botões para campo " + campo + ": " + e.getMessage());
                 }
             });
+        }
+    }
+    
+    private javafx.scene.control.Label obterLabelVersao(String campo) {
+        switch (campo) {
+            case "empresa":
+                return labelVersaoEmpresa;
+            case "descricao_empresa":
+                return labelVersaoDescricaoEmpresa;
+            case "repositorio":
+                return labelVersaoRepositorio;
+            case "problema":
+                return labelVersaoProblema;
+            case "solucao":
+                return labelVersaoSolucao;
+            case "tecnologias":
+                return labelVersaoTecnologias;
+            case "contribuicoes":
+                return labelVersaoContribuicoes;
+            case "hard_skills":
+                return labelVersaoHardSkills;
+            case "soft_skills":
+                return labelVersaoSoftSkills;
+            default:
+                return null;
         }
     }
 
@@ -323,6 +498,19 @@ public class OrientadorCorrigirApiController {
 
     private void aprovarCampo(String campo, TextArea areaFeedback) {
         statusPorCampo.put(campo, "Aprovado");
+        javafx.scene.layout.VBox container = obterContainerFeedback(campo);
+        javafx.scene.control.Label labelVersao = obterLabelVersao(campo);
+        
+        // Oculta label de versão quando aprovar (agora é feedback da versão atual)
+        if (labelVersao != null) {
+            labelVersao.setVisible(false);
+            labelVersao.setManaged(false);
+        }
+        
+        if (container != null) {
+            container.setVisible(false);
+            container.setManaged(false);
+        }
         if (areaFeedback != null) {
             areaFeedback.setVisible(false);
             areaFeedback.setManaged(false); // Não ocupa espaço quando invisível
@@ -334,15 +522,60 @@ public class OrientadorCorrigirApiController {
 
     private void revisarCampo(String campo, TextArea areaFeedback) {
         statusPorCampo.put(campo, "Revisar");
+        javafx.scene.layout.VBox container = obterContainerFeedback(campo);
+        javafx.scene.control.Label labelVersao = obterLabelVersao(campo);
+        
+        // Oculta label de versão quando revisar (agora é feedback da versão atual)
+        if (labelVersao != null) {
+            labelVersao.setVisible(false);
+            labelVersao.setManaged(false);
+        }
+        
+        if (container != null) {
+            container.setVisible(true);
+            container.setManaged(true);
+        }
         if (areaFeedback != null) {
             areaFeedback.setVisible(true);
             areaFeedback.setManaged(true); // Ocupa espaço quando visível
             areaFeedback.setPromptText("Digite seu feedback aqui...");
-            areaFeedback.setPrefHeight(100);
+            areaFeedback.setPrefHeight(80);
             areaFeedback.setWrapText(true);
         }
         atualizarCorBotoes(campo, "Revisar");
-        removerBordaVerdeCampo(campo);
+        aplicarBordaVermelhaCampo(campo);
+    }
+    
+    private void aplicarBordaVermelhaCampo(String campo) {
+        TextArea textArea = obterTextAreaAluno(campo);
+        if (textArea != null) {
+            textArea.setStyle("-fx-background-color: #F8F9FA; -fx-border-color: #E74C3C; -fx-border-width: 2px; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;");
+        }
+    }
+    
+    private javafx.scene.layout.VBox obterContainerFeedback(String campo) {
+        switch (campo) {
+            case "empresa":
+                return containerFeedbackEmpresa;
+            case "descricao_empresa":
+                return containerFeedbackDescricaoEmpresa;
+            case "repositorio":
+                return containerFeedbackRepositorio;
+            case "problema":
+                return containerFeedbackProblema;
+            case "solucao":
+                return containerFeedbackSolucao;
+            case "tecnologias":
+                return containerFeedbackTecnologias;
+            case "contribuicoes":
+                return containerFeedbackContribuicoes;
+            case "hard_skills":
+                return containerFeedbackHardSkills;
+            case "soft_skills":
+                return containerFeedbackSoftSkills;
+            default:
+                return null;
+        }
     }
     
     private void aplicarBordaVerdeCampo(String campo) {
