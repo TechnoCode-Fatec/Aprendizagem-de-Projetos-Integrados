@@ -123,15 +123,32 @@
 
                                         <!-- Link do Repositório -->
                                         <VBox spacing="8">
-                                            <Label text="Link do Repositório" textFill="#34495E">
-                                                <font>
-                                                    <Font name="System Bold" size="12.0" />
-                                                </font>
-                                            </Label>
+                                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                                <Label text="Link do Repositório" textFill="#34495E">
+                                                    <font>
+                                                        <Font name="System Bold" size="12.0" />
+                                                    </font>
+                                                </Label>
+                                                <Label fx:id="statusRepositorio" style="-fx-font-weight: bold; -fx-padding: 4 12 4 12; -fx-background-radius: 12;" text="Status">
+                                                    <font>
+                                                        <Font size="11.0" />
+                                                    </font>
+                                                </Label>
+                                                <Button fx:id="btnExpandRepositorio" style="-fx-background-color: transparent; -fx-padding: 0; -fx-cursor: hand;" visible="false" managed="false">
+                                                    <graphic>
+                                                        <Label text="▼" textFill="#3498DB" style="-fx-font-size: 10px;" />
+                                                    </graphic>
+                                                </Button>
+                                            </HBox>
                                             <HBox spacing="10" alignment="CENTER_LEFT">
                                                 <Hyperlink fx:id="linkRepositorio" style="-fx-text-fill: #3498DB; -fx-font-size: 12px; -fx-underline: true;" />
                                                 <Region HBox.hgrow="ALWAYS" />
                                             </HBox>
+                                            <VBox fx:id="containerFeedbackRepositorio" visible="false" managed="false" spacing="5">
+                                                <Label text="Feedback:" textFill="#E74C3C" style="-fx-font-weight: bold; -fx-font-size: 11px;" />
+                                                <TextArea fx:id="feedbackRepositorio" editable="false" prefHeight="80.0" 
+                                                          style="-fx-background-color: #FADBD8; -fx-border-color: #E74C3C; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #C0392B;" wrapText="true" />
+                                            </VBox>
                                         </VBox>
 
                                         <!-- Problema -->

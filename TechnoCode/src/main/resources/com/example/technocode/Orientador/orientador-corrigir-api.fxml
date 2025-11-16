@@ -179,11 +179,29 @@
                                     <Font name="System Bold" size="12.0" />
                                 </font>
                             </Label>
+                            <!-- Feedback da Versão Anterior -->
+                            <VBox spacing="5" visible="false" managed="false" fx:id="containerFeedbackAnteriorRepositorio" style="-fx-background-color: #FFF9E6; -fx-background-radius: 6; -fx-padding: 10; -fx-border-color: #F39C12; -fx-border-radius: 6; -fx-border-width: 1;">
+                                <children>
+                                    <Label text="📝 Feedback da Versão Anterior:" textFill="#E67E22">
+                                        <font>
+                                            <Font name="System Bold" size="11.0" />
+                                        </font>
+                                    </Label>
+                                    <TextArea fx:id="feedbackAnteriorRepositorio" editable="false" prefHeight="60.0" style="-fx-background-color: #FFF9E6; -fx-border-color: transparent; -fx-background-radius: 4; -fx-padding: 5; -fx-wrap-text: true; -fx-text-fill: #8B6914;" wrapText="true" />
+                                </children>
+                            </VBox>
                             <HBox spacing="10">
                                 <children>
                                     <TextArea fx:id="alunoLinkRepositorio" editable="false" prefHeight="60.0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" HBox.hgrow="ALWAYS" />
+                                    <VBox spacing="5">
+                                        <children>
+                                            <Button fx:id="aprovarRepositorio" onAction="#aprovarRepositorio" prefHeight="37.0" prefWidth="53.0" style="-fx-background-color: #27AE60; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✔" />
+                                            <Button fx:id="revisarRepositorio" onAction="#revisarRepositorio" prefHeight="37.0" prefWidth="53.0" style="-fx-background-color: #E74C3C; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✖" />
+                                        </children>
+                                    </VBox>
                                 </children>
                             </HBox>
+                            <TextArea fx:id="feedbackRepositorio" prefHeight="80.0" promptText="Digite seu feedback..." style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" visible="false" wrapText="true" />
                         </VBox>
 
                         <!-- Tecnologias utilizadas -->

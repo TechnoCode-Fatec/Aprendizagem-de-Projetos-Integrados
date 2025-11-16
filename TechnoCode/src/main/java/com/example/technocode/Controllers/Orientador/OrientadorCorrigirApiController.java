@@ -44,6 +44,7 @@ public class OrientadorCorrigirApiController {
     // TextAreas de feedback (coluna direita)
     @FXML private TextArea feedbackEmpresa;
     @FXML private TextArea feedbackDescricaoEmpresa;
+    @FXML private TextArea feedbackRepositorio;
     @FXML private TextArea feedbackProblema;
     @FXML private TextArea feedbackSolucao;
     @FXML private TextArea feedbackTecnologias;
@@ -54,6 +55,7 @@ public class OrientadorCorrigirApiController {
     // TextAreas de feedback da versão anterior
     @FXML private TextArea feedbackAnteriorEmpresa;
     @FXML private TextArea feedbackAnteriorDescricaoEmpresa;
+    @FXML private TextArea feedbackAnteriorRepositorio;
     @FXML private TextArea feedbackAnteriorProblema;
     @FXML private TextArea feedbackAnteriorSolucao;
     @FXML private TextArea feedbackAnteriorTecnologias;
@@ -64,6 +66,7 @@ public class OrientadorCorrigirApiController {
     // Containers para feedback anterior
     @FXML private javafx.scene.layout.VBox containerFeedbackAnteriorEmpresa;
     @FXML private javafx.scene.layout.VBox containerFeedbackAnteriorDescricaoEmpresa;
+    @FXML private javafx.scene.layout.VBox containerFeedbackAnteriorRepositorio;
     @FXML private javafx.scene.layout.VBox containerFeedbackAnteriorProblema;
     @FXML private javafx.scene.layout.VBox containerFeedbackAnteriorSolucao;
     @FXML private javafx.scene.layout.VBox containerFeedbackAnteriorTecnologias;
@@ -81,6 +84,10 @@ public class OrientadorCorrigirApiController {
         if (feedbackDescricaoEmpresa != null) {
             feedbackDescricaoEmpresa.setVisible(false);
             feedbackDescricaoEmpresa.setManaged(false);
+        }
+        if (feedbackRepositorio != null) {
+            feedbackRepositorio.setVisible(false);
+            feedbackRepositorio.setManaged(false);
         }
         if (feedbackProblema != null) {
             feedbackProblema.setVisible(false);
@@ -168,6 +175,7 @@ public class OrientadorCorrigirApiController {
         if (secaoApi == null || secaoApi.getEmailAluno() == null) return;
         String sql = "SELECT status_empresa, feedback_empresa, " +
                 "status_descricao_empresa, feedback_descricao_empresa, " +
+                "status_repositorio, feedback_repositorio, " +
                 "status_problema, feedback_problema, " +
                 "status_solucao, feedback_solucao, " +
                 "status_tecnologias, feedback_tecnologias, " +
@@ -193,6 +201,11 @@ public class OrientadorCorrigirApiController {
                         carregarCampoFeedbackExistente("descricao_empresa", rs, feedbackDescricaoEmpresa);
                     } catch (Exception e) {
                         System.err.println("Erro ao carregar feedback descricao_empresa: " + e.getMessage());
+                    }
+                    try {
+                        carregarCampoFeedbackExistente("repositorio", rs, feedbackRepositorio);
+                    } catch (Exception e) {
+                        System.err.println("Erro ao carregar feedback repositorio: " + e.getMessage());
                     }
                     try {
                         carregarCampoFeedbackExistente("problema", rs, feedbackProblema);
@@ -284,6 +297,8 @@ public class OrientadorCorrigirApiController {
     @FXML private void revisarEmpresa(ActionEvent e) { revisarCampo("empresa", feedbackEmpresa); }
     @FXML private void aprovarDescricaoEmpresa(ActionEvent e) { aprovarCampo("descricao_empresa", feedbackDescricaoEmpresa); }
     @FXML private void revisarDescricaoEmpresa(ActionEvent e) { revisarCampo("descricao_empresa", feedbackDescricaoEmpresa); }
+    @FXML private void aprovarRepositorio(ActionEvent e) { aprovarCampo("repositorio", feedbackRepositorio); }
+    @FXML private void revisarRepositorio(ActionEvent e) { revisarCampo("repositorio", feedbackRepositorio); }
     @FXML private void aprovarProblema(ActionEvent e) { aprovarCampo("problema", feedbackProblema); }
     @FXML private void revisarProblema(ActionEvent e) { revisarCampo("problema", feedbackProblema); }
     @FXML private void aprovarSolucao(ActionEvent e) { aprovarCampo("solucao", feedbackSolucao); }
@@ -350,6 +365,8 @@ public class OrientadorCorrigirApiController {
                 return alunoEmpresa;
             case "descricao_empresa":
                 return alunoDescricaoEmpresa;
+            case "repositorio":
+                return alunoLinkRepositorio;
             case "problema":
                 return alunoProblema;
             case "solucao":
@@ -380,6 +397,9 @@ public class OrientadorCorrigirApiController {
                 break;
             case "descricao_empresa":
                 node = alunoDescricaoEmpresa;
+                break;
+            case "repositorio":
+                node = alunoLinkRepositorio;
                 break;
             case "problema":
                 node = alunoProblema;
@@ -414,6 +434,10 @@ public class OrientadorCorrigirApiController {
             case "descricao_empresa":
                 btnAprovar = (Button) node.getScene().lookup("#aprovarDescricaoEmpresa");
                 btnRevisar = (Button) node.getScene().lookup("#revisarDescricaoEmpresa");
+                break;
+            case "repositorio":
+                btnAprovar = (Button) node.getScene().lookup("#aprovarRepositorio");
+                btnRevisar = (Button) node.getScene().lookup("#revisarRepositorio");
                 break;
             case "problema":
                 btnAprovar = (Button) node.getScene().lookup("#aprovarProblema");
@@ -468,6 +492,7 @@ public class OrientadorCorrigirApiController {
         String sql = "UPDATE secao_api SET " +
                     "status_empresa = ?, feedback_empresa = ?, " +
                     "status_descricao_empresa = ?, feedback_descricao_empresa = ?, " +
+                    "status_repositorio = ?, feedback_repositorio = ?, " +
                     "status_problema = ?, feedback_problema = ?, " +
                     "status_solucao = ?, feedback_solucao = ?, " +
                     "status_tecnologias = ?, feedback_tecnologias = ?, " +
@@ -484,25 +509,27 @@ public class OrientadorCorrigirApiController {
             setNullableString(pst, 2, textOrNull(feedbackEmpresa));
             setNullableString(pst, 3, statusPorCampo.get("descricao_empresa"));
             setNullableString(pst, 4, textOrNull(feedbackDescricaoEmpresa));
-            setNullableString(pst, 5, statusPorCampo.get("problema"));
-            setNullableString(pst, 6, textOrNull(feedbackProblema));
-            setNullableString(pst, 7, statusPorCampo.get("solucao"));
-            setNullableString(pst, 8, textOrNull(feedbackSolucao));
-            setNullableString(pst, 9, statusPorCampo.get("tecnologias"));
-            setNullableString(pst, 10, textOrNull(feedbackTecnologias));
-            setNullableString(pst, 11, statusPorCampo.get("contribuicoes"));
-            setNullableString(pst, 12, textOrNull(feedbackContribuicoes));
-            setNullableString(pst, 13, statusPorCampo.get("hard_skills"));
-            setNullableString(pst, 14, textOrNull(feedbackHardSkills));
-            setNullableString(pst, 15, statusPorCampo.get("soft_skills"));
-            setNullableString(pst, 16, textOrNull(feedbackSoftSkills));
+            setNullableString(pst, 5, statusPorCampo.get("repositorio"));
+            setNullableString(pst, 6, textOrNull(feedbackRepositorio));
+            setNullableString(pst, 7, statusPorCampo.get("problema"));
+            setNullableString(pst, 8, textOrNull(feedbackProblema));
+            setNullableString(pst, 9, statusPorCampo.get("solucao"));
+            setNullableString(pst, 10, textOrNull(feedbackSolucao));
+            setNullableString(pst, 11, statusPorCampo.get("tecnologias"));
+            setNullableString(pst, 12, textOrNull(feedbackTecnologias));
+            setNullableString(pst, 13, statusPorCampo.get("contribuicoes"));
+            setNullableString(pst, 14, textOrNull(feedbackContribuicoes));
+            setNullableString(pst, 15, statusPorCampo.get("hard_skills"));
+            setNullableString(pst, 16, textOrNull(feedbackHardSkills));
+            setNullableString(pst, 17, statusPorCampo.get("soft_skills"));
+            setNullableString(pst, 18, textOrNull(feedbackSoftSkills));
 
             // Para UPDATE, adiciona WHERE
-            pst.setString(17, secaoApi.getEmailAluno());
-            pst.setString(18, secaoApi.getSemestreCurso());
-            pst.setInt(19, secaoApi.getAno());
-            pst.setString(20, secaoApi.getSemestreAno());
-            pst.setInt(21, secaoApi.getVersao());
+            pst.setString(19, secaoApi.getEmailAluno());
+            pst.setString(20, secaoApi.getSemestreCurso());
+            pst.setInt(21, secaoApi.getAno());
+            pst.setString(22, secaoApi.getSemestreAno());
+            pst.setInt(23, secaoApi.getVersao());
 
             pst.executeUpdate();
 
@@ -525,6 +552,7 @@ public class OrientadorCorrigirApiController {
         
         String sql = "SELECT status_empresa, feedback_empresa, " +
                 "status_descricao_empresa, feedback_descricao_empresa, " +
+                "status_repositorio, feedback_repositorio, " +
                 "status_problema, feedback_problema, " +
                 "status_solucao, feedback_solucao, " +
                 "status_tecnologias, feedback_tecnologias, " +
@@ -548,6 +576,8 @@ public class OrientadorCorrigirApiController {
                             alunoEmpresa, feedbackAnteriorEmpresa, containerFeedbackAnteriorEmpresa);
                     carregarFeedbackAnteriorCampo("descricao_empresa", rs.getString("status_descricao_empresa"), rs.getString("feedback_descricao_empresa"), 
                             alunoDescricaoEmpresa, feedbackAnteriorDescricaoEmpresa, containerFeedbackAnteriorDescricaoEmpresa);
+                    carregarFeedbackAnteriorCampo("repositorio", rs.getString("status_repositorio"), rs.getString("feedback_repositorio"), 
+                            alunoLinkRepositorio, feedbackAnteriorRepositorio, containerFeedbackAnteriorRepositorio);
                     carregarFeedbackAnteriorCampo("problema", rs.getString("status_problema"), rs.getString("feedback_problema"), 
                             alunoProblema, feedbackAnteriorProblema, containerFeedbackAnteriorProblema);
                     carregarFeedbackAnteriorCampo("solucao", rs.getString("status_solucao"), rs.getString("feedback_solucao"), 
@@ -596,7 +626,7 @@ public class OrientadorCorrigirApiController {
     private boolean verificarFeedbackExistente() {
         if (secaoApi == null || secaoApi.getEmailAluno() == null) return false;
         String sql = "SELECT COUNT(*) FROM secao_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ? " +
-                     "AND (status_empresa IS NOT NULL OR status_descricao_empresa IS NOT NULL OR status_problema IS NOT NULL OR status_solucao IS NOT NULL OR status_tecnologias IS NOT NULL " +
+                     "AND (status_empresa IS NOT NULL OR status_descricao_empresa IS NOT NULL OR status_repositorio IS NOT NULL OR status_problema IS NOT NULL OR status_solucao IS NOT NULL OR status_tecnologias IS NOT NULL " +
                      "OR status_contribuicoes IS NOT NULL OR status_hard_skills IS NOT NULL OR status_soft_skills IS NOT NULL)";
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {

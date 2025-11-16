@@ -304,7 +304,7 @@ public class SecaoApi {
      */
     public static boolean verificarFeedback(String emailAluno, String semestreCurso, int ano, String semestreAno, int versao) {
         String sql = "SELECT COUNT(*) as count FROM secao_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ? " +
-                     "AND (status_problema IS NOT NULL OR status_solucao IS NOT NULL OR status_tecnologias IS NOT NULL " +
+                     "AND (status_empresa IS NOT NULL OR status_descricao_empresa IS NOT NULL OR status_repositorio IS NOT NULL OR status_problema IS NOT NULL OR status_solucao IS NOT NULL OR status_tecnologias IS NOT NULL " +
                      "OR status_contribuicoes IS NOT NULL OR status_hard_skills IS NOT NULL OR status_soft_skills IS NOT NULL)";
         try (Connection c = new Connector().getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
