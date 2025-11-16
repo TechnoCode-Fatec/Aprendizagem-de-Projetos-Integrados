@@ -274,13 +274,22 @@ public class SecaoApresentacao {
     /**
      * Busca o horário do feedback para uma seção de apresentação
      * @return String formatada com data e hora, ou null se não existir feedback
-     * Nota: Como os feedbacks agora estão na própria tabela secao_apresentacao,
-     * retornamos null pois não há mais um campo horario separado para feedback
      */
     public static String buscarHorarioFeedback(String emailAluno, int versao) {
-        // No novo esquema, não há mais um campo horario específico para feedback
-        // Os feedbacks estão diretamente na tabela secao_apresentacao
-        // Retornamos null por enquanto, ou pode-se usar horario_secao se necessário
+        String sql = "SELECT DATE_FORMAT(horario_feedback, '%d/%m/%Y às %H:%i') as horario_formatado " +
+                     "FROM secao_apresentacao WHERE aluno = ? AND versao = ? AND horario_feedback IS NOT NULL LIMIT 1";
+        try (Connection con = new Connector().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, emailAluno);
+            ps.setInt(2, versao);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("horario_formatado");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 }

@@ -404,7 +404,8 @@ public class OrientadorCorrigirApresentacaoController {
                     "status_historico_profissional = ?, feedback_historico_profissional = ?, " +
                     "status_github = ?, feedback_github = ?, " +
                     "status_linkedin = ?, feedback_linkedin = ?, " +
-                    "status_conhecimentos = ?, feedback_conhecimentos = ? " +
+                    "status_conhecimentos = ?, feedback_conhecimentos = ?, " +
+                    "horario_feedback = CURRENT_TIMESTAMP " +
                     "WHERE aluno = ? AND versao = ?";
 
         try (Connection con = new Connector().getConnection();
