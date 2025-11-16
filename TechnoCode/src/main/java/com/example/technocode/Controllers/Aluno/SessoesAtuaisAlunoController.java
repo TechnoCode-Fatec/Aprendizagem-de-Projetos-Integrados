@@ -2,8 +2,10 @@ package com.example.technocode.Controllers.Aluno;
 
 import com.example.technocode.Controllers.*;
 import com.example.technocode.Services.NavigationService;
+import com.example.technocode.model.Aluno;
 import com.example.technocode.model.SecaoApi;
 import com.example.technocode.model.SecaoApresentacao;
+import com.example.technocode.model.dao.Connector;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -15,8 +17,21 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 import java.util.Map;
 
@@ -355,6 +370,347 @@ public class SessoesAtuaisAlunoController {
         });
     }
 
+    @FXML
+    private void gerarArquivoMD(ActionEvent event) {
+        try {
+            // Busca dados do aluno
+            Map<String, String> dadosAluno = Aluno.buscarDadosPorEmail(emailAluno);
+            String nomeAluno = dadosAluno.get("nome");
+            String emailAlunoDados = dadosAluno.get("email");
+            
+            if (nomeAluno == null || nomeAluno.isBlank()) {
+                mostrarAlerta("Erro", "Não foi possível obter os dados do aluno.");
+                return;
+            }
+            
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            
+            // 1. Escolhe onde criar a pasta
+            DirectoryChooser directoryChooser = new DirectoryChooser();
+            directoryChooser.setTitle("Escolha onde criar a pasta do README");
+            File diretorioPai = directoryChooser.showDialog(stage);
+            
+            if (diretorioPai == null) {
+                return; // Usuário cancelou
+            }
+            
+            // 2. Cria a pasta (usa nome do aluno ou "README")
+            String nomePasta = sanitizeFileName(nomeAluno);
+            if (nomePasta.isBlank()) {
+                nomePasta = "README";
+            }
+            File pastaDestino = new File(diretorioPai, nomePasta);
+            
+            // Se a pasta já existir, adiciona número
+            int contador = 1;
+            File pastaFinal = pastaDestino;
+            while (pastaFinal.exists()) {
+                pastaFinal = new File(diretorioPai, nomePasta + "_" + contador);
+                contador++;
+            }
+            pastaFinal.mkdirs();
+            
+            // 3. Escolhe a foto do aluno
+            FileChooser fotoChooser = new FileChooser();
+            fotoChooser.setTitle("Escolha a foto do aluno");
+            fotoChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Imagens", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp"),
+                new FileChooser.ExtensionFilter("Todos os arquivos", "*.*")
+            );
+            File fotoOriginal = fotoChooser.showOpenDialog(stage);
+            
+            String nomeFoto = null;
+            if (fotoOriginal != null) {
+                // Copia a foto para a pasta criada
+                String extensao = getFileExtension(fotoOriginal.getName());
+                nomeFoto = "foto" + extensao;
+                File fotoDestino = new File(pastaFinal, nomeFoto);
+                
+                try {
+                    Files.copy(fotoOriginal.toPath(), fotoDestino.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    mostrarAlerta("Erro", "Erro ao copiar a foto: " + e.getMessage());
+                    return;
+                }
+            }
+            
+            // 4. Busca apresentação mais recente
+            Map<String, String> apresentacao = buscarApresentacaoMaisRecente();
+            
+            // 5. Busca todas as seções API (versões mais recentes)
+            List<Map<String, String>> secoesApi = buscarTodasSecoesApiCompletas();
+            
+            // 6. Gera o conteúdo do arquivo MD (passa o nome da foto)
+            String conteudoMD = gerarConteudoMD(nomeAluno, emailAlunoDados, apresentacao, secoesApi, nomeFoto);
+            
+            // 7. Salva o README.md na pasta criada
+            File arquivoMD = new File(pastaFinal, "README.md");
+            try (FileWriter writer = new FileWriter(arquivoMD)) {
+                writer.write(conteudoMD);
+                mostrarAlerta("Sucesso", "Pasta criada com sucesso!\n\n" +
+                    "Localização: " + pastaFinal.getAbsolutePath() + "\n" +
+                    "Arquivos criados:\n" +
+                    "- README.md\n" +
+                    (nomeFoto != null ? "- " + nomeFoto : ""));
+            } catch (IOException e) {
+                mostrarAlerta("Erro", "Erro ao salvar o arquivo: " + e.getMessage());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarAlerta("Erro", "Erro ao gerar arquivo: " + e.getMessage());
+        }
+    }
+    
+    private String sanitizeFileName(String nome) {
+        if (nome == null) return "";
+        // Remove caracteres inválidos para nome de arquivo/pasta
+        return nome.replaceAll("[<>:\"/\\|?*]", "_").trim();
+    }
+    
+    private String getFileExtension(String fileName) {
+        int lastDot = fileName.lastIndexOf('.');
+        if (lastDot > 0 && lastDot < fileName.length() - 1) {
+            return fileName.substring(lastDot);
+        }
+        return ".jpg"; // Extensão padrão se não encontrar
+    }
+    
+    private Map<String, String> buscarApresentacaoMaisRecente() {
+        Map<String, String> apresentacao = new java.util.HashMap<>();
+        try (Connection conn = new Connector().getConnection()) {
+            String sql = "SELECT nome, idade, curso, motivacao, historico, historico_profissional, " +
+                        "link_github, link_linkedin, principais_conhecimentos " +
+                        "FROM secao_apresentacao " +
+                        "WHERE aluno = ? AND versao = (SELECT MAX(versao) FROM secao_apresentacao WHERE aluno = ?)";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, emailAluno);
+            pst.setString(2, emailAluno);
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                apresentacao.put("nome", rs.getString("nome"));
+                apresentacao.put("idade", rs.getString("idade"));
+                apresentacao.put("curso", rs.getString("curso"));
+                apresentacao.put("motivacao", rs.getString("motivacao"));
+                apresentacao.put("historico", rs.getString("historico"));
+                apresentacao.put("historico_profissional", rs.getString("historico_profissional"));
+                apresentacao.put("link_github", rs.getString("link_github"));
+                apresentacao.put("link_linkedin", rs.getString("link_linkedin"));
+                apresentacao.put("principais_conhecimentos", rs.getString("principais_conhecimentos"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return apresentacao;
+    }
+    
+    private List<Map<String, String>> buscarTodasSecoesApiCompletas() {
+        List<Map<String, String>> secoesApi = new java.util.ArrayList<>();
+        try (Connection conn = new Connector().getConnection()) {
+            // Busca versões mais recentes de cada seção API com todos os campos
+            String sql = "SELECT sa.semestre_curso, sa.ano, sa.semestre_ano, sa.versao, sa.empresa, " +
+                        "sa.descricao_empresa, sa.problema, sa.solucao, sa.link_repositorio, " +
+                        "sa.tecnologias, sa.contribuicoes, sa.hard_skills, sa.soft_skills " +
+                        "FROM secao_api sa " +
+                        "WHERE sa.aluno = ? AND sa.versao = (" +
+                        "    SELECT MAX(versao) " +
+                        "    FROM secao_api s2 " +
+                        "    WHERE s2.aluno = sa.aluno " +
+                        "    AND s2.semestre_curso = sa.semestre_curso " +
+                        "    AND s2.ano = sa.ano " +
+                        "    AND s2.semestre_ano = sa.semestre_ano" +
+                        ") " +
+                        "ORDER BY sa.ano DESC, sa.semestre_ano DESC";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, emailAluno);
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                Map<String, String> secao = new java.util.HashMap<>();
+                secao.put("semestre_curso", rs.getString("semestre_curso"));
+                secao.put("ano", String.valueOf(rs.getInt("ano")));
+                secao.put("semestre_ano", rs.getString("semestre_ano"));
+                secao.put("versao", String.valueOf(rs.getInt("versao")));
+                secao.put("empresa", rs.getString("empresa"));
+                secao.put("descricao_empresa", rs.getString("descricao_empresa"));
+                secao.put("problema", rs.getString("problema"));
+                secao.put("solucao", rs.getString("solucao"));
+                secao.put("link_repositorio", rs.getString("link_repositorio"));
+                secao.put("tecnologias", rs.getString("tecnologias"));
+                secao.put("contribuicoes", rs.getString("contribuicoes"));
+                secao.put("hard_skills", rs.getString("hard_skills"));
+                secao.put("soft_skills", rs.getString("soft_skills"));
+                secoesApi.add(secao);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return secoesApi;
+    }
+    
+    private String gerarConteudoMD(String nomeAluno, String emailAluno, Map<String, String> apresentacao, 
+                                   List<Map<String, String>> secoesApi, String nomeFoto) {
+        StringBuilder md = new StringBuilder();
+        
+        // Calcula idade
+        String idadeStr = "N/A";
+        if (apresentacao.get("idade") != null && !apresentacao.get("idade").isBlank()) {
+            try {
+                LocalDate dataNascimento = LocalDate.parse(apresentacao.get("idade"));
+                int idade = Period.between(dataNascimento, LocalDate.now()).getYears();
+                idadeStr = String.valueOf(idade);
+            } catch (Exception e) {
+                idadeStr = apresentacao.get("idade");
+            }
+        }
+        
+        // Foto do aluno - usa o nome do arquivo se fornecido, senão placeholder
+        String fotoAluno = nomeFoto != null ? nomeFoto : "(FOTO DO ALUNO)";
+        
+        // Header
+        md.append("<div align=\"center\">\n\n");
+        md.append("<h1>").append(escapeHtml(nomeAluno)).append("</h1>\n\n");
+        md.append("    \n");
+        md.append("<img src=\"").append(fotoAluno).append("\" alt=\"Foto\" width=\"300\" height=\"300\"/>\n\n");
+        md.append("    \n");
+        md.append("</div>\n\n");
+        md.append("<hr>\n\n");
+        
+        // Apresentação pessoal
+        md.append("Meu nome é ").append(escapeHtml(nomeAluno)).append(" e tenho ").append(idadeStr).append(".\n\n");
+        md.append("Cursando ").append(escapeHtml(apresentacao.getOrDefault("curso", "N/A"))).append(" na FATEC-SJC\n\n");
+        
+        String historico = apresentacao.getOrDefault("historico", "");
+        if (!historico.isBlank()) {
+            md.append(historico).append("\n\n");
+        }
+        
+        String motivacao = apresentacao.getOrDefault("motivacao", "");
+        if (!motivacao.isBlank()) {
+            md.append(motivacao).append("\n\n");
+        }
+        
+        String historicoProfissional = apresentacao.getOrDefault("historico_profissional", "");
+        if (!historicoProfissional.isBlank()) {
+            md.append(historicoProfissional).append("\n\n");
+        }
+        
+        // Contatos
+        md.append("## 📞 Contatos\n\n");
+        md.append("<ul style=\"display: flex; flex-direction: column; align-items: left;\">\n\n");
+        
+        String github = apresentacao.getOrDefault("link_github", "");
+        if (!github.isBlank()) {
+            md.append("    <li style=\"margin-bottom: 10px;\">\n");
+            md.append("         <a href=\"").append(github).append("\"><img align=\"center\" alt=\"GitHub\" src = \"https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white\"/></a>\n");
+            md.append("    </li>\n\n");
+        }
+        
+        String linkedin = apresentacao.getOrDefault("link_linkedin", "");
+        if (!linkedin.isBlank()) {
+            md.append("    <li style=\"margin-bottom: 10px\">\n");
+            md.append("        <a href=\"").append(linkedin).append("\" target=\"_blank\"><img align=\"center\" alt=\"Linkedin\" src=\"https://img.shields.io/badge/-LinkedIn-%230077B5?style=for-the-badge&logo=linkedin&logoColor=white\" target=\"_blank\"></a>\n");
+            md.append("    </li>\n\n");
+        }
+        
+        md.append("    <li style=\"margin-bottom: 10px\">\n");
+        md.append("        <a href = \"mailto:").append(emailAluno).append("\"><img align=\"center\" alt=\"Gmail\" src=\"https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white\" target=\"_blank\"></a>\n");
+        md.append("    </li>\n\n");
+        md.append("</ul>\n\n");
+        
+        // Principais conhecimentos
+        String conhecimentos = apresentacao.getOrDefault("principais_conhecimentos", "");
+        if (!conhecimentos.isBlank()) {
+            md.append("## 📚 Meus Principais Conhecimentos\n\n");
+            md.append(conhecimentos).append("\n\n");
+        }
+        
+        md.append("<hr>\n\n");
+        
+        // Projetos API
+        if (!secoesApi.isEmpty()) {
+            md.append("## 💼 Meus Projetos\n\n");
+            
+            for (Map<String, String> secao : secoesApi) {
+                md.append("### ").append(escapeHtml(secao.get("semestre_curso")))
+                  .append(" (").append(secao.get("ano")).append("-").append(secao.get("semestre_ano"))
+                  .append(") | ").append(escapeHtml(secao.get("empresa"))).append("\n\n");
+                
+                md.append("O projeto desenvolvido no ").append(escapeHtml(secao.get("semestre_curso")))
+                  .append(" do curso teve como cliente a ").append(escapeHtml(secao.get("empresa"))).append(", ");
+                
+                String descricaoEmpresa = secao.getOrDefault("descricao_empresa", "");
+                if (!descricaoEmpresa.isBlank()) {
+                    md.append(descricaoEmpresa).append("\n\n");
+                } else {
+                    md.append("\n\n");
+                }
+                
+                String problema = secao.getOrDefault("problema", "");
+                if (!problema.isBlank()) {
+                    md.append(problema).append("\n\n");
+                }
+                
+                String solucao = secao.getOrDefault("solucao", "");
+                if (!solucao.isBlank()) {
+                    md.append(solucao).append("\n\n");
+                }
+                
+                md.append("<br>\n\n");
+                md.append("<hr>\n\n");
+                
+                String linkRepositorio = secao.getOrDefault("link_repositorio", "");
+                if (!linkRepositorio.isBlank()) {
+                    md.append("#### ✍ Repositório do Projeto: [GitHub](").append(linkRepositorio).append(")\n\n");
+                    md.append("<hr>\n\n");
+                }
+                
+                md.append("#### 👨‍💻 Tecnologias Utilizadas\n\n");
+                String tecnologias = secao.getOrDefault("tecnologias", "");
+                if (!tecnologias.isBlank()) {
+                    md.append(tecnologias).append("\n\n");
+                }
+                
+                md.append("#### 👍 Contribuições Pessoais\n\n");
+                String contribuicoes = secao.getOrDefault("contribuicoes", "");
+                if (!contribuicoes.isBlank()) {
+                    md.append(contribuicoes).append("\n\n");
+                }
+                
+                md.append("#### 💪 Hard Skills\n\n");
+                md.append("Exercitei as seguintes Hard Skills durante esse projeto:\n\n");
+                String hardSkills = secao.getOrDefault("hard_skills", "");
+                if (!hardSkills.isBlank()) {
+                    md.append(hardSkills).append("\n\n");
+                }
+                
+                md.append("#### 🍀 Soft Skills\n\n");
+                String softSkills = secao.getOrDefault("soft_skills", "");
+                if (!softSkills.isBlank()) {
+                    md.append(softSkills).append("\n\n");
+                }
+                
+                md.append("---\n\n");
+            }
+        }
+        
+        return md.toString();
+    }
+    
+    private String escapeHtml(String text) {
+        if (text == null) return "";
+        return text.replace("&", "&amp;")
+                   .replace("<", "&lt;")
+                   .replace(">", "&gt;")
+                   .replace("\"", "&quot;")
+                   .replace("'", "&#39;");
+    }
+    
+    private void mostrarAlerta(String titulo, String mensagem) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensagem);
+        alert.showAndWait();
+    }
 
 }
 
