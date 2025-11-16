@@ -179,6 +179,14 @@ public class PrincipalAlunoController {
     }
 
     /**
+     * Botão Gerar README - carrega a tela de gerar README.md
+     */
+    @FXML
+    private void navegarGerarReadme() {
+        navegarParaTela("/com/example/technocode/Aluno/gerar-readme.fxml", null);
+    }
+
+    /**
      * Método público para ser chamado por outras telas quando precisarem navegar
      * Mantém a estrutura principal mas troca o conteúdo do center
      */

@@ -26,22 +26,13 @@
                      </font>
                   </Label>
                </VBox>
-               <HBox spacing="10">
-                  <Button fx:id="btnGerarMD" mnemonicParsing="false" onAction="#gerarArquivoMD" prefHeight="40.0" prefWidth="180.0" 
-                          style="-fx-background-color: #9B59B6; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(155,89,182,0.3), 5, 0, 0, 2);" 
-                          text="📄 GERAR README.md" textFill="WHITE">
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                  </Button>
-                  <Button fx:id="btnNovaSessao" mnemonicParsing="false" onAction="#mostrarOpcoesNovaSessao" prefHeight="40.0" prefWidth="150.0" 
-                          style="-fx-background-color: #B82E1A; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(184,46,26,0.3), 5, 0, 0, 2);" 
-                          text="+ NOVA SESSÃO" textFill="WHITE">
-                     <font>
-                        <Font name="System Bold" size="13.0" />
-                     </font>
-                  </Button>
-               </HBox>
+               <Button fx:id="btnNovaSessao" mnemonicParsing="false" onAction="#mostrarOpcoesNovaSessao" prefHeight="40.0" prefWidth="150.0" 
+                       style="-fx-background-color: #B82E1A; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(184,46,26,0.3), 5, 0, 0, 2);" 
+                       text="+ NOVA SESSÃO" textFill="WHITE">
+                  <font>
+                     <Font name="System Bold" size="13.0" />
+                  </font>
+               </Button>
             </children>
          </HBox>
 
