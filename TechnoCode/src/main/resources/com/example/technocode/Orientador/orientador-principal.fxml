@@ -78,6 +78,17 @@
                     </graphic>
                 </Button>
 
+                <!-- Botão Alunos Orientados -->
+                <Button contentDisplay="LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarAlunosOrientados" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Alunos Orientados">
+                    <graphic>
+                        <ImageView fitHeight="18" fitWidth="18" preserveRatio="true">
+                            <image>
+                                <Image url="@../imagens/doc.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Button>
+
                 <!-- Botão Solicitações -->
                 <Button contentDisplay="LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarSolicitacoes" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Solicitações">
                     <graphic>

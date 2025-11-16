@@ -4,15 +4,15 @@ import com.example.technocode.Controllers.LoginController;
 import com.example.technocode.Services.NavigationService;
 import com.example.technocode.model.Aluno;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.Callback;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-public class TelaInicialOrientadorController {
+public class AlunosOrientadosController {
 
     @FXML
     private TableView<Map<String, String>> tabelaAlunos;
@@ -23,15 +23,20 @@ public class TelaInicialOrientadorController {
     @FXML
     private TableColumn<Map<String, String>, String> colDisciplina;
     @FXML
+    private TableColumn<Map<String, String>, String> colSecoesAprovadas;
+    @FXML
     private TableColumn<Map<String, String>, Void> colAnalisar;
 
     @FXML
-    private void voltarLogin(ActionEvent event) throws IOException {
-        NavigationService.navegarPara(event, "/com/example/technocode/login.fxml");
+    public void initialize() {
+        carregarTabela();
     }
 
-    @FXML
-    public void initialize() {
+    public void recarregarTabela() {
+        carregarTabela();
+    }
+
+    private void carregarTabela() {
         try {
             colNome.setCellValueFactory(data ->
                     new SimpleStringProperty(data.getValue().get("nome"))
@@ -42,16 +47,63 @@ public class TelaInicialOrientadorController {
             colDisciplina.setCellValueFactory(data ->
                     new SimpleStringProperty(data.getValue().get("professor_tg"))
             );
+            colSecoesAprovadas.setCellValueFactory(data -> {
+                String emailAluno = data.getValue().get("email");
+                Map<String, Integer> secoes = Aluno.contarSecoesPorAluno(emailAluno);
+                int aprovadas = secoes.get("aprovadas");
+                int enviadas = secoes.get("enviadas");
+                return new SimpleStringProperty(aprovadas + "/" + enviadas);
+            });
+
             List<Map<String, String>> alunos = Aluno.buscarPorOrientador(LoginController.getEmailLogado());
+
+            // Adiciona informações de seções aprovadas para cada aluno
+            for (Map<String, String> aluno : alunos) {
+                String emailAluno = aluno.get("email");
+                Map<String, Integer> secoes = Aluno.contarSecoesPorAluno(emailAluno);
+                aluno.put("secoes_aprovadas", String.valueOf(secoes.get("aprovadas")));
+                aluno.put("secoes_enviadas", String.valueOf(secoes.get("enviadas")));
+            }
 
             tabelaAlunos.getItems().setAll(alunos);
 
-            // A tabela será estilizada via CSS (estilo.css)
             // Configura alinhamento das colunas
             colNome.setStyle("-fx-alignment: CENTER-LEFT;");
             colEmail.setStyle("-fx-alignment: CENTER-LEFT;");
             colDisciplina.setStyle("-fx-alignment: CENTER-LEFT;");
+            colSecoesAprovadas.setStyle("-fx-alignment: CENTER;");
             colAnalisar.setStyle("-fx-alignment: CENTER;");
+
+            // Estiliza coluna de seções aprovadas
+            colSecoesAprovadas.setCellFactory(col -> new TableCell<Map<String, String>, String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setStyle("");
+                    } else {
+                        setText(item);
+                        // Extrai números para colorir
+                        String[] partes = item.split("/");
+                        if (partes.length == 2) {
+                            try {
+                                int aprovadas = Integer.parseInt(partes[0]);
+                                int enviadas = Integer.parseInt(partes[1]);
+                                if (aprovadas == enviadas && enviadas > 0) {
+                                    setStyle("-fx-text-fill: #27AE60; -fx-font-weight: bold;");
+                                } else if (aprovadas > 0) {
+                                    setStyle("-fx-text-fill: #3498DB; -fx-font-weight: bold;");
+                                } else {
+                                    setStyle("-fx-text-fill: #95A5A6;");
+                                }
+                            } catch (NumberFormatException e) {
+                                setStyle("");
+                            }
+                        }
+                    }
+                }
+            });
 
             // Adiciona os botões de "Analisar"
             addButtonToTable();
@@ -63,7 +115,6 @@ public class TelaInicialOrientadorController {
             e.printStackTrace();
         }
     }
-
 
     private void addButtonToTable() {
         Callback<TableColumn<Map<String, String>, Void>, TableCell<Map<String, String>, Void>> cellFactory =
@@ -142,18 +193,5 @@ public class TelaInicialOrientadorController {
             e.printStackTrace();
         }
     }
-
-    // Método público para recarregar a tabela de alunos
-    public void recarregarTabelaAlunos() {
-        try {
-            List<Map<String, String>> alunos = Aluno.buscarPorOrientador(LoginController.getEmailLogado());
-
-            tabelaAlunos.getItems().setAll(alunos);
-            tabelaAlunos.refresh();
-        } catch (Exception e) {
-            System.err.println("Erro ao recarregar tabela de alunos: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
 }
+

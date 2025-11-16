@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<ScrollPane id="telas-orientador" fitToWidth="true" prefHeight="800.0" prefWidth="1200.0" style="-fx-background-color: #F8F9FA; -fx-background: transparent;" vbarPolicy="AS_NEEDED" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.Orientador.DashboardOrientadorController">
+    <content>
+        <VBox alignment="TOP_CENTER" prefWidth="1180.0" style="-fx-spacing: 20; -fx-padding: 20;">
+            
+            <!-- (A) Header Superior - Card com informações do orientador -->
+            <VBox spacing="15" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);">
+                <children>
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Region style="-fx-background-color: #3498DB; -fx-background-radius: 4;" prefWidth="4" prefHeight="24" />
+                        <Label text="Informações do Orientador" textFill="#2C3E50">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
+                        </Label>
+                    </HBox>
+                    <GridPane hgap="20" vgap="15">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="ALWAYS" minWidth="200.0" />
+                            <ColumnConstraints hgrow="ALWAYS" minWidth="200.0" />
+                            <ColumnConstraints hgrow="ALWAYS" minWidth="200.0" />
+                        </columnConstraints>
+                        <rowConstraints>
+                            <RowConstraints minHeight="30.0" />
+                        </rowConstraints>
+                        <children>
+                            <VBox spacing="5" GridPane.columnIndex="0">
+                                <children>
+                                    <Label text="Nome do Orientador:" textFill="#7F8C8D">
+                                        <font>
+                                            <Font size="12.0" />
+                                        </font>
+                                    </Label>
+                                    <Label fx:id="labelNomeOrientador" text="Carregando..." textFill="#2C3E50">
+                                        <font>
+                                            <Font name="System Bold" size="14.0" />
+                                        </font>
+                                    </Label>
+                                </children>
+                            </VBox>
+                            <VBox spacing="5" GridPane.columnIndex="1">
+                                <children>
+                                    <Label text="Total de Alunos:" textFill="#7F8C8D">
+                                        <font>
+                                            <Font size="12.0" />
+                                        </font>
+                                    </Label>
+                                    <Label fx:id="labelAlunosOrientados" text="0" textFill="#2C3E50">
+                                        <font>
+                                            <Font name="System Bold" size="14.0" />
+                                        </font>
+                                    </Label>
+                                </children>
+                            </VBox>
+                            <VBox spacing="5" GridPane.columnIndex="2">
+                                <children>
+                                    <Label text="Solicitações Pendentes:" textFill="#7F8C8D">
+                                        <font>
+                                            <Font size="12.0" />
+                                        </font>
+                                    </Label>
+                                    <Label fx:id="labelSolicitacoesPendentes" text="0" textFill="#2C3E50">
+                                        <font>
+                                            <Font name="System Bold" size="14.0" />
+                                        </font>
+                                    </Label>
+                                </children>
+                            </VBox>
+                        </children>
+                    </GridPane>
+                </children>
+            </VBox>
+
+            <!-- (B) Cards principais (3 colunas) -->
+            <GridPane hgap="15" style="-fx-background-color: transparent;" vgap="15">
+                <columnConstraints>
+                    <ColumnConstraints hgrow="ALWAYS" minWidth="300.0" prefWidth="300.0" />
+                    <ColumnConstraints hgrow="ALWAYS" minWidth="300.0" prefWidth="300.0" />
+                    <ColumnConstraints hgrow="ALWAYS" minWidth="300.0" prefWidth="300.0" />
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints minHeight="200.0" prefHeight="200.0" />
+                </rowConstraints>
+                <children>
+                    <!-- Card 1: Alunos Orientados -->
+                    <VBox spacing="10" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);" GridPane.columnIndex="0">
+                        <children>
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Region style="-fx-background-color: #3498DB; -fx-background-radius: 4;" prefWidth="4" prefHeight="24" />
+                                <Label text="Alunos Orientados" textFill="#2C3E50">
+                                    <font>
+                                        <Font name="System Bold" size="16.0" />
+                                    </font>
+                                </Label>
+                            </HBox>
+                            <VBox alignment="CENTER" spacing="10">
+                                <Label fx:id="labelAlunosOrientadosCard" style="-fx-font-size: 48px; -fx-font-weight: bold;" text="0" textFill="#3498DB" />
+                                <Label text="alunos sob sua orientação" textFill="#7F8C8D" wrapText="true">
+                                    <font>
+                                        <Font size="12.0" />
+                                    </font>
+                                </Label>
+                                <Region prefHeight="35.0" />
+                            </VBox>
+                        </children>
+                    </VBox>
+
+                    <!-- Card 2: Alunos com Seções Completas -->
+                    <VBox spacing="10" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);" GridPane.columnIndex="1">
+                        <children>
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Region style="-fx-background-color: #27AE60; -fx-background-radius: 4;" prefWidth="4" prefHeight="24" />
+                                <Label text="Alunos Completos" textFill="#2C3E50">
+                                    <font>
+                                        <Font name="System Bold" size="16.0" />
+                                    </font>
+                                </Label>
+                            </HBox>
+                            <VBox alignment="CENTER" spacing="10">
+                                <Label fx:id="labelAlunosCompletos" style="-fx-font-size: 48px; -fx-font-weight: bold;" text="0" textFill="#27AE60" />
+                                <Label text="alunos com seções aprovadas" textFill="#7F8C8D" wrapText="true">
+                                    <font>
+                                        <Font size="12.0" />
+                                    </font>
+                                </Label>
+                                <Region prefHeight="35.0" />
+                            </VBox>
+                        </children>
+                    </VBox>
+
+                    <!-- Card 3: Seções Pendentes -->
+                    <VBox spacing="10" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);" GridPane.columnIndex="2">
+                        <children>
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Region style="-fx-background-color: #F57C00; -fx-background-radius: 4;" prefWidth="4" prefHeight="24" />
+                                <Label text="Seções Pendentes" textFill="#2C3E50">
+                                    <font>
+                                        <Font name="System Bold" size="16.0" />
+                                    </font>
+                                </Label>
+                            </HBox>
+                            <VBox alignment="CENTER" spacing="10">
+                                <Label fx:id="labelSecoesPendentes" style="-fx-font-size: 48px; -fx-font-weight: bold;" text="0" textFill="#F57C00" />
+                                <Label text="seções aguardando avaliação" textFill="#7F8C8D" wrapText="true">
+                                    <font>
+                                        <Font size="12.0" />
+                                    </font>
+                                </Label>
+                                <Region prefHeight="35.0" />
+                            </VBox>
+                        </children>
+                    </VBox>
+                </children>
+            </GridPane>
+
+            <!-- (C) Bloco Inferior - 2 colunas -->
+            <GridPane hgap="15" style="-fx-background-color: transparent;" vgap="15">
+                <columnConstraints>
+                    <ColumnConstraints hgrow="ALWAYS" minWidth="300.0" prefWidth="300.0" />
+                    <ColumnConstraints hgrow="ALWAYS" minWidth="300.0" prefWidth="300.0" />
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints minHeight="200.0" prefHeight="200.0" />
+                </rowConstraints>
+                <children>
+                    <!-- Coluna 1: Solicitações Pendentes -->
+                    <VBox spacing="10" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);" GridPane.columnIndex="0">
+                        <children>
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Region style="-fx-background-color: #9B59B6; -fx-background-radius: 4;" prefWidth="4" prefHeight="24" />
+                                <Label text="Solicitações Pendentes" textFill="#2C3E50">
+                                    <font>
+                                        <Font name="System Bold" size="16.0" />
+                                    </font>
+                                </Label>
+                            </HBox>
+                            <VBox alignment="CENTER" spacing="10" VBox.vgrow="ALWAYS">
+                                <Region VBox.vgrow="ALWAYS" />
+                                <Label fx:id="labelSolicitacoesPendentes" style="-fx-font-size: 48px; -fx-font-weight: bold;" text="0" textFill="#9B59B6" />
+                                <Button onAction="#navegarParaSolicitacoes" prefHeight="40.0" prefWidth="200.0" 
+                                        style="-fx-background-color: #9B59B6; -fx-background-radius: 8; -fx-cursor: hand;" 
+                                        text="Ver Solicitações" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="12.0" />
+                                    </font>
+                                </Button>
+                                <Region VBox.vgrow="ALWAYS" />
+                            </VBox>
+                        </children>
+                    </VBox>
+
+                    <!-- Coluna 2: Ações Rápidas -->
+                    <VBox spacing="10" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);" GridPane.columnIndex="1">
+                        <children>
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Region style="-fx-background-color: #F39C12; -fx-background-radius: 4;" prefWidth="4" prefHeight="24" />
+                                <Label text="Ações Rápidas" textFill="#2C3E50">
+                                    <font>
+                                        <Font name="System Bold" size="16.0" />
+                                    </font>
+                                </Label>
+                            </HBox>
+                            <VBox alignment="CENTER" spacing="10" VBox.vgrow="ALWAYS">
+                                <Region VBox.vgrow="ALWAYS" />
+                                <Button onAction="#navegarParaAlunosOrientados" prefHeight="40.0" prefWidth="200.0" 
+                                        style="-fx-background-color: #3498DB; -fx-background-radius: 8; -fx-cursor: hand;" 
+                                        text="Ver Alunos Orientados" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="12.0" />
+                                    </font>
+                                </Button>
+                                <Button onAction="#navegarParaSolicitacoes" prefHeight="40.0" prefWidth="200.0" 
+                                        style="-fx-background-color: #9B59B6; -fx-background-radius: 8; -fx-cursor: hand;" 
+                                        text="Ver Solicitações" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="12.0" />
+                                    </font>
+                                </Button>
+                                <Region VBox.vgrow="ALWAYS" />
+                            </VBox>
+                        </children>
+                    </VBox>
+                </children>
+            </GridPane>
+        </VBox>
+    </content>
+</ScrollPane>

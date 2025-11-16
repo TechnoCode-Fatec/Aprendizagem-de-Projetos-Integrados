@@ -209,12 +209,16 @@ public class EntregasDoAlunoController {
 
     @FXML
     private void voltarTelaOrientador(ActionEvent event) throws IOException {
-        NavigationService.navegarPara(event, "/com/example/technocode/Orientador/tela-inicial-orientador.fxml",
-            controller -> {
-                if (controller instanceof TelaInicialOrientadorController) {
-                    ((TelaInicialOrientadorController) controller).recarregarTabelaAlunos();
+        if (OrientadorPrincipalController.getInstance() != null) {
+            OrientadorPrincipalController.getInstance().navegarParaTela(
+                "/com/example/technocode/Orientador/alunos-orientados.fxml",
+                controller -> {
+                    if (controller instanceof AlunosOrientadosController) {
+                        ((AlunosOrientadosController) controller).recarregarTabela();
+                    }
                 }
-            });
+            );
+        }
     }
 
     /**

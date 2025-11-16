@@ -225,6 +225,47 @@ public class SolicitacaoOrientacao {
     }
 
     /**
+     * Busca todas as solicitações de um orientador (histórico completo)
+     */
+    public static List<Map<String, String>> buscarTodasPorOrientador(String emailOrientador) {
+        List<Map<String, String>> solicitacoes = new ArrayList<>();
+        String sql = "SELECT so.id, so.aluno, so.orientador, so.status, so.mensagem_orientador, " +
+                     "so.data_solicitacao, so.data_resposta, a.nome as nome_aluno " +
+                     "FROM solicitacao_orientacao so " +
+                     "INNER JOIN aluno a ON so.aluno = a.email " +
+                     "WHERE so.orientador = ? " +
+                     "ORDER BY so.data_solicitacao DESC";
+
+        try (Connection conn = new Connector().getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setString(1, emailOrientador);
+            ResultSet rs = pst.executeQuery();
+
+            while (rs.next()) {
+                Map<String, String> solicitacao = new HashMap<>();
+                solicitacao.put("id", String.valueOf(rs.getInt("id")));
+                solicitacao.put("aluno", rs.getString("aluno"));
+                solicitacao.put("nome_aluno", rs.getString("nome_aluno"));
+                solicitacao.put("orientador", rs.getString("orientador"));
+                solicitacao.put("status", rs.getString("status"));
+                solicitacao.put("mensagem_orientador", rs.getString("mensagem_orientador"));
+                solicitacao.put("data_solicitacao", rs.getTimestamp("data_solicitacao") != null ? 
+                    rs.getTimestamp("data_solicitacao").toString() : null);
+                solicitacao.put("data_resposta", rs.getTimestamp("data_resposta") != null ? 
+                    rs.getTimestamp("data_resposta").toString() : null);
+                solicitacoes.add(solicitacao);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao buscar todas as solicitações", e);
+        }
+
+        return solicitacoes;
+    }
+
+    /**
      * Busca todas as solicitações de um aluno
      */
     public static List<Map<String, String>> buscarPorAluno(String emailAluno) {
