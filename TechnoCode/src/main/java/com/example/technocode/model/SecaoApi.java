@@ -347,5 +347,90 @@ public class SecaoApi {
         }
         return null;
     }
+
+    /**
+     * Conta quantos itens estão aprovados em uma seção de API
+     * Se não houver feedback na versão atual, busca da versão anterior
+     * @return Map com "aprovados" (int) e "total" (int)
+     */
+    public static Map<String, Integer> contarItensAprovados(String emailAluno, String semestreCurso, int ano, String semestreAno, int versao) {
+        Map<String, Integer> resultado = new HashMap<>();
+        resultado.put("aprovados", 0);
+        resultado.put("total", 9); // Total de campos: empresa, descricao_empresa, repositorio, problema, solucao, tecnologias, contribuicoes, hard_skills, soft_skills
+        
+        // Primeiro tenta buscar da versão atual
+        String sql = "SELECT status_empresa, status_descricao_empresa, status_repositorio, status_problema, " +
+                     "status_solucao, status_tecnologias, status_contribuicoes, status_hard_skills, status_soft_skills " +
+                     "FROM secao_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
+        try (Connection con = new Connector().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, emailAluno);
+            ps.setString(2, semestreCurso);
+            ps.setInt(3, ano);
+            ps.setString(4, semestreAno);
+            ps.setInt(5, versao);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    // Verifica se há algum feedback na versão atual
+                    boolean temFeedback = false;
+                    int aprovados = 0;
+                    String[] statusFields = {"status_empresa", "status_descricao_empresa", "status_repositorio", 
+                                             "status_problema", "status_solucao", "status_tecnologias", 
+                                             "status_contribuicoes", "status_hard_skills", "status_soft_skills"};
+                    for (String field : statusFields) {
+                        String status = rs.getString(field);
+                        if (status != null) {
+                            temFeedback = true;
+                            if ("Aprovado".equals(status)) {
+                                aprovados++;
+                            }
+                        }
+                    }
+                    
+                    if (temFeedback) {
+                        resultado.put("aprovados", aprovados);
+                        return resultado;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        // Se não há feedback na versão atual e há versão anterior, busca da versão anterior
+        if (versao > 1) {
+            int versaoAnterior = versao - 1;
+            String sqlAnterior = "SELECT status_empresa, status_descricao_empresa, status_repositorio, status_problema, " +
+                                "status_solucao, status_tecnologias, status_contribuicoes, status_hard_skills, status_soft_skills " +
+                                "FROM secao_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
+            try (Connection con = new Connector().getConnection();
+                 PreparedStatement ps = con.prepareStatement(sqlAnterior)) {
+                ps.setString(1, emailAluno);
+                ps.setString(2, semestreCurso);
+                ps.setInt(3, ano);
+                ps.setString(4, semestreAno);
+                ps.setInt(5, versaoAnterior);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        int aprovados = 0;
+                        if ("Aprovado".equals(rs.getString("status_empresa"))) aprovados++;
+                        if ("Aprovado".equals(rs.getString("status_descricao_empresa"))) aprovados++;
+                        if ("Aprovado".equals(rs.getString("status_repositorio"))) aprovados++;
+                        if ("Aprovado".equals(rs.getString("status_problema"))) aprovados++;
+                        if ("Aprovado".equals(rs.getString("status_solucao"))) aprovados++;
+                        if ("Aprovado".equals(rs.getString("status_tecnologias"))) aprovados++;
+                        if ("Aprovado".equals(rs.getString("status_contribuicoes"))) aprovados++;
+                        if ("Aprovado".equals(rs.getString("status_hard_skills"))) aprovados++;
+                        if ("Aprovado".equals(rs.getString("status_soft_skills"))) aprovados++;
+                        resultado.put("aprovados", aprovados);
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return resultado;
+    }
 }
 

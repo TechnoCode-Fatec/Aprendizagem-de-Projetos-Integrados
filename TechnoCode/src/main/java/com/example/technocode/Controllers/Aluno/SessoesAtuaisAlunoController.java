@@ -161,6 +161,36 @@ public class SessoesAtuaisAlunoController {
             horarioFeedback = SecaoApi.buscarHorarioFeedback(emailAluno, semestreCurso, anoExtraido, semestreAno, versao);
         }
         
+        // Busca informações sobre itens aprovados
+        Map<String, Integer> itensAprovados = null;
+        if ("apresentacao".equals(tipo)) {
+            int versao = Integer.parseInt(secao.get("versao"));
+            itensAprovados = SecaoApresentacao.contarItensAprovados(emailAluno, versao);
+        } else {
+            String semestreCurso = secao.get("semestre_curso");
+            String ano = secao.get("ano");
+            String semestreAno = secao.get("semestre_ano");
+            int versao = Integer.parseInt(secao.get("versao"));
+            String anoExtraido = ano != null ? ano.split("-")[0] : ano;
+            itensAprovados = SecaoApi.contarItensAprovados(emailAluno, semestreCurso, Integer.parseInt(anoExtraido), semestreAno, versao);
+        }
+        
+        // Adiciona label com informação de itens aprovados
+        if (itensAprovados != null) {
+            int aprovados = itensAprovados.get("aprovados");
+            int total = itensAprovados.get("total");
+            Label labelAprovados;
+            if (aprovados == total) {
+                // Se todos os itens estão aprovados, mostra mensagem especial
+                labelAprovados = new Label("✓ Seção aprovada!");
+            } else {
+                // Caso contrário, mostra a contagem normal
+                labelAprovados = new Label("✓ " + aprovados + "/" + total + " itens aprovados");
+            }
+            labelAprovados.setStyle("-fx-font-size: 11px; -fx-text-fill: #27AE60; -fx-font-weight: bold;");
+            textBox.getChildren().add(labelAprovados);
+        }
+        
         // Se existe feedback, adiciona label com o horário
         if (horarioFeedback != null) {
             Label labelHorario = new Label("✓ Feedback recebido em: " + horarioFeedback);
@@ -242,10 +272,11 @@ public class SessoesAtuaisAlunoController {
         
         if ("apresentacao".equals(tipo)) {
             Node node = containerApresentacoes;
-            NavigationService.navegarParaTelaInterna(node, "/com/example/technocode/Aluno/aluno-visualizar-apresentacao.fxml",
+            // Abre diretamente a tela de feedback (unificada)
+            NavigationService.navegarParaTelaInterna(node, "/com/example/technocode/Aluno/aluno-feedback-apresentacao.fxml",
                 controller -> {
-                    if (controller instanceof AlunoVisualizarApresentacaoController) {
-                        ((AlunoVisualizarApresentacaoController) controller).setIdentificadorSecao(
+                    if (controller instanceof AlunoFeedbackApresentacaoController) {
+                        ((AlunoFeedbackApresentacaoController) controller).setIdentificadorSecao(
                             emailAluno, Integer.parseInt(secao.get("versao"))
                         );
                     }
@@ -262,10 +293,11 @@ public class SessoesAtuaisAlunoController {
                 final int anoInt = Integer.parseInt(anoExtraido);
                 final int versaoInt = Integer.parseInt(versao);
                 
-                NavigationService.navegarParaTelaInterna(node, "/com/example/technocode/Aluno/aluno-visualizar-api.fxml",
+                // Abre diretamente a tela de feedback (unificada)
+                NavigationService.navegarParaTelaInterna(node, "/com/example/technocode/Aluno/aluno-feedback-api.fxml",
                     controller -> {
-                        if (controller instanceof AlunoVisualizarApiController) {
-                            ((AlunoVisualizarApiController) controller).setIdentificadorSecao(
+                        if (controller instanceof AlunoFeedbackApiController) {
+                            ((AlunoFeedbackApiController) controller).setIdentificadorSecao(
                                 emailAluno, semestreCurso, anoInt, semestreAno, versaoInt
                             );
                         }

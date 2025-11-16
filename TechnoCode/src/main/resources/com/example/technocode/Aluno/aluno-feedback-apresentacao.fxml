@@ -43,6 +43,13 @@
                             <Font name="System Bold" size="13.0" />
                         </font>
                     </Button>
+                    <Button fx:id="btnEnviarNovaVersao" mnemonicParsing="false" onAction="#enviarNovaVersao" prefHeight="40.0" prefWidth="180.0" 
+                            style="-fx-background-color: #3498DB; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.3), 5, 0, 0, 2);" 
+                            text="ENVIAR NOVA VERSÃO" textFill="WHITE" visible="false" managed="false">
+                        <font>
+                            <Font name="System Bold" size="13.0" />
+                        </font>
+                    </Button>
                 </children>
             </HBox>
 
@@ -275,6 +282,8 @@
                                                 </HBox>
                                                 <HBox spacing="10" alignment="CENTER_LEFT">
                                                     <Hyperlink fx:id="linkGithub" style="-fx-text-fill: #3498DB; -fx-font-size: 12px; -fx-underline: true;" />
+                                                    <TextField fx:id="alunoLinkGithubEditavel" visible="false" managed="false" prefWidth="300.0" 
+                                                               style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-text-fill: #2C3E50;" />
                                                     <Region HBox.hgrow="ALWAYS" />
                                                 </HBox>
                                                 <VBox fx:id="containerFeedbackGithub" visible="false" managed="false" spacing="5">
@@ -303,6 +312,8 @@
                                                 </HBox>
                                                 <HBox spacing="10" alignment="CENTER_LEFT">
                                                     <Hyperlink fx:id="linkLinkedin" style="-fx-text-fill: #3498DB; -fx-font-size: 12px; -fx-underline: true;" />
+                                                    <TextField fx:id="alunoLinkLinkedinEditavel" visible="false" managed="false" prefWidth="300.0" 
+                                                               style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-text-fill: #2C3E50;" />
                                                     <Region HBox.hgrow="ALWAYS" />
                                                 </HBox>
                                                 <VBox fx:id="containerFeedbackLinkedin" visible="false" managed="false" spacing="5">
