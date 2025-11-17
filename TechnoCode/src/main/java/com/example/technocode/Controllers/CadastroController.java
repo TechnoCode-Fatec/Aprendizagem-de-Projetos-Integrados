@@ -4,6 +4,7 @@ import com.example.technocode.Services.NavigationService;
 import com.example.technocode.model.Aluno;
 import com.example.technocode.model.Orientador;
 import com.example.technocode.model.ProfessorTG;
+import com.example.technocode.model.SolicitacaoOrientacao;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -148,15 +149,23 @@ public class CadastroController {
                 return;
             }
 
+            // Cadastra o aluno sem orientador inicialmente (será definido após aceitação da solicitação)
             Aluno aluno = new Aluno(
                     txtNome.getText(),
                     txtEmail.getText(),
                     txtSenha.getText(),
-                    emailOrientador,
+                    null, // orientador será definido após aceitação da solicitação
                     emailProfessorTG,
                     null  // curso removido do banco de dados
             );
             aluno.cadastrar();
+            
+            // Cria uma solicitação de orientação
+            SolicitacaoOrientacao solicitacao = new SolicitacaoOrientacao(
+                    txtEmail.getText(),
+                    emailOrientador
+            );
+            solicitacao.criar();
         } else if (tipo.equals("Orientador")) {
             Orientador orientador = new Orientador(
                     txtNome.getText(),

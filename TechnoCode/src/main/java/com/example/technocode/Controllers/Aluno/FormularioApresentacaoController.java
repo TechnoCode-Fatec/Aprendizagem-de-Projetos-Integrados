@@ -129,10 +129,10 @@ public class FormularioApresentacaoController {
             ? (Node) event.getSource() 
             : txtNome;
             
-        NavigationService.navegarParaTelaInterna(node, "/com/example/technocode/Aluno/tela-inicial-aluno.fxml", 
+        NavigationService.navegarParaTelaInterna(node, "/com/example/technocode/Aluno/sessoes-atuais.fxml", 
             controller -> {
-                if (controller instanceof TelaInicialAlunoController) {
-                    ((TelaInicialAlunoController) controller).recarregarSecoes();
+                if (controller instanceof SessoesAtuaisAlunoController) {
+                    ((SessoesAtuaisAlunoController) controller).recarregarSecoes();
                 }
             });
     }

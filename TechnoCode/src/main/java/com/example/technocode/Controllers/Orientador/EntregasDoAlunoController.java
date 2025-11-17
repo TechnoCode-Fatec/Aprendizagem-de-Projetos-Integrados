@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.ArrayList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import java.io.IOException;
 
@@ -42,6 +41,7 @@ public class EntregasDoAlunoController {
     @FXML private TableView<Map<String, String>> tabelaSecao;
     @FXML private TableColumn<Map<String, String>, String> colNomeSecao; // "id"
     @FXML private TableColumn<Map<String, String>, String> colDescricao; // "empresa"
+    @FXML private TableColumn<Map<String, String>, String> colItensAprovados; // itens aprovados
     @FXML private TableColumn<Map<String, String>, String> colStatusFeedback; // status do feedback
     @FXML private TableColumn<Map<String, String>, Void> colAnalisar;
 
@@ -50,6 +50,50 @@ public class EntregasDoAlunoController {
         try {
             colNomeSecao.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("id")));
             colDescricao.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("empresa")));
+            colItensAprovados.setCellValueFactory(data -> {
+                Map<String, String> secao = data.getValue();
+                String tipo = secao.getOrDefault("tipo", "api");
+                String emailAluno = emailAlunoParaConsulta;
+                
+                // Se o email ainda não foi definido, retorna "-"
+                if (emailAluno == null || emailAluno.isBlank()) {
+                    return new SimpleStringProperty("-");
+                }
+                
+                try {
+                    Map<String, Integer> itensAprovados = null;
+                    if ("apresentacao".equals(tipo)) {
+                        String versao = secao.getOrDefault("versao", null);
+                        if (versao != null) {
+                            itensAprovados = SecaoApresentacao.contarItensAprovados(emailAluno, Integer.parseInt(versao));
+                        }
+                    } else {
+                        String semestreCurso = secao.getOrDefault("semestre_curso", null);
+                        String ano = secao.getOrDefault("ano", null);
+                        String semestreAno = secao.getOrDefault("semestre_ano", null);
+                        String versao = secao.getOrDefault("versao", null);
+                        
+                        if (semestreCurso != null && ano != null && semestreAno != null && versao != null) {
+                            String anoExtraido = ano.split("-")[0];
+                            itensAprovados = SecaoApi.contarItensAprovados(emailAluno, semestreCurso, Integer.parseInt(anoExtraido), semestreAno, Integer.parseInt(versao));
+                        }
+                    }
+                    
+                    if (itensAprovados != null) {
+                        int aprovados = itensAprovados.get("aprovados");
+                        int total = itensAprovados.get("total");
+                        if (aprovados == total) {
+                            return new SimpleStringProperty("Seção aprovada!");
+                        } else {
+                            return new SimpleStringProperty(aprovados + "/" + total + " itens aprovados");
+                        }
+                    }
+                } catch (Exception e) {
+                    System.err.println("Erro ao contar itens aprovados: " + e.getMessage());
+                }
+                
+                return new SimpleStringProperty("-");
+            });
             colStatusFeedback.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("status_feedback")));
 
             // Aplica estilo customizado na coluna de status
@@ -209,12 +253,16 @@ public class EntregasDoAlunoController {
 
     @FXML
     private void voltarTelaOrientador(ActionEvent event) throws IOException {
-        NavigationService.navegarPara(event, "/com/example/technocode/Orientador/tela-inicial-orientador.fxml",
-            controller -> {
-                if (controller instanceof TelaInicialOrientadorController) {
-                    ((TelaInicialOrientadorController) controller).recarregarTabelaAlunos();
+        if (OrientadorPrincipalController.getInstance() != null) {
+            OrientadorPrincipalController.getInstance().navegarParaTela(
+                "/com/example/technocode/Orientador/alunos-orientados.fxml",
+                controller -> {
+                    if (controller instanceof AlunosOrientadosController) {
+                        ((AlunosOrientadosController) controller).recarregarTabela();
+                    }
                 }
-            });
+            );
+        }
     }
 
     /**

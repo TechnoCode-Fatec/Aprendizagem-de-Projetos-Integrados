@@ -274,14 +274,102 @@ public class SecaoApresentacao {
     /**
      * Busca o horário do feedback para uma seção de apresentação
      * @return String formatada com data e hora, ou null se não existir feedback
-     * Nota: Como os feedbacks agora estão na própria tabela secao_apresentacao,
-     * retornamos null pois não há mais um campo horario separado para feedback
      */
     public static String buscarHorarioFeedback(String emailAluno, int versao) {
-        // No novo esquema, não há mais um campo horario específico para feedback
-        // Os feedbacks estão diretamente na tabela secao_apresentacao
-        // Retornamos null por enquanto, ou pode-se usar horario_secao se necessário
+        String sql = "SELECT DATE_FORMAT(horario_feedback, '%d/%m/%Y às %H:%i') as horario_formatado " +
+                     "FROM secao_apresentacao WHERE aluno = ? AND versao = ? AND horario_feedback IS NOT NULL LIMIT 1";
+        try (Connection con = new Connector().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, emailAluno);
+            ps.setInt(2, versao);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("horario_formatado");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
+    }
+
+    /**
+     * Conta quantos itens estão aprovados em uma seção de apresentação
+     * Se não houver feedback na versão atual, busca da versão anterior
+     * @return Map com "aprovados" (int) e "total" (int)
+     */
+    public static Map<String, Integer> contarItensAprovados(String emailAluno, int versao) {
+        Map<String, Integer> resultado = new HashMap<>();
+        resultado.put("aprovados", 0);
+        resultado.put("total", 9); // Total de campos: nome, idade, curso, motivacao, historico, historico_profissional, github, linkedin, conhecimentos
+        
+        // Primeiro tenta buscar da versão atual
+        String sql = "SELECT status_nome, status_idade, status_curso, status_motivacao, status_historico, " +
+                     "status_historico_profissional, status_github, status_linkedin, status_conhecimentos " +
+                     "FROM secao_apresentacao WHERE aluno = ? AND versao = ?";
+        try (Connection con = new Connector().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, emailAluno);
+            ps.setInt(2, versao);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    // Verifica se há algum feedback na versão atual
+                    boolean temFeedback = false;
+                    int aprovados = 0;
+                    String[] statusFields = {"status_nome", "status_idade", "status_curso", "status_motivacao", 
+                                             "status_historico", "status_historico_profissional", 
+                                             "status_github", "status_linkedin", "status_conhecimentos"};
+                    for (String field : statusFields) {
+                        String status = rs.getString(field);
+                        if (status != null) {
+                            temFeedback = true;
+                            if ("Aprovado".equals(status)) {
+                                aprovados++;
+                            }
+                        }
+                    }
+                    
+                    if (temFeedback) {
+                        resultado.put("aprovados", aprovados);
+                        return resultado;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        // Se não há feedback na versão atual e há versão anterior, busca da versão anterior
+        if (versao > 1) {
+            int versaoAnterior = versao - 1;
+            String sqlAnterior = "SELECT status_nome, status_idade, status_curso, status_motivacao, status_historico, " +
+                                "status_historico_profissional, status_github, status_linkedin, status_conhecimentos " +
+                                "FROM secao_apresentacao WHERE aluno = ? AND versao = ?";
+            try (Connection con = new Connector().getConnection();
+                 PreparedStatement ps = con.prepareStatement(sqlAnterior)) {
+                ps.setString(1, emailAluno);
+                ps.setInt(2, versaoAnterior);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        int aprovados = 0;
+                        if ("Aprovado".equals(rs.getString("status_nome"))) aprovados++;
+                        if ("Aprovado".equals(rs.getString("status_idade"))) aprovados++;
+                        if ("Aprovado".equals(rs.getString("status_curso"))) aprovados++;
+                        if ("Aprovado".equals(rs.getString("status_motivacao"))) aprovados++;
+                        if ("Aprovado".equals(rs.getString("status_historico"))) aprovados++;
+                        if ("Aprovado".equals(rs.getString("status_historico_profissional"))) aprovados++;
+                        if ("Aprovado".equals(rs.getString("status_github"))) aprovados++;
+                        if ("Aprovado".equals(rs.getString("status_linkedin"))) aprovados++;
+                        if ("Aprovado".equals(rs.getString("status_conhecimentos"))) aprovados++;
+                        resultado.put("aprovados", aprovados);
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return resultado;
     }
 }
 

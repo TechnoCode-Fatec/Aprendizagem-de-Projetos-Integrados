@@ -100,12 +100,45 @@
                   </graphic>
               </Button>
 
+              <!-- Botão Sessões Atuais -->
+              <Button contentDisplay="LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarSessoesAtuais" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Sessões Atuais">
+                  <graphic>
+                      <ImageView fitHeight="18" fitWidth="18" preserveRatio="true">
+                          <image>
+                              <Image url="@../imagens/doc.png" />
+                          </image>
+                      </ImageView>
+                  </graphic>
+              </Button>
+
               <!-- Botão Histórico -->
               <Button contentDisplay="LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarHistorico" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Histórico">
                   <graphic>
                       <ImageView fitHeight="18" fitWidth="18" preserveRatio="true">
                           <image>
                               <Image url="@../imagens/history.png" />
+                          </image>
+                      </ImageView>
+                  </graphic>
+              </Button>
+
+              <!-- Botão Solicitar Orientação -->
+              <Button contentDisplay="LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarSolicitarOrientacao" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Solicitar Orientação">
+                  <graphic>
+                      <ImageView fitHeight="18" fitWidth="18" preserveRatio="true">
+                          <image>
+                              <Image url="@../imagens/doc.png" />
+                          </image>
+                      </ImageView>
+                  </graphic>
+              </Button>
+
+              <!-- Botão Gerar README -->
+              <Button contentDisplay="LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarGerarReadme" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Gerar README.md">
+                  <graphic>
+                      <ImageView fitHeight="18" fitWidth="18" preserveRatio="true">
+                          <image>
+                              <Image url="@../imagens/doc.png" />
                           </image>
                       </ImageView>
                   </graphic>
