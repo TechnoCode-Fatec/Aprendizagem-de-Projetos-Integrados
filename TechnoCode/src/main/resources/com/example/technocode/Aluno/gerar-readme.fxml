@@ -24,46 +24,55 @@
                         <Font size="12.0" />
                      </font>
                   </Label>
-               </VBox>
-               <HBox spacing="10">
-                  <Button fx:id="btnCriarPasta" mnemonicParsing="false" onAction="#selecionarPasta" prefHeight="40.0" prefWidth="150.0" 
-                          style="-fx-background-color: #27AE60; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(39,174,96,0.3), 5, 0, 0, 2);" 
-                          text="📁 Selecionar Pasta" textFill="WHITE">
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                  </Button>
-                  <Button fx:id="btnAdicionarFoto" mnemonicParsing="false" onAction="#adicionarFoto" prefHeight="40.0" prefWidth="150.0" 
-                          style="-fx-background-color: #3498DB; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.3), 5, 0, 0, 2);" 
-                          text="📷 Adicionar Foto" textFill="WHITE" disable="true">
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                  </Button>
-               </HBox>
-            </children>
-         </HBox>
-
-         <!-- Card Principal com Tabs estilo GitHub -->
-         <VBox spacing="0" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS" minHeight="600.0">
-            <children>
-               <!-- Tabs estilo GitHub -->
-               <HBox spacing="0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E1E4E8; -fx-border-width: 0 0 1 0; -fx-background-radius: 12 12 0 0;">
-                  <children>
-                     <Button fx:id="btnTabCode" mnemonicParsing="false" onAction="#mostrarCode" prefHeight="40.0" prefWidth="120.0" 
-                             style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-border-width: 0 0 2 0; -fx-border-color: #FD7E14; -fx-text-fill: #24292E; -fx-font-weight: bold; -fx-cursor: hand;" text="Code">
+                  <HBox spacing="10" style="-fx-padding: 10 0 0 0;">
+                     <Label fx:id="labelSecoesAprovadas" text="Seções aprovadas: Carregando..." textFill="#27AE60">
                         <font>
                            <Font name="System Bold" size="13.0" />
                         </font>
-                     </Button>
-                     <Button fx:id="btnTabPreview" mnemonicParsing="false" onAction="#mostrarPreview" prefHeight="40.0" prefWidth="120.0" 
-                             style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-text-fill: #586069; -fx-cursor: hand;" text="Preview">
+                     </Label>
+                  </HBox>
+               </VBox>
+               <VBox spacing="10" alignment="CENTER_RIGHT">
+                  <HBox spacing="10">
+                     <Button fx:id="btnAdicionarFoto" mnemonicParsing="false" onAction="#adicionarFoto" prefHeight="40.0" prefWidth="150.0" 
+                             style="-fx-background-color: #3498DB; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.3), 5, 0, 0, 2);" 
+                             text="📷 Adicionar Foto" textFill="WHITE">
                         <font>
-                           <Font name="System" size="13.0" />
+                           <Font name="System Bold" size="12.0" />
                         </font>
                      </Button>
+                     <Button fx:id="btnGerarReadme" mnemonicParsing="false" onAction="#gerarReadme" prefHeight="40.0" prefWidth="150.0" 
+                             style="-fx-background-color: #9B59B6; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(155,89,182,0.3), 5, 0, 0, 2);" 
+                             text="✨ Gerar README" textFill="WHITE" disable="true">
+                        <font>
+                           <Font name="System Bold" size="12.0" />
+                        </font>
+                     </Button>
+                  </HBox>
+                  <Button fx:id="btnSalvarPasta" mnemonicParsing="false" onAction="#salvarPasta" prefHeight="40.0" prefWidth="310.0" 
+                          style="-fx-background-color: #27AE60; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(39,174,96,0.3), 5, 0, 0, 2);" 
+                          text="💾 Salvar Pasta (README + Foto)" textFill="WHITE" visible="false" managed="false">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Button>
+               </VBox>
+            </children>
+         </HBox>
+
+         <!-- Card Principal com Preview -->
+         <VBox fx:id="cardCodePreview" spacing="0" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS" minHeight="600.0" visible="false" managed="false">
+            <children>
+               <!-- Header do Preview -->
+               <HBox spacing="0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E1E4E8; -fx-border-width: 0 0 1 0; -fx-background-radius: 12 12 0 0; -fx-padding: 10;">
+                  <children>
+                     <Label text="Preview" textFill="#24292E" style="-fx-font-weight: bold; -fx-padding: 0 0 0 10;">
+                        <font>
+                           <Font name="System Bold" size="14.0" />
+                        </font>
+                     </Label>
                      <Region HBox.hgrow="ALWAYS" />
-                     <Label fx:id="labelStatusPasta" text="Nenhuma pasta criada" textFill="#586069" style="-fx-padding: 0 15 0 0;">
+                     <Label fx:id="labelStatusFoto" text="Nenhuma foto adicionada" textFill="#586069" style="-fx-padding: 0 15 0 0;">
                         <font>
                            <Font size="11.0" />
                         </font>
@@ -71,23 +80,8 @@
                   </children>
                </HBox>
                
-               <!-- Conteúdo das Tabs -->
-               <StackPane VBox.vgrow="ALWAYS" maxWidth="1.7976931348623157E308" minHeight="500.0" prefHeight="600.0">
-                  <children>
-                     <!-- Tab Code (Markdown Raw) -->
-                     <ScrollPane fx:id="scrollPaneCode" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" visible="true" VBox.vgrow="ALWAYS" StackPane.alignment="TOP_LEFT">
-                        <content>
-                           <AnchorPane minHeight="500.0" prefHeight="600.0">
-                              <TextArea fx:id="textAreaMarkdown" editable="false" style="-fx-font-family: 'Consolas', 'Monaco', 'Courier New', monospace; -fx-font-size: 13px; -fx-background-color: #FFFFFF; -fx-border-color: transparent; -fx-text-fill: #24292f;" wrapText="true" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-                              </TextArea>
-                           </AnchorPane>
-                        </content>
-                     </ScrollPane>
-                     
-                     <!-- Tab Preview (WebView) -->
-                     <WebView fx:id="webViewPreview" visible="false" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS" StackPane.alignment="TOP_LEFT" />
-                  </children>
-               </StackPane>
+               <!-- Preview (WebView) -->
+               <WebView fx:id="webViewPreview" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS" minHeight="500.0" prefHeight="600.0" />
             </children>
          </VBox>
       </VBox>

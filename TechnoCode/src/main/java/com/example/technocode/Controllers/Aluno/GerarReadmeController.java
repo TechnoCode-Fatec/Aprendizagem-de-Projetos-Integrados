@@ -8,8 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
+import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
@@ -33,115 +32,59 @@ import java.util.Map;
 public class GerarReadmeController {
     
     @FXML
-    private Button btnCriarPasta;
-    
-    @FXML
     private Button btnAdicionarFoto;
     
     @FXML
-    private Button btnTabCode;
+    private Button btnGerarReadme;
     
     @FXML
-    private Button btnTabPreview;
+    private Button btnSalvarPasta;
     
     @FXML
-    private Label labelStatusPasta;
+    private VBox cardCodePreview;
     
     @FXML
-    private TextArea textAreaMarkdown;
+    private Label labelSecoesAprovadas;
     
     @FXML
-    private ScrollPane scrollPaneCode;
+    private Label labelStatusFoto;
     
     @FXML
     private WebView webViewPreview;
     
     private String emailAluno;
-    private File pastaAtual;
+    private File fotoSelecionada;
     private String nomeFoto;
     private String conteudoMD;
+    private int totalSecoesAprovadas;
     
     @FXML
     public void initialize() {
         emailAluno = LoginController.getEmailLogado();
         
-        // Configura estilo inicial das tabs
-        atualizarEstiloTabs(true);
+        // Conta seções aprovadas
+        contarSecoesAprovadas();
         
-        // Gera o conteúdo MD automaticamente baseado nas seções atuais
-        gerarConteudoMD(null);
+        // Mantém o card Preview invisível até gerar o README
+        if (cardCodePreview != null) {
+            cardCodePreview.setVisible(false);
+            cardCodePreview.setManaged(false);
+        }
     }
     
-    @FXML
-    private void selecionarPasta(ActionEvent event) {
+    private void contarSecoesAprovadas() {
         try {
-            Stage stage = (Stage) btnCriarPasta.getScene().getWindow();
-            
-            // Permite selecionar uma pasta existente ou criar uma nova
-            DirectoryChooser directoryChooser = new DirectoryChooser();
-            directoryChooser.setTitle("Selecione a pasta do README (ou crie uma nova)");
-            
-            // Se já tiver uma pasta selecionada, abre nesse diretório
-            if (pastaAtual != null && pastaAtual.exists() && pastaAtual.getParentFile() != null) {
-                directoryChooser.setInitialDirectory(pastaAtual.getParentFile());
-            }
-            
-            File pastaSelecionada = directoryChooser.showDialog(stage);
-            
-            if (pastaSelecionada == null) {
-                return;
-            }
-            
-            // Se a pasta não existir, cria ela
-            if (!pastaSelecionada.exists()) {
-                if (!pastaSelecionada.mkdirs()) {
-                    mostrarAlerta("Erro", "Não foi possível criar a pasta selecionada.");
-                    return;
-                }
-            }
-            
-            pastaAtual = pastaSelecionada;
-            btnAdicionarFoto.setDisable(false);
-            labelStatusPasta.setText("Pasta: " + pastaSelecionada.getName());
-            
-            // Verifica se já existe uma foto na pasta selecionada
-            String fotoEncontrada = buscarFotoNaPasta(pastaSelecionada);
-            if (fotoEncontrada != null) {
-                nomeFoto = fotoEncontrada;
-                // Regenera o conteúdo MD com a foto encontrada
-                gerarConteudoMD(nomeFoto);
-                // Atualiza o preview se estiver visível
-                if (webViewPreview.isVisible()) {
-                    carregarPreview(conteudoMD);
-                }
-            } else {
-                // Se não houver foto, limpa o nomeFoto e regenera sem foto
-                nomeFoto = null;
-                gerarConteudoMD(null);
-            }
-            
-            // Salva o README.md na pasta
-            if (conteudoMD != null) {
-                File arquivoMD = new File(pastaSelecionada, "README.md");
-                try (FileWriter writer = new FileWriter(arquivoMD)) {
-                    writer.write(conteudoMD);
-                } catch (IOException e) {
-                    mostrarAlerta("Erro", "Erro ao salvar README.md: " + e.getMessage());
-                }
-            }
+            Map<String, Integer> resultado = Aluno.contarSecoesPorAluno(emailAluno);
+            totalSecoesAprovadas = resultado.getOrDefault("aprovadas", 0);
+            labelSecoesAprovadas.setText("✓ Seções aprovadas: " + totalSecoesAprovadas);
         } catch (Exception e) {
             e.printStackTrace();
-            mostrarAlerta("Erro", "Erro ao selecionar pasta: " + e.getMessage());
+            labelSecoesAprovadas.setText("Erro ao carregar seções aprovadas");
         }
     }
     
     @FXML
     private void adicionarFoto(ActionEvent event) {
-        if (pastaAtual == null || !pastaAtual.exists()) {
-            mostrarAlerta("Aviso", "Por favor, crie uma pasta primeiro.");
-            return;
-        }
-        
         Stage stage = (Stage) btnAdicionarFoto.getScene().getWindow();
         
         // Escolhe a foto
@@ -151,114 +94,151 @@ public class GerarReadmeController {
             new FileChooser.ExtensionFilter("Imagens", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp"),
             new FileChooser.ExtensionFilter("Todos os arquivos", "*.*")
         );
-        File fotoOriginal = fotoChooser.showOpenDialog(stage);
+        File fotoSelecionada = fotoChooser.showOpenDialog(stage);
         
-        if (fotoOriginal != null) {
-            try {
-                // Copia a foto para a pasta criada
-                String extensao = getFileExtension(fotoOriginal.getName());
+        if (fotoSelecionada != null) {
+            this.fotoSelecionada = fotoSelecionada;
+            String extensao = getFileExtension(fotoSelecionada.getName());
                 nomeFoto = "foto" + extensao;
-                File fotoDestino = new File(pastaAtual, nomeFoto);
-                
-                Files.copy(fotoOriginal.toPath(), fotoDestino.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                
-                // Regenera o conteúdo MD com a foto
-                gerarConteudoMD(nomeFoto);
-                
-                // Atualiza o preview se estiver visível
-                if (webViewPreview.isVisible()) {
-                    carregarPreview(conteudoMD);
-                }
-                
-                mostrarAlerta("Sucesso", "Foto adicionada com sucesso!");
-            } catch (IOException e) {
-                mostrarAlerta("Erro", "Erro ao copiar a foto: " + e.getMessage());
-            }
+            
+            // Atualiza label de status
+            labelStatusFoto.setText("Foto: " + fotoSelecionada.getName());
+            
+            // Habilita botão de gerar README
+            btnGerarReadme.setDisable(false);
+            
+            mostrarAlerta("Sucesso", "Foto selecionada! Agora você pode gerar o README.");
         }
     }
     
     @FXML
-    private void mostrarCode(ActionEvent event) {
-        atualizarEstiloTabs(true);
-        scrollPaneCode.setVisible(true);
-        webViewPreview.setVisible(false);
-    }
-    
-    @FXML
-    private void mostrarPreview(ActionEvent event) {
-        atualizarEstiloTabs(false);
-        scrollPaneCode.setVisible(false);
-        webViewPreview.setVisible(true);
+    private void gerarReadme(ActionEvent event) {
+        if (fotoSelecionada == null || nomeFoto == null) {
+            mostrarAlerta("Aviso", "Por favor, adicione uma foto primeiro.");
+            return;
+        }
         
-        // Sempre atualiza o preview quando muda para a tab
-        if (conteudoMD != null) {
-            carregarPreview(conteudoMD);
-        } else {
-            // Se não houver conteúdo ainda, gera
-            gerarConteudoMD(nomeFoto);
+        if (totalSecoesAprovadas == 0) {
+            mostrarAlerta("Aviso", "Você não possui seções aprovadas para gerar o README.");
+            return;
+        }
+        
+        // Gera o conteúdo MD apenas com seções aprovadas
+        gerarConteudoMDComSecoesAprovadas();
+        
+        // Mostra o card Preview agora que o README foi gerado
+        if (cardCodePreview != null) {
+            cardCodePreview.setVisible(true);
+            cardCodePreview.setManaged(true);
+        }
+        
+        // Carrega o preview com o conteúdo gerado
+        carregarPreview(conteudoMD);
+        
+        // Habilita botão de salvar pasta
+        btnSalvarPasta.setVisible(true);
+        btnSalvarPasta.setManaged(true);
+        
+        mostrarAlerta("Sucesso", "README gerado com sucesso! Agora você pode salvar a pasta.");
+    }
+    
+    @FXML
+    private void salvarPasta(ActionEvent event) {
+        if (conteudoMD == null || conteudoMD.isBlank()) {
+            mostrarAlerta("Aviso", "Por favor, gere o README primeiro.");
+            return;
+        }
+        
+        if (fotoSelecionada == null) {
+            mostrarAlerta("Aviso", "Por favor, adicione uma foto primeiro.");
+            return;
+        }
+        
+        try {
+            Stage stage = (Stage) btnSalvarPasta.getScene().getWindow();
+            
+            // Permite selecionar o diretório onde será criada a pasta "portfolio"
+            DirectoryChooser directoryChooser = new DirectoryChooser();
+            directoryChooser.setTitle("Selecione onde criar a pasta 'portfolio'");
+            
+            File diretorioSelecionado = directoryChooser.showDialog(stage);
+            
+            if (diretorioSelecionado == null) {
+                return;
+            }
+            
+            // Cria a pasta "portfolio" dentro do diretório selecionado
+            File pastaPortfolio = new File(diretorioSelecionado, "portfolio");
+            
+            // Se a pasta não existir, cria ela
+            if (!pastaPortfolio.exists()) {
+                if (!pastaPortfolio.mkdirs()) {
+                    mostrarAlerta("Erro", "Não foi possível criar a pasta 'portfolio'.");
+                    return;
+                }
+            }
+            
+            // Copia a foto para a pasta portfolio
+            String extensao = getFileExtension(fotoSelecionada.getName());
+            String nomeFotoFinal = "foto" + extensao;
+            File fotoDestino = new File(pastaPortfolio, nomeFotoFinal);
+            Files.copy(fotoSelecionada.toPath(), fotoDestino.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            
+            // Atualiza o nome da foto no markdown se necessário
+            String conteudoFinal = conteudoMD;
+            if (!conteudoFinal.contains(nomeFotoFinal)) {
+                conteudoFinal = conteudoFinal.replace(nomeFoto, nomeFotoFinal);
+            }
+            
+            // Salva o README.md na pasta portfolio
+            File arquivoMD = new File(pastaPortfolio, "README.md");
+            try (FileWriter writer = new FileWriter(arquivoMD)) {
+                writer.write(conteudoFinal);
+            }
+            
+            mostrarAlerta("Sucesso", "Pasta 'portfolio' criada com sucesso!\n\nLocal: " + pastaPortfolio.getAbsolutePath() + "\n\nA pasta contém:\n- README.md\n- " + nomeFotoFinal);
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarAlerta("Erro", "Erro ao salvar pasta: " + e.getMessage());
         }
     }
     
-    private void atualizarEstiloTabs(boolean codeAtivo) {
-        if (codeAtivo) {
-            btnTabCode.setStyle("-fx-background-color: transparent; -fx-border-color: transparent; -fx-border-width: 0 0 2 0; -fx-border-color: #FD7E14; -fx-text-fill: #24292E; -fx-font-weight: bold; -fx-cursor: hand;");
-            btnTabPreview.setStyle("-fx-background-color: transparent; -fx-border-color: transparent; -fx-text-fill: #586069; -fx-cursor: hand;");
-        } else {
-            btnTabCode.setStyle("-fx-background-color: transparent; -fx-border-color: transparent; -fx-text-fill: #586069; -fx-cursor: hand;");
-            btnTabPreview.setStyle("-fx-background-color: transparent; -fx-border-color: transparent; -fx-border-width: 0 0 2 0; -fx-border-color: #FD7E14; -fx-text-fill: #24292E; -fx-font-weight: bold; -fx-cursor: hand;");
-        }
-    }
     
-    private void gerarConteudoMD(String nomeFoto) {
+    private void gerarConteudoMDComSecoesAprovadas() {
         try {
             Map<String, String> dadosAluno = Aluno.buscarDadosPorEmail(emailAluno);
             String nomeAluno = dadosAluno.get("nome");
             String emailAlunoDados = dadosAluno.get("email");
             
             if (nomeAluno == null || nomeAluno.isBlank()) {
-                conteudoMD = "# README.md\n\n*Carregando dados...*";
-                textAreaMarkdown.setText(conteudoMD);
-                carregarPreview(conteudoMD);
+                conteudoMD = "# README.md\n\n*Erro ao carregar dados do aluno.*";
                 return;
             }
             
-            Map<String, String> apresentacao = buscarApresentacaoMaisRecente();
-            List<Map<String, String>> secoesApi = buscarTodasSecoesApiCompletas();
+            // Busca apenas seções aprovadas
+            Map<String, String> apresentacao = buscarApresentacaoAprovada();
+            List<Map<String, String>> secoesApi = buscarSecoesApiAprovadas();
             
             conteudoMD = gerarConteudoMD(nomeAluno, emailAlunoDados, apresentacao, secoesApi, nomeFoto);
-            
-            // Atualiza a text area
-            textAreaMarkdown.setText(conteudoMD);
-            
-            // Atualiza o preview se estiver visível
-            if (webViewPreview.isVisible()) {
-                carregarPreview(conteudoMD);
-            }
-            
-            // Salva o README.md na pasta se já foi criada
-            if (pastaAtual != null && pastaAtual.exists()) {
-                File arquivoMD = new File(pastaAtual, "README.md");
-                try (FileWriter writer = new FileWriter(arquivoMD)) {
-                    writer.write(conteudoMD);
-                } catch (IOException e) {
-                    mostrarAlerta("Erro", "Erro ao salvar README.md: " + e.getMessage());
-                }
-            }
         } catch (Exception e) {
             e.printStackTrace();
-            conteudoMD = "# Erro\n\n*Erro ao carregar dados: " + e.getMessage() + "*";
-            textAreaMarkdown.setText(conteudoMD);
-            carregarPreview(conteudoMD);
+            conteudoMD = "# Erro\n\n*Erro ao gerar README: " + e.getMessage() + "*";
         }
     }
     
-    private Map<String, String> buscarApresentacaoMaisRecente() {
+    private Map<String, String> buscarApresentacaoAprovada() {
         Map<String, String> apresentacao = new java.util.HashMap<>();
         try (Connection conn = new Connector().getConnection()) {
+            // Busca apenas apresentação aprovada (onde todos os campos estão aprovados)
             String sql = "SELECT nome, idade, curso, motivacao, historico, historico_profissional, " +
                         "link_github, link_linkedin, principais_conhecimentos " +
                         "FROM secao_apresentacao " +
-                        "WHERE aluno = ? AND versao = (SELECT MAX(versao) FROM secao_apresentacao WHERE aluno = ?)";
+                        "WHERE aluno = ? AND versao = (SELECT MAX(versao) FROM secao_apresentacao WHERE aluno = ?) " +
+                        "AND status_nome = 'Aprovado' AND status_idade = 'Aprovado' " +
+                        "AND status_curso = 'Aprovado' AND status_motivacao = 'Aprovado' " +
+                        "AND status_historico = 'Aprovado' AND status_historico_profissional = 'Aprovado' " +
+                        "AND status_github = 'Aprovado' AND status_linkedin = 'Aprovado' " +
+                        "AND status_conhecimentos = 'Aprovado'";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, emailAluno);
             pst.setString(2, emailAluno);
@@ -280,9 +260,10 @@ public class GerarReadmeController {
         return apresentacao;
     }
     
-    private List<Map<String, String>> buscarTodasSecoesApiCompletas() {
+    private List<Map<String, String>> buscarSecoesApiAprovadas() {
         List<Map<String, String>> secoesApi = new java.util.ArrayList<>();
         try (Connection conn = new Connector().getConnection()) {
+            // Busca apenas seções API aprovadas (onde todos os campos estão aprovados)
             String sql = "SELECT sa.semestre_curso, sa.ano, sa.semestre_ano, sa.versao, sa.empresa, " +
                         "sa.descricao_empresa, sa.problema, sa.solucao, sa.link_repositorio, " +
                         "sa.tecnologias, sa.contribuicoes, sa.hard_skills, sa.soft_skills " +
@@ -295,7 +276,12 @@ public class GerarReadmeController {
                         "    AND s2.ano = sa.ano " +
                         "    AND s2.semestre_ano = sa.semestre_ano" +
                         ") " +
-                        "ORDER BY sa.ano DESC, sa.semestre_ano DESC";
+                        "AND sa.status_empresa = 'Aprovado' AND sa.status_descricao_empresa = 'Aprovado' " +
+                        "AND sa.status_repositorio = 'Aprovado' AND sa.status_problema = 'Aprovado' " +
+                        "AND sa.status_solucao = 'Aprovado' AND sa.status_tecnologias = 'Aprovado' " +
+                        "AND sa.status_contribuicoes = 'Aprovado' AND sa.status_hard_skills = 'Aprovado' " +
+                        "AND sa.status_soft_skills = 'Aprovado' " +
+                        "ORDER BY sa.ano ASC, sa.semestre_ano ASC";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, emailAluno);
             ResultSet rs = pst.executeQuery();
@@ -370,26 +356,26 @@ public class GerarReadmeController {
         }
         
         // Contatos
-        md.append("## Contatos\n\n");
-        md.append("<ul style=\"display: flex; flex-direction: column; align-items: left;\">\n\n");
+        md.append("## Contatos\n");
+        md.append("<ul style=\"display: flex; flex-direction: column; align-items: left;\">\n");
         
         String github = apresentacao.getOrDefault("link_github", "");
         if (!github.isBlank()) {
             md.append("    <li style=\"margin-bottom: 10px;\">\n");
             md.append("         <a href=\"").append(github).append("\"><img align=\"center\" alt=\"GitHub\" src = \"https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white\"/></a>\n");
-            md.append("    </li>\n\n");
+            md.append("    </li>\n");
         }
         
         String linkedin = apresentacao.getOrDefault("link_linkedin", "");
         if (!linkedin.isBlank()) {
             md.append("    <li style=\"margin-bottom: 10px\">\n");
             md.append("        <a href=\"").append(linkedin).append("\" target=\"_blank\"><img align=\"center\" alt=\"Linkedin\" src=\"https://img.shields.io/badge/-LinkedIn-%230077B5?style=for-the-badge&logo=linkedin&logoColor=white\" target=\"_blank\"></a>\n");
-            md.append("    </li>\n\n");
+            md.append("    </li>\n");
         }
         
         md.append("    <li style=\"margin-bottom: 10px\">\n");
         md.append("        <a href = \"mailto:").append(emailAluno).append("\"><img align=\"center\" alt=\"Gmail\" src=\"https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white\" target=\"_blank\"></a>\n");
-        md.append("    </li>\n\n");
+        md.append("    </li>\n");
         md.append("</ul>\n\n");
         
         // Principais conhecimentos
@@ -472,16 +458,18 @@ public class GerarReadmeController {
     }
     
     private void carregarPreview(String markdown) {
+        if (markdown == null || markdown.isBlank()) {
+            markdown = "# README.md\n\n*Nenhum conteúdo disponível.*";
+        }
+        
         WebEngine engine = webViewPreview.getEngine();
         
-        // Se há uma foto na pasta, precisa converter para data URI ou usar caminho local
+        // Se há uma foto selecionada, precisa converter para data URI
         String fotoDataUri = "";
-        if (nomeFoto != null && pastaAtual != null && pastaAtual.exists()) {
-            File fotoFile = new File(pastaAtual, nomeFoto);
-            if (fotoFile.exists()) {
+        if (nomeFoto != null && fotoSelecionada != null && fotoSelecionada.exists()) {
                 try {
                     // Converte a imagem para data URI
-                    byte[] fotoBytes = Files.readAllBytes(fotoFile.toPath());
+                byte[] fotoBytes = Files.readAllBytes(fotoSelecionada.toPath());
                     String extensao = getFileExtension(nomeFoto).substring(1).toLowerCase();
                     String mimeType = "image/jpeg";
                     if (extensao.equals("png")) mimeType = "image/png";
@@ -495,27 +483,37 @@ public class GerarReadmeController {
                     markdown = markdown.replace(nomeFoto, fotoDataUri);
                 } catch (IOException e) {
                     // Se não conseguir ler a foto, mantém o nome do arquivo
-                }
+                e.printStackTrace();
             }
         }
         
-        // Escapa o markdown para JavaScript
-        String escapedMarkdown = escapeForJavaScript(markdown);
+        // Processa o markdown mantendo HTML bruto
+        String processedContent = processMarkdownWithHtml(markdown);
+        
+        // Escapa para HTML (para inserir diretamente no HTML, preservando tags HTML)
+        String htmlEscapedContent = escapeHtmlForEmbedding(processedContent);
         
         String html = String.format("""
                 <!DOCTYPE html>
                 <html>
                 <head>
                     <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
                     <style>
                         html, body {
                             overflow-x: hidden !important;
                             max-width: 100%% !important;
+                            margin: 0;
+                            padding: 0;
                         }
                         body {
                             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Segoe UI Emoji', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-                            line-height: 1.6; padding: 20px; color: #333; background: #fff;
-                            max-width: 100%%; margin: 0 auto;
+                            line-height: 1.6; 
+                            padding: 20px; 
+                            color: #24292e; 
+                            background: #fff;
+                            max-width: 100%%; 
+                            margin: 0 auto;
                         }
                         #content {
                             max-width: 100%% !important;
@@ -523,31 +521,65 @@ public class GerarReadmeController {
                             word-wrap: break-word !important;
                             word-break: break-word !important;
                         }
-                        h1, h2, h3 { border-bottom: 1px solid #eaecef; padding-bottom: 0.3em; }
-                        h1 { font-size: 2em; } h2 { font-size: 1.5em; } h3 { font-size: 1.25em; }
+                        h1, h2, h3, h4, h5, h6 { 
+                            border-bottom: 1px solid #eaecef; 
+                            padding-bottom: 0.3em; 
+                            margin-top: 24px;
+                            margin-bottom: 16px;
+                        }
+                        h1 { font-size: 2em; } 
+                        h2 { font-size: 1.5em; } 
+                        h3 { font-size: 1.25em; }
+                        h4 { font-size: 1em; }
+                        p {
+                            margin-bottom: 16px;
+                        }
+                        ul, ol {
+                            margin-bottom: 16px;
+                            padding-left: 2em;
+                        }
+                        li {
+                            margin-bottom: 8px;
+                        }
                         pre { 
                             background-color: #f6f8fa; 
-                            border-radius: 3px; 
+                            border-radius: 6px; 
                             padding: 16px; 
                             overflow: auto;
                             white-space: pre-wrap !important;
                             max-width: 100%% !important;
+                            font-size: 85%%;
+                            line-height: 1.45;
                         }
                         code { 
-                            background-color: #f6f8fa; 
+                            background-color: rgba(175, 184, 193, 0.2); 
                             border-radius: 3px; 
                             padding: 2px 4px; 
-                            font-family: 'Courier New', monospace;
-                            max-width: 100%% !important;
+                            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+                            font-size: 85%%;
+                        }
+                        pre code {
+                            background-color: transparent;
+                            padding: 0;
                         }
                         table { 
                             border-collapse: collapse;
                             max-width: 100%% !important;
+                            margin-bottom: 16px;
+                            width: 100%%;
                         }
-                        table th, table td { border: 1px solid #dfe2e5; padding: 6px 13px; }
+                        table th, table td { 
+                            border: 1px solid #dfe2e5; 
+                            padding: 6px 13px; 
+                        }
+                        table th {
+                            font-weight: 600;
+                            background-color: #f6f8fa;
+                        }
                         img {
                             max-width: 100%% !important;
                             height: auto;
+                            display: inline-block;
                         }
                         div[align="center"] {
                             text-align: center;
@@ -556,20 +588,168 @@ public class GerarReadmeController {
                             display: block;
                             margin: 0 auto;
                         }
+                        hr {
+                            border: none;
+                            border-top: 1px solid #eaecef;
+                            margin: 24px 0;
+                        }
+                        a {
+                            color: #0366d6;
+                            text-decoration: none;
+                            cursor: default;
+                            pointer-events: none;
+                        }
+                        a:hover {
+                            text-decoration: underline;
+                        }
+                        /* Estilos para badges */
+                        a img[src*="img.shields.io"] {
+                            margin: 2px;
+                            vertical-align: middle;
+                        }
+                        ul[style*="flex"] {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: flex-start;
+                            list-style: none;
+                            padding-left: 0;
+                        }
+                        ul[style*="flex"] li {
+                            margin-bottom: 10px;
+                        }
                     </style>
-                    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
                 </head>
                 <body>
-                    <div id="content"></div>
+                    <div id="content" style="display:none;">%s</div>
+                    <div id="loading">Carregando...</div>
                     <script>
-                        const markdown = "%s";;
-                        document.getElementById('content').innerHTML = marked.parse(markdown);
+                        const contentDiv = document.getElementById('content');
+                        const loadingDiv = document.getElementById('loading');
+                        const rawContent = contentDiv.innerHTML;
+                        
+                        function renderContent() {
+                            // Primeiro, tenta usar marked.js se disponível
+                            if (typeof marked !== 'undefined') {
+                                try {
+                                    // Configura marked para GitHub Flavored Markdown
+                                    marked.setOptions({
+                                        breaks: true,
+                                        gfm: true,
+                                        headerIds: true,
+                                        mangle: false
+                                    });
+                                    
+                                    // Processa o markdown - HTML bruto será mantido
+                                    let htmlContent = marked.parse(rawContent);
+                                    
+                                    // Insere o conteúdo processado diretamente
+                                    contentDiv.innerHTML = htmlContent;
+                                    
+                                    // Desabilita todos os links após inserir o conteúdo
+                                    disableAllLinks(contentDiv);
+                                    
+                                    loadingDiv.style.display = 'none';
+                                    contentDiv.style.display = 'block';
+                                    return;
+                                } catch (e) {
+                                    console.error('Erro ao renderizar com marked:', e);
+                                }
+                            }
+                            
+                            // Se marked não funcionou ou não está disponível, mostra HTML diretamente
+                            // Isso garante que badges HTML apareçam corretamente
+                            contentDiv.innerHTML = rawContent;
+                            
+                            // Desabilita todos os links após inserir o conteúdo
+                            disableAllLinks(contentDiv);
+                            
+                            loadingDiv.style.display = 'none';
+                            contentDiv.style.display = 'block';
+                        }
+                        
+                        // Função para desabilitar todos os links
+                        function disableAllLinks(container) {
+                            const links = container.querySelectorAll('a');
+                            links.forEach(function(link) {
+                                // Previne o comportamento padrão do link
+                                link.addEventListener('click', function(e) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    return false;
+                                });
+                                // Remove o atributo href ou o substitui por javascript:void(0)
+                                link.setAttribute('href', 'javascript:void(0)');
+                                // Adiciona estilo para mostrar que não é clicável
+                                link.style.cursor = 'default';
+                                link.style.pointerEvents = 'none';
+                            });
+                        }
+                        
+                        // Tenta carregar marked.js
+                        var script = document.createElement('script');
+                        script.src = 'https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js';
+                        script.onload = function() {
+                            // Aguarda um pouco para garantir que marked está totalmente carregado
+                            setTimeout(renderContent, 50);
+                        };
+                        script.onerror = function() {
+                            // Se marked não carregar, renderiza HTML diretamente
+                            // Isso garante que badges apareçam mesmo sem marked
+                            renderContent();
+                        };
+                        document.head.appendChild(script);
+                        
+                        // Timeout de segurança: se marked demorar muito, renderiza diretamente
+                        setTimeout(function() {
+                            if (loadingDiv.style.display !== 'none') {
+                                renderContent();
+                            }
+                        }, 2000);
                     </script>
                 </body>
                 </html>
-                """, escapedMarkdown);
+                """, htmlEscapedContent);
         
-        engine.loadContent(html);
+        try {
+            // Armazena o HTML para uso no listener
+            final String finalHtml = html;
+            
+            // Previne navegação interceptando mudanças de URL
+            engine.locationProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue != null && !newValue.equals("about:blank") && !newValue.startsWith("data:")) {
+                    // Cancela a navegação recarregando o conteúdo original
+                    engine.loadContent(finalHtml);
+                }
+            });
+            
+            engine.loadContent(html);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Tenta carregar novamente com conteúdo simples
+            String htmlSimples = "<html><body><p>Erro ao carregar preview. Tente novamente.</p></body></html>";
+            engine.loadContent(htmlSimples);
+        }
+    }
+    
+    /**
+     * Processa o markdown mantendo HTML bruto (como badges) intacto.
+     * O marked.js será usado apenas para converter markdown, mantendo HTML existente.
+     */
+    private String processMarkdownWithHtml(String markdown) {
+        // O markdown já contém HTML bruto (badges), então apenas retornamos
+        // O marked.js vai processar o markdown mas manterá o HTML bruto
+        return markdown;
+    }
+    
+    /**
+     * Escapa HTML para inserir diretamente no HTML (preserva tags HTML mas escapa caracteres problemáticos)
+     */
+    private String escapeHtmlForEmbedding(String html) {
+        if (html == null) return "";
+        // Não escapa tags HTML, apenas caracteres que podem quebrar o HTML
+        return html.replace("</script>", "<\\/script>")
+                   .replace("</style>", "<\\/style>")
+                   .replace("<!--", "<\\!--");
     }
     
     /**
@@ -609,11 +789,6 @@ public class GerarReadmeController {
                    .replace("'", "&#39;");
     }
     
-    private String sanitizeFileName(String nome) {
-        if (nome == null) return "";
-        return nome.replaceAll("[<>:\"/\\|?*]", "_").trim();
-    }
-    
     private String getFileExtension(String fileName) {
         int lastDot = fileName.lastIndexOf('.');
         if (lastDot > 0 && lastDot < fileName.length() - 1) {
@@ -622,50 +797,6 @@ public class GerarReadmeController {
         return ".jpg";
     }
     
-    /**
-     * Busca uma foto na pasta selecionada.
-     * Prioriza arquivos com nome "foto" seguido de extensão de imagem.
-     * Se não encontrar, busca qualquer arquivo de imagem na pasta.
-     * 
-     * @param pasta A pasta onde buscar a foto
-     * @return O nome do arquivo da foto encontrada, ou null se não encontrar
-     */
-    private String buscarFotoNaPasta(File pasta) {
-        if (pasta == null || !pasta.exists() || !pasta.isDirectory()) {
-            return null;
-        }
-        
-        File[] arquivos = pasta.listFiles();
-        if (arquivos == null) {
-            return null;
-        }
-        
-        // Extensões de imagem suportadas
-        String[] extensoesImagem = {".png", ".jpg", ".jpeg", ".gif", ".bmp"};
-        
-        // Primeiro, tenta encontrar arquivo com nome "foto" + extensão
-        for (String extensao : extensoesImagem) {
-            String nomeFotoEsperado = "foto" + extensao;
-            File fotoEsperada = new File(pasta, nomeFotoEsperado);
-            if (fotoEsperada.exists() && fotoEsperada.isFile()) {
-                return nomeFotoEsperado;
-            }
-        }
-        
-        // Se não encontrou "foto.extensao", busca qualquer arquivo de imagem
-        for (File arquivo : arquivos) {
-            if (arquivo.isFile()) {
-                String nomeArquivo = arquivo.getName().toLowerCase();
-                for (String extensao : extensoesImagem) {
-                    if (nomeArquivo.endsWith(extensao)) {
-                        return arquivo.getName();
-                    }
-                }
-            }
-        }
-        
-        return null;
-    }
     
     private void mostrarAlerta(String titulo, String mensagem) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
