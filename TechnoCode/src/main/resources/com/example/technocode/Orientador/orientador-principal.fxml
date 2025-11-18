@@ -7,7 +7,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane fx:id="rootPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.Orientador.OrientadorPrincipalController">
+<BorderPane fx:id="rootPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" stylesheets="@../css/estilo.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.Orientador.OrientadorPrincipalController">
     <top>
         <HBox alignment="CENTER_LEFT" style="-fx-background-color: WHITE; -fx-border-color: #c9c9c9; -fx-border-width: 0 0 1 0; -fx-padding: 10;" BorderPane.alignment="CENTER_RIGHT">
             <children>
@@ -65,13 +65,63 @@
         </HBox>
     </top>
     <left>
-        <VBox alignment="TOP_CENTER" prefHeight="164.0" prefWidth="263.0" style="-fx-background-color: WHITE; -fx-spacing: 10; -fx-padding: 15; -fx-min-width: 158;" BorderPane.alignment="CENTER">
+        <VBox alignment="TOP_CENTER" style="-fx-background-color: WHITE; -fx-spacing: 10; -fx-padding: 15; -fx-min-width: 158;" BorderPane.alignment="CENTER" VBox.vgrow="ALWAYS">
             <children>
-                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarInicio" style="-fx-background-color: WHITE;" text="Início" />
-                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarHistorico" style="-fx-background-color: WHITE;" text="Histórico" />
-            </children></VBox>
+                <!-- Botão Início -->
+                <Button contentDisplay="LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarInicio" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Início">
+                    <graphic>
+                        <ImageView fitHeight="18" fitWidth="18" preserveRatio="true">
+                            <image>
+                                <Image url="@../imagens/home.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <!-- Botão Alunos Orientados -->
+                <Button contentDisplay="LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarAlunosOrientados" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Alunos Orientados">
+                    <graphic>
+                        <ImageView fitHeight="18" fitWidth="18" preserveRatio="true">
+                            <image>
+                                <Image url="@../imagens/doc.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <!-- Botão Solicitações -->
+                <Button contentDisplay="LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarSolicitacoes" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Solicitações">
+                    <graphic>
+                        <ImageView fitHeight="18" fitWidth="18" preserveRatio="true">
+                            <image>
+                                <Image url="@../imagens/doc.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Button>
+                
+                <!-- Espaçador para empurrar o rodapé para baixo -->
+                <Region VBox.vgrow="ALWAYS" />
+                
+                <!-- Rodapé com imagem alinhada à esquerda -->
+                <HBox alignment="BOTTOM_LEFT" style="-fx-padding: 10 0 0 0;">
+                    <children>
+                        <ImageView fitWidth="250" preserveRatio="true">
+                            <image>
+                                <Image url="@../imagens/fatec1.png" />
+                            </image>
+                        </ImageView>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
     </left>
     <center>
-        <StackPane fx:id="centerContent" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
+        <StackPane fx:id="centerContent" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+            <children>
+                <!-- Conteúdo central dinâmico -->
+                <AnchorPane fx:id="mainContent" />
+            </children>
+        </StackPane>
     </center>
 </BorderPane>

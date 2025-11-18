@@ -83,10 +83,10 @@ public class PrincipalAlunoController {
     }
 
     /**
-     * Carrega a tela inicial no center
+     * Carrega a tela inicial (dashboard) no center
      */
     private void carregarTelaInicial() {
-        navegarParaTela("/com/example/technocode/Aluno/tela-inicial-aluno.fxml", null);
+        navegarParaTela("/com/example/technocode/Aluno/dashboard-aluno.fxml", null);
     }
 
     /**
@@ -115,15 +115,15 @@ public class PrincipalAlunoController {
     }
 
     /**
-     * Botão Início - carrega a tela inicial
+     * Botão Início - carrega o dashboard
      */
     @FXML
     private void navegarInicio() {
-        navegarParaTela("/com/example/technocode/Aluno/tela-inicial-aluno.fxml",
+        navegarParaTela("/com/example/technocode/Aluno/dashboard-aluno.fxml",
                 controller -> {
-                    if (controller instanceof com.example.technocode.Controllers.Aluno.TelaInicialAlunoController) {
-                        // Recarrega as seções quando volta para a tela inicial
-                        ((com.example.technocode.Controllers.Aluno.TelaInicialAlunoController) controller).recarregarSecoes();
+                    if (controller instanceof com.example.technocode.Controllers.Aluno.DashboardAlunoController) {
+                        // Recarrega as estatísticas quando volta para o dashboard
+                        ((com.example.technocode.Controllers.Aluno.DashboardAlunoController) controller).atualizarEstatisticas();
                     }
                 });
     }
@@ -145,11 +145,45 @@ public class PrincipalAlunoController {
     }
 
     /**
+     * Botão Sessões Atuais - carrega a tela de sessões atuais
+     */
+    @FXML
+    private void navegarSessoesAtuais() {
+        navegarParaTela("/com/example/technocode/Aluno/sessoes-atuais.fxml",
+                controller -> {
+                    if (controller instanceof SessoesAtuaisAlunoController) {
+                        ((SessoesAtuaisAlunoController) controller).recarregarSecoes();
+                    }
+                });
+    }
+
+    /**
      * Botão Histórico - carrega a tela de histórico
      */
     @FXML
     private void navegarHistorico() {
         navegarParaTela("/com/example/technocode/Aluno/aluno-historico.fxml", null);
+    }
+
+    /**
+     * Botão Solicitar Orientação - carrega a tela de solicitar orientação
+     */
+    @FXML
+    private void navegarSolicitarOrientacao() {
+        navegarParaTela("/com/example/technocode/Aluno/solicitar-orientacao.fxml",
+                controller -> {
+                    if (controller instanceof SolicitarOrientacaoController) {
+                        ((SolicitarOrientacaoController) controller).recarregarDados();
+                    }
+                });
+    }
+
+    /**
+     * Botão Gerar README - carrega a tela de gerar README.md
+     */
+    @FXML
+    private void navegarGerarReadme() {
+        navegarParaTela("/com/example/technocode/Aluno/gerar-readme.fxml", null);
     }
 
     /**

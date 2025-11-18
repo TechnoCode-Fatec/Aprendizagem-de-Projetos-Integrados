@@ -114,7 +114,7 @@ public class NavigationService {
         
         if (fxmlPath.contains("aluno-principal.fxml") || fxmlPath.contains("orientador-principal.fxml") ||
             fxmlPath.contains("professor-tg-principal.fxml") || fxmlPath.contains("login.fxml") || 
-            fxmlPath.contains("cadastro.fxml") || fxmlPath.contains("tela-inicial-orientador.fxml")) {
+            fxmlPath.contains("cadastro.fxml")) {
             // Telas principais: cria com tamanho da tela
             scene = new Scene(root, screenBounds.getWidth(), screenBounds.getHeight());
         } else {
@@ -134,7 +134,7 @@ public class NavigationService {
         // Garante maximização após mostrar para telas principais
         if (fxmlPath.contains("aluno-principal.fxml") || fxmlPath.contains("orientador-principal.fxml") ||
             fxmlPath.contains("professor-tg-principal.fxml") || fxmlPath.contains("login.fxml") || 
-            fxmlPath.contains("cadastro.fxml") || fxmlPath.contains("tela-inicial-orientador.fxml")) {
+            fxmlPath.contains("cadastro.fxml")) {
             javafx.application.Platform.runLater(() -> {
                 if (!stage.isMaximized()) {
                     stage.setMaximized(true);
@@ -176,7 +176,7 @@ public class NavigationService {
         
         if (fxmlPath.contains("aluno-principal.fxml") || fxmlPath.contains("orientador-principal.fxml") ||
             fxmlPath.contains("professor-tg-principal.fxml") || fxmlPath.contains("login.fxml") || 
-            fxmlPath.contains("cadastro.fxml") || fxmlPath.contains("tela-inicial-orientador.fxml")) {
+            fxmlPath.contains("cadastro.fxml")) {
             // Telas principais: cria com tamanho da tela
             scene = new Scene(root, screenBounds.getWidth(), screenBounds.getHeight());
         } else {

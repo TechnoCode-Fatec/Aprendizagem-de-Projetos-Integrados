@@ -4,130 +4,125 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox alignment="TOP_CENTER" prefHeight="700.0" prefWidth="800.0" style="-fx-background-color: C4C4C4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.Aluno.AlunoVisualizarApiController">
-    <children>
-        <HBox alignment="CENTER" prefHeight="60.0" prefWidth="800.0" style="-fx-spacing: 25; -fx-padding: 10 20 10 20;">
-            <children>
-                <Button mnemonicParsing="false" onAction="#voltarTelaInicial" prefHeight="34.0" prefWidth="130.0" style="-fx-background-color: B82E1A;" text="Voltar" textFill="WHITE">
-                    <font>
-                        <Font size="14.0" />
-                    </font>
-                </Button>
-                <Label fx:id="labelTitulo" alignment="CENTER" prefHeight="39.0" prefWidth="293.0" text="MINHA SEÇÃO API">
-                    <font>
-                        <Font name="System Bold" size="24.0" />
-                    </font>
-                </Label>
-                <Button fx:id="btnFeedback" mnemonicParsing="false" onAction="#verFeedback" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: B82E1A;" text="Feedback" textFill="WHITE">
-                    <font>
-                        <Font size="16.0" />
-                    </font>
-                </Button>
-                <Button mnemonicParsing="false" onAction="#verHistorico" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: B82E1A;" text="Histórico" textFill="WHITE">
-                    <font>
-                        <Font size="16.0" />
-                    </font>
-                </Button>
-                <Button mnemonicParsing="false" onAction="#carregarVersaoAnterior" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: B82E1A;" text="Nova versão" textFill="WHITE">
-                    <font>
-                        <Font size="16.0" />
-                    </font>
-                </Button>
-            </children>
-        </HBox>
+<ScrollPane id="telas-aluno" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: #F8F9FA; -fx-background: transparent;" stylesheets="@../css/estilo.css" vbarPolicy="AS_NEEDED" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.Aluno.AlunoVisualizarApiController">
+    <content>
+        <VBox maxWidth="1.7976931348623157E308" spacing="20" style="-fx-background-color: #F8F9FA; -fx-padding: 25;">
+            
+            <!-- Header Moderno -->
+            <HBox alignment="CENTER" spacing="20" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);">
+                <children>
+                    <Button mnemonicParsing="false" onAction="#voltarTelaInicial" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #B82E1A; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(184,46,26,0.3), 5, 0, 0, 2);" text="← VOLTAR" textFill="WHITE">
+                        <font>
+                            <Font name="System Bold" size="13.0" />
+                        </font>
+                    </Button>
+                    <VBox alignment="CENTER" spacing="5" HBox.hgrow="ALWAYS">
+                        <Label fx:id="labelTitulo" text="MINHA SEÇÃO API" textFill="#2C3E50">
+                            <font>
+                                <Font name="System Bold" size="24.0" />
+                            </font>
+                        </Label>
+                        <Label text="Visualize os dados da sua API" textFill="#7F8C8D">
+                            <font>
+                                <Font size="12.0" />
+                            </font>
+                        </Label>
+                    </VBox>
+                    <Button fx:id="btnFeedback" mnemonicParsing="false" onAction="#verFeedback" prefHeight="40.0" prefWidth="130.0" style="-fx-background-color: #B82E1A; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.3), 5, 0, 0, 2);" text="FEEDBACK" textFill="WHITE">
+                        <font>
+                            <Font name="System Bold" size="13.0" />
+                        </font>
+                    </Button>
+                    <Button mnemonicParsing="false" onAction="#verHistorico" prefHeight="40.0" prefWidth="130.0" style="-fx-background-color: #B82E1A; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(155,89,182,0.3), 5, 0, 0, 2);" text="HISTÓRICO" textFill="WHITE">
+                        <font>
+                            <Font name="System Bold" size="13.0" />
+                        </font>
+                    </Button>
+                    <Button mnemonicParsing="false" onAction="#carregarVersaoAnterior" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #B82E1A; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(39,174,96,0.3), 5, 0, 0, 2);" text="NOVA VERSÃO" textFill="WHITE">
+                        <font>
+                            <Font name="System Bold" size="13.0" />
+                        </font>
+                    </Button>
+                </children>
+            </HBox>
 
-        <ScrollPane fitToWidth="true" prefHeight="560.0" prefWidth="780.0" style="-fx-background-color: transparent;" vbarPolicy="ALWAYS">
-            <content>
-                <VBox alignment="TOP_CENTER" prefWidth="760.0" style="-fx-spacing: 15; -fx-padding: 20;">
-                    <children>
-                        <GridPane hgap="20" style="-fx-background-color: EAEAEA; -fx-padding: 20; -fx-background-radius: 8;" vgap="18">
-                            <columnConstraints>
-                                <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" minWidth="360.0" prefWidth="380.0" />
-                            </columnConstraints>
-                            <rowConstraints>
-                                <RowConstraints valignment="TOP" vgrow="NEVER" />
-                                <RowConstraints valignment="TOP" vgrow="NEVER" />
-                                <RowConstraints valignment="TOP" vgrow="NEVER" />
-                                <RowConstraints valignment="TOP" vgrow="NEVER" />
-                                <RowConstraints valignment="TOP" vgrow="NEVER" />
-                                <RowConstraints valignment="TOP" vgrow="NEVER" />
-                            </rowConstraints>
+            <!-- Card Principal com Dados -->
+            <VBox spacing="20" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);">
+                <children>
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Region prefHeight="28" prefWidth="4" style="-fx-background-color: #3498DB; -fx-background-radius: 4;" />
+                        <Label text="Dados da API" textFill="#2C3E50">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
+                        </Label>
+                    </HBox>
+                    
+                    <VBox spacing="20" style="-fx-padding: 20 0 0 0;">
+                        <!-- Problema -->
+                        <VBox spacing="8">
+                            <Label text="Problema" textFill="#34495E">
+                                <font>
+                                    <Font name="System Bold" size="12.0" />
+                                </font>
+                            </Label>
+                            <TextArea fx:id="alunoProblema" editable="false" prefHeight="100.0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
+                        </VBox>
 
-                            <!-- Problema -->
-                            <VBox style="-fx-spacing: 8;" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                                <children>
-                                    <Label text="Problema">
+                        <!-- Solução -->
+                        <VBox spacing="8">
+                            <Label text="Solução" textFill="#34495E">
+                                <font>
+                                    <Font name="System Bold" size="12.0" />
+                                </font>
+                            </Label>
+                            <TextArea fx:id="alunoSolucao" editable="false" prefHeight="100.0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
+                        </VBox>
+
+                        <!-- Tecnologias utilizadas -->
+                        <VBox spacing="8">
+                            <Label text="Tecnologias Utilizadas" textFill="#34495E">
+                                <font>
+                                    <Font name="System Bold" size="12.0" />
+                                </font>
+                            </Label>
+                            <TextArea fx:id="alunoTecnologias" editable="false" prefHeight="100.0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
+                        </VBox>
+
+                        <!-- Contribuições pessoais -->
+                        <VBox spacing="8">
+                            <Label text="Contribuições Pessoais" textFill="#34495E">
+                                <font>
+                                    <Font name="System Bold" size="12.0" />
+                                </font>
+                            </Label>
+                            <TextArea fx:id="alunoContribuicoes" editable="false" prefHeight="100.0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
+                        </VBox>
+
+                        <!-- Hard Skills e Soft Skills -->
+                        <HBox spacing="15">
+                            <children>
+                                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                    <Label text="Hard Skills" textFill="#34495E">
                                         <font>
-                                            <Font name="System Bold" size="16.0" />
+                                            <Font name="System Bold" size="12.0" />
                                         </font>
                                     </Label>
-                                    <TextArea fx:id="alunoProblema" editable="false" prefHeight="130.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" wrapText="true" />
-                                </children>
-                            </VBox>
-
-                            <!-- Solução -->
-                            <VBox style="-fx-spacing: 8;" GridPane.columnIndex="0" GridPane.rowIndex="1">
-                                <children>
-                                    <Label text="Solução">
+                                    <TextArea fx:id="alunoHardSkills" editable="false" prefHeight="100.0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
+                                </VBox>
+                                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                    <Label text="Soft Skills" textFill="#34495E">
                                         <font>
-                                            <Font name="System Bold" size="16.0" />
+                                            <Font name="System Bold" size="12.0" />
                                         </font>
                                     </Label>
-                                    <TextArea fx:id="alunoSolucao" editable="false" prefHeight="130.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" wrapText="true" />
-                                </children>
-                            </VBox>
-
-                            <!-- Tecnologias utilizadas -->
-                            <VBox style="-fx-spacing: 8;" GridPane.columnIndex="0" GridPane.rowIndex="2">
-                                <children>
-                                    <Label text="Tecnologias Utilizadas">
-                                        <font>
-                                            <Font name="System Bold" size="16.0" />
-                                        </font>
-                                    </Label>
-                                    <TextArea fx:id="alunoTecnologias" editable="false" prefHeight="130.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" wrapText="true" />
-                                </children>
-                            </VBox>
-
-                            <!-- Contribuições pessoais -->
-                            <VBox style="-fx-spacing: 8;" GridPane.columnIndex="0" GridPane.rowIndex="3">
-                                <children>
-                                    <Label text="Contribuições Pessoais">
-                                        <font>
-                                            <Font name="System Bold" size="16.0" />
-                                        </font>
-                                    </Label>
-                                    <TextArea fx:id="alunoContribuicoes" editable="false" prefHeight="130.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" wrapText="true" />
-                                </children>
-                            </VBox>
-
-                            <!-- Hard Skills -->
-                            <VBox style="-fx-spacing: 8;" GridPane.columnIndex="0" GridPane.rowIndex="4">
-                                <children>
-                                    <Label text="Hard Skills">
-                                        <font>
-                                            <Font name="System Bold" size="16.0" />
-                                        </font>
-                                    </Label>
-                                    <TextArea fx:id="alunoHardSkills" editable="false" prefHeight="130.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" wrapText="true" />
-                                </children>
-                            </VBox>
-
-                            <!-- Soft Skills -->
-                            <VBox style="-fx-spacing: 8;" GridPane.columnIndex="0" GridPane.rowIndex="5">
-                                <children>
-                                    <Label text="Soft Skills">
-                                        <font>
-                                            <Font name="System Bold" size="16.0" />
-                                        </font>
-                                    </Label>
-                                    <TextArea fx:id="alunoSoftSkills" editable="false" prefHeight="130.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 8;" wrapText="true" />
-                                </children>
-                            </VBox>
-                        </GridPane>
-                    </children>
-                </VBox>
-            </content>
-        </ScrollPane>
-    </children>
-</VBox>
+                                    <TextArea fx:id="alunoSoftSkills" editable="false" prefHeight="100.0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
+                                </VBox>
+                            </children>
+                        </HBox>
+                    </VBox>
+                </children>
+            </VBox>
+        </VBox>
+    </content>
+</ScrollPane>

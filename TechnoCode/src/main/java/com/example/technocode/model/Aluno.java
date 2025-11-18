@@ -121,7 +121,10 @@ public class Aluno {
     public static List<Map<String, String>> buscarPorOrientador(String emailOrientador) {
         List<Map<String, String>> alunos = new ArrayList<>();
         try (Connection conn = new Connector().getConnection()) {
-            String selectAlunos = "SELECT nome, email FROM aluno WHERE orientador = ?";
+            String selectAlunos = "SELECT a.nome, a.email, COALESCE(pt.disciplina, 'N/A') as disciplina " +
+                    "FROM aluno a " +
+                    "LEFT JOIN professor_tg pt ON a.professor_tg = pt.email " +
+                    "WHERE a.orientador = ?";
             PreparedStatement pst = conn.prepareStatement(selectAlunos);
             pst.setString(1, emailOrientador);
             ResultSet rs = pst.executeQuery();
@@ -129,12 +132,28 @@ public class Aluno {
                 Map<String, String> aluno = new HashMap<>();
                 aluno.put("nome", rs.getString("nome"));
                 aluno.put("email", rs.getString("email"));
+                String disciplina = rs.getString("disciplina");
+                // Formata a disciplina para exibição (TG1 -> TG 1, TG2 -> TG 2)
+                String disciplinaFormatada = formatarDisciplina(disciplina);
+                aluno.put("professor_tg", disciplinaFormatada);
                 alunos.add(aluno);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return alunos;
+    }
+    
+    /**
+     * Formata a disciplina para exibição
+     * TG1 -> TG 1, TG2 -> TG 2, TG1/TG2 -> TG 1/TG 2
+     */
+    private static String formatarDisciplina(String disciplina) {
+        if (disciplina == null || disciplina.equals("N/A")) {
+            return disciplina;
+        }
+        // Converte "TG1" para "TG 1", "TG2" para "TG 2", "TG1/TG2" para "TG 1/TG 2"
+        return disciplina.replace("TG1", "TG 1").replace("TG2", "TG 2");
     }
 
     /**
@@ -172,6 +191,89 @@ public class Aluno {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Conta seções aprovadas e enviadas por aluno
+     * Considera apenas versões mais recentes para contagem de enviadas
+     * @param emailAluno Email do aluno
+     * @return Map com "aprovadas" (int) e "enviadas" (int)
+     */
+    public static Map<String, Integer> contarSecoesPorAluno(String emailAluno) {
+        Map<String, Integer> resultado = new HashMap<>();
+        resultado.put("aprovadas", 0);
+        resultado.put("enviadas", 0);
+        
+        try (Connection conn = new Connector().getConnection()) {
+            // Conta seções de apresentação enviadas (cada aluno tem apenas 1 seção de apresentação, independente de versões)
+            // Verifica se existe pelo menos uma versão de apresentação (retorna 0 ou 1)
+            String sqlApresentacaoEnviadas = "SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END as total FROM secao_apresentacao WHERE aluno = ?";
+            PreparedStatement pst1 = conn.prepareStatement(sqlApresentacaoEnviadas);
+            pst1.setString(1, emailAluno);
+            ResultSet rs1 = pst1.executeQuery();
+            int apresentacoesEnviadas = rs1.next() ? rs1.getInt("total") : 0;
+            
+            // Conta seções de API enviadas (combinações distintas de semestre_curso, ano, semestre_ano)
+            // Cada combinação única conta como uma seção, independente da versão
+            String sqlApiEnviadas = "SELECT COUNT(DISTINCT CONCAT(semestre_curso, '-', ano, '-', semestre_ano)) as total " +
+                                    "FROM secao_api WHERE aluno = ?";
+            PreparedStatement pst2 = conn.prepareStatement(sqlApiEnviadas);
+            pst2.setString(1, emailAluno);
+            ResultSet rs2 = pst2.executeQuery();
+            int apisEnviadas = rs2.next() ? rs2.getInt("total") : 0;
+            
+            int totalEnviadas = apresentacoesEnviadas + apisEnviadas;
+            resultado.put("enviadas", totalEnviadas);
+            
+            // Conta seções de apresentação aprovadas (onde todos os campos estão aprovados)
+            String sqlApresentacaoAprovadas = "SELECT COUNT(*) as total FROM ( " +
+                    "SELECT aluno, MAX(versao) as versao_recente " +
+                    "FROM secao_apresentacao WHERE aluno = ? " +
+                    "GROUP BY aluno " +
+                    ") AS versoes_recentes " +
+                    "INNER JOIN secao_apresentacao fa ON " +
+                    "  versoes_recentes.aluno = fa.aluno AND " +
+                    "  versoes_recentes.versao_recente = fa.versao " +
+                    "WHERE fa.status_nome = 'Aprovado' AND fa.status_idade = 'Aprovado' " +
+                    "AND fa.status_curso = 'Aprovado' AND fa.status_motivacao = 'Aprovado' " +
+                    "AND fa.status_historico = 'Aprovado' AND fa.status_historico_profissional = 'Aprovado' " +
+                    "AND fa.status_github = 'Aprovado' AND fa.status_linkedin = 'Aprovado' " +
+                    "AND fa.status_conhecimentos = 'Aprovado'";
+            PreparedStatement pst3 = conn.prepareStatement(sqlApresentacaoAprovadas);
+            pst3.setString(1, emailAluno);
+            ResultSet rs3 = pst3.executeQuery();
+            int apresentacoesAprovadas = rs3.next() ? rs3.getInt("total") : 0;
+            
+            // Conta seções de API aprovadas (onde todos os campos estão aprovados)
+            String sqlApiAprovadas = "SELECT COUNT(*) as total FROM ( " +
+                    "SELECT aluno, semestre_curso, ano, semestre_ano, MAX(versao) as versao_recente " +
+                    "FROM secao_api WHERE aluno = ? " +
+                    "GROUP BY aluno, semestre_curso, ano, semestre_ano " +
+                    ") AS versoes_recentes " +
+                    "INNER JOIN secao_api fa ON " +
+                    "  versoes_recentes.aluno = fa.aluno AND " +
+                    "  versoes_recentes.semestre_curso = fa.semestre_curso AND " +
+                    "  versoes_recentes.ano = fa.ano AND " +
+                    "  versoes_recentes.semestre_ano = fa.semestre_ano AND " +
+                    "  versoes_recentes.versao_recente = fa.versao " +
+                    "WHERE fa.status_empresa = 'Aprovado' AND fa.status_descricao_empresa = 'Aprovado' " +
+                    "AND fa.status_repositorio = 'Aprovado' AND fa.status_problema = 'Aprovado' " +
+                    "AND fa.status_solucao = 'Aprovado' AND fa.status_tecnologias = 'Aprovado' " +
+                    "AND fa.status_contribuicoes = 'Aprovado' AND fa.status_hard_skills = 'Aprovado' " +
+                    "AND fa.status_soft_skills = 'Aprovado'";
+            PreparedStatement pst4 = conn.prepareStatement(sqlApiAprovadas);
+            pst4.setString(1, emailAluno);
+            ResultSet rs4 = pst4.executeQuery();
+            int apisAprovadas = rs4.next() ? rs4.getInt("total") : 0;
+            
+            int totalAprovadas = apresentacoesAprovadas + apisAprovadas;
+            resultado.put("aprovadas", totalAprovadas);
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return resultado;
     }
 }
 

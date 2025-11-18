@@ -75,7 +75,7 @@ public class OrientadorPrincipalController {
      * Carrega a tela inicial no center
      */
     private void carregarTelaInicial() {
-        navegarParaTela("/com/example/technocode/Orientador/tela-inicial-orientador.fxml", null);
+        navegarParaTela("/com/example/technocode/Orientador/dashboard-orientador.fxml", null);
     }
 
     /**
@@ -104,15 +104,15 @@ public class OrientadorPrincipalController {
     }
 
     /**
-     * Botão Início - carrega a tela inicial
+     * Botão Início - carrega a tela inicial (dashboard)
      */
     @FXML
     private void navegarInicio() {
-        navegarParaTela("/com/example/technocode/Orientador/tela-inicial-orientador.fxml",
+        navegarParaTela("/com/example/technocode/Orientador/dashboard-orientador.fxml",
                 controller -> {
-                    if (controller instanceof com.example.technocode.Controllers.Orientador.TelaInicialOrientadorController) {
-                        // Recarrega as seções quando volta para a tela inicial
-                        ((com.example.technocode.Controllers.Orientador.TelaInicialOrientadorController) controller).recarregarTabelaAlunos();
+                    if (controller instanceof com.example.technocode.Controllers.Orientador.DashboardOrientadorController) {
+                        // Recarrega as estatísticas quando volta para o dashboard
+                        ((com.example.technocode.Controllers.Orientador.DashboardOrientadorController) controller).initialize();
                     }
                 });
     }
@@ -123,6 +123,32 @@ public class OrientadorPrincipalController {
     @FXML
     private void navegarHistorico() {
         navegarParaTela("/com/example/technocode/Orientador/orientador-historico.fxml", null);
+    }
+
+    /**
+     * Botão Alunos Orientados - carrega a tela de alunos orientados
+     */
+    @FXML
+    private void navegarAlunosOrientados() {
+        navegarParaTela("/com/example/technocode/Orientador/alunos-orientados.fxml",
+                controller -> {
+                    if (controller instanceof AlunosOrientadosController) {
+                        ((AlunosOrientadosController) controller).recarregarTabela();
+                    }
+                });
+    }
+
+    /**
+     * Botão Solicitações - carrega a tela de solicitações de orientação
+     */
+    @FXML
+    private void navegarSolicitacoes() {
+        navegarParaTela("/com/example/technocode/Orientador/solicitacoes-orientacao.fxml",
+                controller -> {
+                    if (controller instanceof SolicitacoesOrientacaoController) {
+                        ((SolicitacoesOrientacaoController) controller).recarregarSolicitacoes();
+                    }
+                });
     }
 
     /**
