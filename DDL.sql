@@ -33,10 +33,12 @@ CREATE TABLE aluno(
 
 CREATE TABLE solicitacao_orientacao (
     id INT AUTO_INCREMENT PRIMARY KEY,
+
     aluno VARCHAR(120) NOT NULL,
     orientador VARCHAR(120) NOT NULL,
+
     status ENUM('Pendente', 'Aceita', 'Recusada') NOT NULL DEFAULT 'Pendente',
-    mensagem_aluno TEXT,
+
     mensagem_orientador TEXT,
     data_solicitacao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     data_resposta DATETIME,
@@ -73,6 +75,9 @@ CREATE TABLE secao_api(
 			
 		status_solucao ENUM('Aprovado', 'Revisar') DEFAULT NULL,
 		feedback_solucao TEXT,
+        
+        status_repositorio ENUM('Aprovado', 'Revisar') DEFAULT NULL,
+        feedback_repositorio TEXT,
 		
 		status_tecnologias ENUM('Aprovado', 'Revisar') DEFAULT NULL,
 		feedback_tecnologias TEXT,
@@ -86,7 +91,7 @@ CREATE TABLE secao_api(
 		status_soft_skills ENUM('Aprovado', 'Revisar') DEFAULT NULL,
 		feedback_soft_skills TEXT,
 			
-		horario_feedback DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+		horario_feedback DATETIME, 
         
         PRIMARY KEY (aluno, semestre_curso, ano, semestre_ano, versao),
         FOREIGN KEY (aluno) REFERENCES aluno(email)
@@ -105,6 +110,7 @@ CREATE TABLE secao_apresentacao(
         link_linkedin VARCHAR(255) NOT NULL,
         principais_conhecimentos TEXT NOT NULL,
         historico_profissional TEXT NOT NULL,
+        horario_secao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, 
         
 		status_nome ENUM('Aprovado', 'Revisar') DEFAULT NULL,
         feedback_nome TEXT,
@@ -132,6 +138,8 @@ CREATE TABLE secao_apresentacao(
         
         status_historico_profissional ENUM('Aprovado', 'Revisar') DEFAULT NULL,
         feedback_historico_profissional TEXT,
+        			
+		horario_feedback DATETIME, 
         
         PRIMARY KEY(aluno, versao),
         FOREIGN KEY (aluno) REFERENCES aluno(email)
