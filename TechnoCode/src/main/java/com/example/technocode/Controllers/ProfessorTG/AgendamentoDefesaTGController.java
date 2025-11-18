@@ -13,7 +13,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -212,14 +214,14 @@ public class AgendamentoDefesaTGController {
 
         // Verifica conflitos de horário/sala
         if (verificarConflito(datePickerData.getValue(), horario, sala, null)) {
-            mostrarErro("Conflito", "Já existe um agendamento para este horário e sala na mesma data.");
+            mostrarErro("Conflito", "Já existe um agendamento para este horário na mesma data. Informe um horario com 30 minutos de diferença do já agendado!");
             return;
         }
 
         // Busca o email do aluno selecionado
         String nomeAluno = comboAluno.getValue();
         String emailAluno = buscarEmailAlunoPorNome(nomeAluno);
-        
+
         if (emailAluno == null) {
             mostrarErro("Erro", "Não foi possível encontrar o email do aluno selecionado.");
             return;
@@ -228,15 +230,15 @@ public class AgendamentoDefesaTGController {
         // Insere o agendamento no banco
         try (Connection conn = new Connector().getConnection()) {
             String sql = "INSERT INTO agendamento_defesa_tg (email_professor, email_aluno, data_defesa, horario, sala) " +
-                        "VALUES (?, ?, ?, ?, ?)";
-            
+                    "VALUES (?, ?, ?, ?, ?)";
+
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, emailProfessorLogado);
             pst.setString(2, emailAluno);
             pst.setDate(3, java.sql.Date.valueOf(datePickerData.getValue()));
             pst.setString(4, horario);
             pst.setString(5, sala);
-            
+
             pst.executeUpdate();
 
             mostrarSucesso("Sucesso", "Defesa agendada com sucesso!");
@@ -247,6 +249,57 @@ public class AgendamentoDefesaTGController {
             e.printStackTrace();
             mostrarErro("Erro", "Erro ao agendar defesa: " + e.getMessage());
         }
+    }
+
+
+
+
+    // Conflito exato: mesma data, horário e sala
+    private boolean verificarConflitoExato(LocalDate data, LocalTime horario, String sala) {
+        String sql = "SELECT COUNT(*) FROM agendamento_defesa_tg " +
+                "WHERE data_defesa = ? AND horario = ? AND sala = ?";
+        try (Connection conn = new Connector().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setDate(1, java.sql.Date.valueOf(data));
+            stmt.setTime(2, java.sql.Time.valueOf(horario));
+            stmt.setString(3, sala);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Conflito de intervalo: menos de 30 minutos de diferença na mesma data e sala
+    private boolean verificarConflitoIntervalo(LocalDate data, LocalTime horario, String sala) {
+        final int MINUTOS_TOLERANCIA = 30;
+
+        String sql = "SELECT horario FROM agendamento_defesa_tg WHERE data_defesa = ? AND sala = ?";
+        try (Connection conn = new Connector().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setDate(1, java.sql.Date.valueOf(data));
+            stmt.setString(2, sala);
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                LocalTime horarioExistente = rs.getTime("horario").toLocalTime();
+                long diff = Math.abs(Duration.between(horarioExistente, horario).toMinutes());
+                if (diff > 0 && diff < MINUTOS_TOLERANCIA) {
+                    return true; // conflito -> intervalo menor que 30 min
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     /**
@@ -395,38 +448,44 @@ public class AgendamentoDefesaTGController {
      */
     private boolean verificarConflito(LocalDate data, String horario, String sala, Integer idExcluir) {
         try (Connection conn = new Connector().getConnection()) {
-            String sql = "SELECT COUNT(*) as total " +
-                        "FROM agendamento_defesa_tg " +
-                        "WHERE email_professor = ? " +
-                        "AND data_defesa = ? " +
-                        "AND horario = ? " +
-                        "AND sala = ?";
-            
+
+            // Agora buscamos todas as defesas do mesmo dia para comparar horário por horário
+            String sql = "SELECT id, horario FROM agendamento_defesa_tg " +
+                    "WHERE email_professor = ? " +
+                    "AND data_defesa = ?";
+
             if (idExcluir != null) {
                 sql += " AND id != ?";
             }
-            
+
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, emailProfessorLogado);
             pst.setDate(2, java.sql.Date.valueOf(data));
-            pst.setString(3, horario);
-            pst.setString(4, sala);
-            
+
             if (idExcluir != null) {
-                pst.setInt(5, idExcluir);
+                pst.setInt(3, idExcluir);
             }
-            
+
             ResultSet rs = pst.executeQuery();
-            
-            if (rs.next()) {
-                return rs.getInt("total") > 0;
+
+            // Converte horário informado
+            LocalTime novoHorario = LocalTime.parse(horario);
+
+            while (rs.next()) {
+                LocalTime horarioExistente = rs.getTime("horario").toLocalTime();
+
+                long diff = Math.abs(Duration.between(novoHorario, horarioExistente).toMinutes());
+
+                if (diff < 30) {
+                    return true; // Conflito detectado
+                }
             }
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
-        return false;
+
+        return false; // Sem conflito
     }
 
     /**
