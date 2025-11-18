@@ -132,6 +132,17 @@ public class ProfessorTGPrincipalController {
                 });
     }
 
+    @FXML
+    private void navegaragenda() {
+        navegarParaTela("/com/example/technocode/ProfessorTG/AgendamentoDefesaTGView.fxml",
+                controller -> {
+                    if (controller instanceof com.example.technocode.Controllers.DashboardProfessorTGController) {
+                        // Atualiza o dashboard quando volta para ele
+                        ((com.example.technocode.Controllers.DashboardProfessorTGController) controller).atualizarDashboard();
+                    }
+                });
+    }
+
     /**
      * Método público para ser chamado por outras telas quando precisarem navegar
      * Mantém a estrutura principal mas troca o conteúdo do center

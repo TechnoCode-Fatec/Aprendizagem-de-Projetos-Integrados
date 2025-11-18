@@ -144,3 +144,23 @@ CREATE TABLE secao_apresentacao(
         PRIMARY KEY(aluno, versao),
         FOREIGN KEY (aluno) REFERENCES aluno(email)
 );
+
+CREATE TABLE agendamento_defesa_tg (
+    id INT AUTO_INCREMENT,
+    email_professor VARCHAR(120) NOT NULL,
+    email_aluno VARCHAR(120) NOT NULL,
+    data_defesa DATE NOT NULL,
+    horario TIME NOT NULL,
+    sala VARCHAR(50) NOT NULL,
+    status ENUM('Agendado', 'Concluído', 'Cancelado') DEFAULT 'Agendado',
+    observacao TEXT,
+    FOREIGN KEY (email_professor) REFERENCES professor_tg(email)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    FOREIGN KEY (email_aluno) REFERENCES aluno(email)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    PRIMARY KEY (data_defesa, horario),
+    UNIQUE KEY uk_id (id),
+    UNIQUE KEY uk_data_horario_sala (data_defesa, horario, sala)
+);
