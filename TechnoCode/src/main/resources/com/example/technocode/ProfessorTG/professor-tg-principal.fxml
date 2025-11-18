@@ -77,6 +77,15 @@
                       </ImageView>
                   </graphic>
               </Button>
+            <Button contentDisplay="LEFT" layoutX="25.0" layoutY="25.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegaragenda" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Agendar Defesa do TG">
+               <graphic>
+                  <ImageView fitHeight="18" fitWidth="18" preserveRatio="true">
+                     <image>
+                        <Image url="@../imagens/home.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
               
               <!-- Espaçador para empurrar o rodapé para baixo -->
               <Region VBox.vgrow="ALWAYS" />
@@ -105,4 +114,3 @@
     </center>
 
 </BorderPane>
-
