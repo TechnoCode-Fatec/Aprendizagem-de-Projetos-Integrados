@@ -92,19 +92,32 @@ public class OrientadorHistoricoController {
     }
     
     private VBox criarCardVersao(Map<String, String> versao, String tipo) {
+        // Container principal do card moderno
         VBox card = new VBox();
-        card.setPrefHeight(80.0);
-        card.setPrefWidth(700.0);
-        card.setStyle("-fx-background-color: #EAEAEA; -fx-background-radius: 5; -fx-padding: 10; -fx-cursor: hand;");
+        card.setPrefWidth(Region.USE_COMPUTED_SIZE);
+        card.setMaxWidth(Double.MAX_VALUE);
+        card.setSpacing(6);
+        card.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-padding: 18; -fx-cursor: hand; " +
+                     "-fx-border-color: #E0E0E0; -fx-border-width: 1; -fx-border-radius: 10; " +
+                     "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 5, 0, 0, 2);");
+        
+        // Hover effect será aplicado via código
+        card.setOnMouseEntered(e -> card.setStyle("-fx-background-color: #F8F9FA; -fx-background-radius: 10; -fx-padding: 18; -fx-cursor: hand; " +
+                                                  "-fx-border-color: #B82E1A; -fx-border-width: 1.5; -fx-border-radius: 10; " +
+                                                  "-fx-effect: dropshadow(gaussian, rgba(184,46,26,0.15), 8, 0, 0, 3);"));
+        card.setOnMouseExited(e -> card.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-padding: 18; -fx-cursor: hand; " +
+                                                 "-fx-border-color: #E0E0E0; -fx-border-width: 1; -fx-border-radius: 10; " +
+                                                 "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 5, 0, 0, 2);"));
         
         // HBox para organizar conteúdo horizontalmente
         HBox contentBox = new HBox();
         contentBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-        contentBox.setSpacing(10);
+        contentBox.setSpacing(15);
         
         // VBox para título, subtítulo e versão (lado esquerdo)
         VBox textBox = new VBox();
-        textBox.setSpacing(2);
+        textBox.setSpacing(6);
+        VBox.setVgrow(textBox, Priority.ALWAYS);
         
         Label titulo = new Label();
         Label subtitulo = new Label();
@@ -125,9 +138,9 @@ public class OrientadorHistoricoController {
             versaoLabel.setText("Versão " + versao.get("versao"));
         }
         
-        titulo.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-        subtitulo.setStyle("-fx-font-size: 14px; -fx-text-fill: #666;");
-        versaoLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #888; -fx-font-weight: bold;");
+        titulo.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2C3E50;");
+        subtitulo.setStyle("-fx-font-size: 14px; -fx-text-fill: #7F8C8D;");
+        versaoLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #586069; -fx-font-weight: bold;");
         
         textBox.getChildren().addAll(titulo, subtitulo, versaoLabel);
         
@@ -148,8 +161,8 @@ public class OrientadorHistoricoController {
         
         // Se existe feedback, adiciona label com o horário
         if (horarioFeedback != null) {
-            Label labelHorario = new Label("Feedback enviado em: " + horarioFeedback);
-            labelHorario.setStyle("-fx-font-size: 11px; -fx-text-fill: #2E7D32; -fx-font-style: italic;");
+            Label labelHorario = new Label("✓ Feedback enviado em: " + horarioFeedback);
+            labelHorario.setStyle("-fx-font-size: 11px; -fx-text-fill: #27AE60; -fx-font-weight: bold;");
             textBox.getChildren().add(labelHorario);
         }
         
@@ -157,12 +170,22 @@ public class OrientadorHistoricoController {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         
-        // Botão de visualizar (lado direito)
+        // Botão de visualizar (lado direito) - modernizado
         Button btnVisualizar = new Button("Visualizar");
-        btnVisualizar.setPrefHeight(30.0);
-        btnVisualizar.setPrefWidth(100.0);
-        btnVisualizar.setStyle("-fx-background-color: #5E5555; -fx-text-fill: white; -fx-background-radius: 5;");
-        btnVisualizar.setFont(new javafx.scene.text.Font(12.0));
+        btnVisualizar.setPrefHeight(36.0);
+        btnVisualizar.setPrefWidth(120.0);
+        btnVisualizar.setStyle("-fx-background-color: #B82E1A; -fx-background-radius: 8; -fx-cursor: hand; " +
+                               "-fx-effect: dropshadow(gaussian, rgba(184,46,26,0.3), 5, 0, 0, 2); " +
+                               "-fx-text-fill: WHITE;");
+        btnVisualizar.setFont(new javafx.scene.text.Font("System Bold", 12.0));
+        
+        // Hover effect no botão
+        btnVisualizar.setOnMouseEntered(e -> btnVisualizar.setStyle("-fx-background-color: #A0261A; -fx-background-radius: 8; -fx-cursor: hand; " +
+                                                                   "-fx-effect: dropshadow(gaussian, rgba(184,46,26,0.4), 6, 0, 0, 3); " +
+                                                                   "-fx-text-fill: WHITE;"));
+        btnVisualizar.setOnMouseExited(e -> btnVisualizar.setStyle("-fx-background-color: #B82E1A; -fx-background-radius: 8; -fx-cursor: hand; " +
+                                                                    "-fx-effect: dropshadow(gaussian, rgba(184,46,26,0.3), 5, 0, 0, 2); " +
+                                                                    "-fx-text-fill: WHITE;"));
         
         // Evento do botão de visualizar
         btnVisualizar.setOnAction(event -> {

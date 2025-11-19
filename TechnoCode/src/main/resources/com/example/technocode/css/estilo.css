@@ -75,6 +75,10 @@
     -fx-text-fill: #2C3E50;
 }
 
+#telas-professor-tg .label {
+    -fx-text-fill: #2C3E50;
+}
+
 /* Estilos para TableView moderna */
 .table-view {
     -fx-background-color: #FFFFFF;

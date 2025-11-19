@@ -7,10 +7,8 @@ import com.example.technocode.model.SolicitacaoOrientacao;
 import com.example.technocode.model.dao.Connector;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.chart.PieChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -35,7 +33,9 @@ public class DashboardAlunoController {
     @FXML
     private Label labelStatusSolicitacao;
     @FXML
-    private Label labelProximaAcao;
+    private Button btnEnviarApi;
+    @FXML
+    private Button btnEnviarApresentacao;
     @FXML
     private Label labelDataUltimoFeedback;
     @FXML
@@ -60,14 +60,16 @@ public class DashboardAlunoController {
     private Label labelPendenciasApresentacaoDetalhe;
     @FXML
     private Label labelVersaoAtualApresentacao;
-
     @FXML
-    private PieChart pieChartStatus;
+    private Label labelDataDefesa;
+    @FXML
+    private Label labelHorarioDefesa;
+    @FXML
+    private Label labelSalaDefesa;
 
     private String emailAluno;
     private String ultimoFeedbackTipo; // "api" ou "apresentacao"
     private Map<String, String> ultimoFeedbackDados;
-    private int totalPendencias = 0;
 
     @FXML
     public void initialize() {
@@ -82,11 +84,11 @@ public class DashboardAlunoController {
      */
     private void carregarDados() {
         carregarInformacoesAluno();
-        carregarProximaAcao();
         carregarUltimoFeedback();
         carregarProgressoGeral();
         carregarMinhasSecoes();
         carregarMinhaApresentacao();
+        carregarAgendamentoDefesa();
     }
 
     /**
@@ -146,51 +148,63 @@ public class DashboardAlunoController {
     }
 
     /**
-     * Carrega a próxima ação do aluno
+     * Carrega informações do agendamento de defesa do TG
      */
-    private void carregarProximaAcao() {
+    private void carregarAgendamentoDefesa() {
         try (Connection conn = new Connector().getConnection()) {
-            // Conta pendências (seções que precisam revisar)
-            int pendenciasApi = contarPendenciasApi(conn);
-            int pendenciasApresentacao = contarPendenciasApresentacao(conn);
-            totalPendencias = pendenciasApi + pendenciasApresentacao;
-
-            // Verifica se tem solicitação pendente
-            List<Map<String, String>> solicitacoes = SolicitacaoOrientacao.buscarPorAluno(emailAluno);
-            boolean temSolicitacaoPendente = solicitacoes.stream()
-                    .anyMatch(s -> "Pendente".equals(s.get("status")));
-
-            if (totalPendencias > 0) {
-                labelProximaAcao.setText("Você tem " + totalPendencias + " itens para revisar");
-                labelProximaAcao.setStyle("-fx-text-fill: #E74C3C; -fx-font-weight: bold; -fx-underline: true; -fx-cursor: hand;");
-            } else if (temSolicitacaoPendente) {
-                labelProximaAcao.setText("Aguardando resposta do orientador");
-                labelProximaAcao.setStyle("-fx-text-fill: #F57C00; -fx-font-weight: bold; -fx-cursor: default;");
+            String sql = "SELECT data_defesa, horario, sala, status " +
+                        "FROM agendamento_defesa_tg " +
+                        "WHERE email_aluno = ? AND status = 'Agendado' " +
+                        "ORDER BY data_defesa, horario LIMIT 1";
+            
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, emailAluno);
+            ResultSet rs = pst.executeQuery();
+            
+            if (rs.next()) {
+                java.sql.Date dataDefesa = rs.getDate("data_defesa");
+                String horario = rs.getString("horario");
+                String sala = rs.getString("sala");
+                
+                // Formata a data
+                SimpleDateFormat sdfData = new SimpleDateFormat("dd/MM/yyyy");
+                labelDataDefesa.setText(sdfData.format(dataDefesa));
+                
+                // Formata o horário (remove segundos se houver)
+                if (horario != null && horario.length() > 5) {
+                    horario = horario.substring(0, 5);
+                }
+                labelHorarioDefesa.setText(horario != null ? horario : "-");
+                labelSalaDefesa.setText(sala != null ? sala : "-");
             } else {
-                labelProximaAcao.setText("Nenhuma ação no momento 🎉");
-                labelProximaAcao.setStyle("-fx-text-fill: #27AE60; -fx-font-weight: bold; -fx-cursor: default;");
+                labelDataDefesa.setText("Não agendado");
+                labelHorarioDefesa.setText("-");
+                labelSalaDefesa.setText("-");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            labelProximaAcao.setText("Erro ao carregar");
+            labelDataDefesa.setText("Erro ao carregar");
+            labelHorarioDefesa.setText("-");
+            labelSalaDefesa.setText("-");
         }
     }
-
+    
     /**
-     * Método chamado quando o usuário clica na próxima ação
+     * Navega para a tela de enviar API
      */
     @FXML
-    private void clicarProximaAcao(MouseEvent event) {
-        if (totalPendencias > 0) {
-            // Navega para a tela de sessões atuais onde o aluno pode ver e revisar
-            PrincipalAlunoController.getInstance().navegarParaTelaDoCenter(
-                "/com/example/technocode/Aluno/sessoes-atuais.fxml",
-                controller -> {
-                    if (controller instanceof SessoesAtuaisAlunoController) {
-                        ((SessoesAtuaisAlunoController) controller).recarregarSecoes();
-                    }
-                });
-        }
+    private void navegarEnviarApi(ActionEvent event) {
+        PrincipalAlunoController.getInstance().navegarParaTelaDoCenter(
+            "/com/example/technocode/Aluno/formulario-api.fxml", null);
+    }
+    
+    /**
+     * Navega para a tela de enviar Apresentação
+     */
+    @FXML
+    private void navegarEnviarApresentacao(ActionEvent event) {
+        PrincipalAlunoController.getInstance().navegarParaTelaDoCenter(
+            "/com/example/technocode/Aluno/formulario-apresentacao.fxml", null);
     }
 
     /**
@@ -294,107 +308,12 @@ public class DashboardAlunoController {
             int pendenciasApresentacao = contarPendenciasApresentacao(conn);
             labelPendenciasApresentacao.setText(String.valueOf(pendenciasApresentacao));
 
-            // Carrega gráfico de status
-            carregarGraficoStatus(conn);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    /**
-     * Carrega o gráfico de pizza com status das seções
-     */
-    private void carregarGraficoStatus(Connection conn) {
-        try {
-            // Conta seções aprovadas
-            int aprovadasApi = contarSecoesAprovadasApi(conn);
-            int aprovadasApresentacao = contarSecoesAprovadasApresentacao(conn);
-            int totalAprovadas = aprovadasApi + aprovadasApresentacao;
-
-            // Conta seções para revisar
-            int revisarApi = contarPendenciasApi(conn);
-            int revisarApresentacao = contarPendenciasApresentacao(conn);
-            int totalRevisar = revisarApi + revisarApresentacao;
-
-            // Conta seções pendentes (sem feedback)
-            int totalSecoes = contarSecoesApiEnviadas(conn) + contarSecoesApresentacaoEnviadas(conn);
-            int totalAvaliadas = contarSecoesApiAvaliadas(conn) + contarSecoesApresentacaoAvaliadas(conn);
-            int totalPendentes = totalSecoes - totalAvaliadas;
-
-            pieChartStatus.getData().clear();
-
-            if (totalAprovadas > 0) {
-                PieChart.Data dataAprovadas = new PieChart.Data("Aprovadas", totalAprovadas);
-                pieChartStatus.getData().add(dataAprovadas);
-                dataAprovadas.nodeProperty().addListener((obs, oldNode, newNode) -> {
-                    if (newNode != null) {
-                        newNode.setStyle("-fx-pie-color: #27AE60;");
-                    }
-                });
-            }
-
-            if (totalRevisar > 0) {
-                PieChart.Data dataRevisar = new PieChart.Data("Para Revisar", totalRevisar);
-                pieChartStatus.getData().add(dataRevisar);
-                dataRevisar.nodeProperty().addListener((obs, oldNode, newNode) -> {
-                    if (newNode != null) {
-                        newNode.setStyle("-fx-pie-color: #E74C3C;");
-                    }
-                });
-            }
-
-            if (totalPendentes > 0) {
-                PieChart.Data dataPendentes = new PieChart.Data("Pendentes", totalPendentes);
-                pieChartStatus.getData().add(dataPendentes);
-                dataPendentes.nodeProperty().addListener((obs, oldNode, newNode) -> {
-                    if (newNode != null) {
-                        newNode.setStyle("-fx-pie-color: #F39C12;");
-                    }
-                });
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private int contarSecoesAprovadasApi(Connection conn) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM ( " +
-                "SELECT aluno, semestre_curso, ano, semestre_ano, MAX(versao) as versao_recente " +
-                "FROM secao_api WHERE aluno = ? " +
-                "GROUP BY aluno, semestre_curso, ano, semestre_ano " +
-                ") AS versoes_recentes " +
-                "INNER JOIN secao_api fa ON " +
-                "  versoes_recentes.aluno = fa.aluno AND " +
-                "  versoes_recentes.semestre_curso = fa.semestre_curso AND " +
-                "  versoes_recentes.ano = fa.ano AND " +
-                "  versoes_recentes.semestre_ano = fa.semestre_ano AND " +
-                "  versoes_recentes.versao_recente = fa.versao " +
-                "WHERE fa.status_empresa = 'Aprovado' AND fa.status_problema = 'Aprovado' " +
-                "AND fa.status_solucao = 'Aprovado' AND fa.status_tecnologias = 'Aprovado'";
-        PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, emailAluno);
-        ResultSet rs = pst.executeQuery();
-        return rs.next() ? rs.getInt(1) : 0;
-    }
-
-    private int contarSecoesAprovadasApresentacao(Connection conn) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM ( " +
-                "SELECT aluno, MAX(versao) as versao_recente " +
-                "FROM secao_apresentacao WHERE aluno = ? " +
-                "GROUP BY aluno " +
-                ") AS versoes_recentes " +
-                "INNER JOIN secao_apresentacao fa ON " +
-                "  versoes_recentes.aluno = fa.aluno AND " +
-                "  versoes_recentes.versao_recente = fa.versao " +
-                "WHERE fa.status_nome = 'Aprovado' AND fa.status_idade = 'Aprovado' " +
-                "AND fa.status_curso = 'Aprovado' AND fa.status_motivacao = 'Aprovado'";
-        PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, emailAluno);
-        ResultSet rs = pst.executeQuery();
-        return rs.next() ? rs.getInt(1) : 0;
-    }
 
     private int contarSecoesApresentacaoEnviadas(Connection conn) throws SQLException {
         String sql = "SELECT COUNT(DISTINCT versao) FROM secao_apresentacao WHERE aluno = ?";
