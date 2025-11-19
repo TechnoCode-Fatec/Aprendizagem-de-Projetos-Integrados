@@ -4,40 +4,44 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<ScrollPane id="formulario" fitToWidth="true" prefHeight="800.0" prefWidth="1200.0" style="-fx-background-color: #C4C4C4;" vbarPolicy="ALWAYS" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.ProfessorTG.AgendamentoDefesaTGController">
+<ScrollPane id="telas-professor-tg" fitToWidth="true" prefHeight="800.0" prefWidth="1200.0" style="-fx-background-color: #F8F9FA; -fx-background: transparent;" vbarPolicy="AS_NEEDED" hbarPolicy="NEVER" stylesheets="@../css/estilo.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.ProfessorTG.AgendamentoDefesaTGController">
     <content>
-        <VBox alignment="TOP_CENTER" prefWidth="1180.0" style="-fx-spacing: 20; -fx-padding: 20;">
+        <VBox alignment="TOP_CENTER" prefWidth="1180.0" style="-fx-spacing: 20; -fx-padding: 25;" maxWidth="1.7976931348623157E308">
             <children>
-                <!-- Cabeçalho -->
-                <VBox prefWidth="1200.0" style="-fx-background-color: WHITE; -fx-border-color: #c9c9c9; -fx-border-width: 0 0 1 0;">
+                <!-- Header Moderno -->
+                <HBox alignment="CENTER" spacing="30" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);">
                     <children>
-                        <!-- Título -->
-                        <HBox alignment="CENTER" prefHeight="50.0" prefWidth="1200.0" style="-fx-spacing: 25; -fx-padding: 5 20 10 20;">
-                            <children>
-                                <Label alignment="CENTER" prefHeight="47.0" prefWidth="400.0" text="AGENDAMENTO DE DEFESAS DE TG">
-                                    <font>
-                                        <Font name="System Bold" size="24.0" />
-                                    </font>
-                                </Label>
-                                <Region HBox.hgrow="ALWAYS" />
-                                <Button fx:id="btnVoltar" mnemonicParsing="false" prefHeight="34.0" prefWidth="100.0" style="-fx-background-color: #B82E1A; -fx-background-radius: 8;" text="Voltar" textFill="WHITE">
-                                    <font>
-                                        <Font size="14.0" />
-                                    </font>
-                                </Button>
-                            </children>
-                        </HBox>
-                    </children>
-                </VBox>
-
-                <!-- Formulário de Agendamento -->
-                <VBox alignment="TOP_CENTER" prefWidth="1160.0" style="-fx-spacing: 15; -fx-background-color: #EAEAEA; -fx-background-radius: 8; -fx-padding: 20;">
-                    <children>
-                        <Label style="-fx-font-weight: bold;" text="Novo Agendamento">
+                        <VBox alignment="CENTER_LEFT" spacing="5" HBox.hgrow="ALWAYS">
+                            <Label text="AGENDAMENTO DE DEFESAS DE TG" textFill="#2C3E50">
+                                <font>
+                                    <Font name="System Bold" size="24.0" />
+                                </font>
+                            </Label>
+                            <Label text="Gerencie os agendamentos de defesas de Trabalho de Graduação" textFill="#7F8C8D">
+                                <font>
+                                    <Font size="12.0" />
+                                </font>
+                            </Label>
+                        </VBox>
+                        <Button fx:id="btnVoltar" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #B82E1A; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(184,46,26,0.3), 5, 0, 0, 2);" text="Voltar" textFill="WHITE">
                             <font>
-                                <Font name="System Bold" size="18.0" />
+                                <Font name="System Bold" size="14.0" />
                             </font>
-                        </Label>
+                        </Button>
+                    </children>
+                </HBox>
+
+                <!-- Card Formulário de Agendamento -->
+                <VBox alignment="TOP_CENTER" prefWidth="1160.0" style="-fx-spacing: 15; -fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);">
+                    <children>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Region style="-fx-background-color: #3498DB; -fx-background-radius: 4;" prefWidth="4" prefHeight="24" />
+                            <Label text="Novo Agendamento" textFill="#2C3E50">
+                                <font>
+                                    <Font name="System Bold" size="18.0" />
+                                </font>
+                            </Label>
+                        </HBox>
                         
                         <GridPane hgap="15" style="-fx-background-color: transparent;" vgap="15">
                             <columnConstraints>
@@ -53,7 +57,7 @@
                             <!-- Aluno -->
                             <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="0">
                                 <children>
-                                    <Label text="Aluno *" textFill="#34495E">
+                                    <Label text="Aluno *" textFill="#2C3E50">
                                         <font>
                                             <Font name="System Bold" size="12.0" />
                                         </font>
@@ -65,7 +69,7 @@
                             <!-- Data da Defesa -->
                             <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="0">
                                 <children>
-                                    <Label text="Data da Defesa *" textFill="#34495E">
+                                    <Label text="Data da Defesa *" textFill="#2C3E50">
                                         <font>
                                             <Font name="System Bold" size="12.0" />
                                         </font>
@@ -77,7 +81,7 @@
                             <!-- Horário -->
                             <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="1">
                                 <children>
-                                    <Label text="Horário * (HH:MM)" textFill="#34495E">
+                                    <Label text="Horário * (HH:MM)" textFill="#2C3E50">
                                         <font>
                                             <Font name="System Bold" size="12.0" />
                                         </font>
@@ -89,7 +93,7 @@
                             <!-- Sala -->
                             <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                 <children>
-                                    <Label text="Sala *" textFill="#34495E">
+                                    <Label text="Sala *" textFill="#2C3E50">
                                         <font>
                                             <Font name="System Bold" size="12.0" />
                                         </font>
@@ -107,9 +111,9 @@
                                         <Font name="System Bold" size="14.0" />
                                     </font>
                                 </Button>
-                                <Button fx:id="btnLimpar" mnemonicParsing="false" onAction="#limparFormulario" prefHeight="45.0" prefWidth="150.0" style="-fx-background-color: #767676; -fx-background-radius: 8; -fx-cursor: hand;" text="Limpar" textFill="WHITE">
+                                <Button fx:id="btnLimpar" mnemonicParsing="false" onAction="#limparFormulario" prefHeight="45.0" prefWidth="150.0" style="-fx-background-color: #767676; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(118,118,118,0.3), 5, 0, 0, 2);" text="Limpar" textFill="WHITE">
                                     <font>
-                                        <Font size="14.0" />
+                                        <Font name="System Bold" size="14.0" />
                                     </font>
                                 </Button>
                             </children>
@@ -117,20 +121,18 @@
                     </children>
                 </VBox>
 
-                <!-- Histórico de Agendamentos -->
-                <VBox alignment="TOP_CENTER" prefWidth="1160.0" style="-fx-spacing: 10; -fx-background-color: #EAEAEA; -fx-background-radius: 8; -fx-padding: 15;">
+                <!-- Card Histórico de Agendamentos -->
+                <VBox alignment="TOP_CENTER" prefWidth="1160.0" style="-fx-spacing: 15; -fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);">
                     <children>
-                        <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 5;">
-                            <children>
-                                <Label style="-fx-font-weight: bold;" text="Histórico de Agendamentos">
-                                    <font>
-                                        <Font size="18.0" />
-                                    </font>
-                                </Label>
-                                <Region HBox.hgrow="ALWAYS" />
-                            </children>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Region style="-fx-background-color: #E74C3C; -fx-background-radius: 4;" prefWidth="4" prefHeight="24" />
+                            <Label text="Histórico de Agendamentos" textFill="#2C3E50">
+                                <font>
+                                    <Font name="System Bold" size="18.0" />
+                                </font>
+                            </Label>
                         </HBox>
-                        <TableView fx:id="tabelaAgendamentos" prefHeight="300.0" prefWidth="1130.0">
+                        <TableView fx:id="tabelaAgendamentos" prefHeight="300.0" prefWidth="1130.0" maxWidth="1.7976931348623157E308">
                             <columns>
                                 <TableColumn fx:id="colAluno" minWidth="200.0" prefWidth="250.0" text="Aluno" />
                                 <TableColumn fx:id="colData" minWidth="120.0" prefWidth="150.0" text="Data" />
@@ -145,19 +147,19 @@
                         <!-- Botões de Ação do Histórico -->
                         <HBox alignment="CENTER" spacing="15" style="-fx-padding: 10 0 0 0;">
                             <children>
-                                <Button fx:id="btnEditar" mnemonicParsing="false" onAction="#editarAgendamento" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #4CAF50; -fx-background-radius: 8; -fx-cursor: hand;" text="Editar" textFill="WHITE">
+                                <Button fx:id="btnEditar" mnemonicParsing="false" onAction="#editarAgendamento" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #4CAF50; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(76,175,80,0.3), 5, 0, 0, 2);" text="Editar" textFill="WHITE">
                                     <font>
-                                        <Font size="14.0" />
+                                        <Font name="System Bold" size="14.0" />
                                     </font>
                                 </Button>
-                                <Button fx:id="btnExcluir" mnemonicParsing="false" onAction="#excluirAgendamento" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #F44336; -fx-background-radius: 8; -fx-cursor: hand;" text="Excluir" textFill="WHITE">
+                                <Button fx:id="btnExcluir" mnemonicParsing="false" onAction="#excluirAgendamento" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #F44336; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(244,67,54,0.3), 5, 0, 0, 2);" text="Excluir" textFill="WHITE">
                                     <font>
-                                        <Font size="14.0" />
+                                        <Font name="System Bold" size="14.0" />
                                     </font>
                                 </Button>
-                                <Button fx:id="btnAtualizar" mnemonicParsing="false" onAction="#atualizarTabela" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #3498DB; -fx-background-radius: 8; -fx-cursor: hand;" text="Atualizar" textFill="WHITE">
+                                <Button fx:id="btnAtualizar" mnemonicParsing="false" onAction="#atualizarTabela" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #3498DB; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.3), 5, 0, 0, 2);" text="Atualizar" textFill="WHITE">
                                     <font>
-                                        <Font size="14.0" />
+                                        <Font name="System Bold" size="14.0" />
                                     </font>
                                 </Button>
                             </children>

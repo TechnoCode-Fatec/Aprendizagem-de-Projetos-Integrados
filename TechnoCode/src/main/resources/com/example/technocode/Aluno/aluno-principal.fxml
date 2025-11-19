@@ -78,28 +78,6 @@
                   </graphic>
               </Button>
 
-              <!-- Botão Enviar API -->
-              <Button contentDisplay="LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarEnviarApi" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Enviar API">
-                  <graphic>
-                      <ImageView fitHeight="18" fitWidth="18" preserveRatio="true">
-                          <image>
-                              <Image url="@../imagens/doc.png" />
-                          </image>
-                      </ImageView>
-                  </graphic>
-              </Button>
-
-              <!-- Botão Enviar Apresentação -->
-              <Button contentDisplay="LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarEnviarApresentacao" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Enviar Apresentação">
-                  <graphic>
-                      <ImageView fitHeight="18" fitWidth="18" preserveRatio="true">
-                          <image>
-                              <Image url="@../imagens/doc.png" />
-                          </image>
-                      </ImageView>
-                  </graphic>
-              </Button>
-
               <!-- Botão Sessões Atuais -->
               <Button contentDisplay="LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarSessoesAtuais" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Sessões Atuais">
                   <graphic>
