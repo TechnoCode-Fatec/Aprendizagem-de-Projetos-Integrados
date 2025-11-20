@@ -3,6 +3,7 @@ package com.example.technocode.Controllers.ProfessorTG;
 import com.example.technocode.Controllers.LoginController;
 import com.example.technocode.model.ProfessorTG;
 import com.example.technocode.model.dao.Connector;
+import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -128,6 +129,33 @@ public class AgendamentoDefesaTGController {
         } catch (SQLException e) {
             e.printStackTrace();
             mostrarErro("Erro", "Erro ao carregar lista de alunos: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Método público para pré-selecionar um aluno no ComboBox
+     * Pode ser chamado externamente após a tela ser carregada
+     * @param nomeAluno Nome do aluno a ser selecionado
+     */
+    public void selecionarAluno(String nomeAluno) {
+        if (nomeAluno != null && !nomeAluno.isEmpty() && comboAluno != null) {
+            // Usa Platform.runLater para garantir que a UI esteja pronta e os alunos carregados
+            javafx.application.Platform.runLater(() -> {
+                // Garante que os alunos foram carregados
+                if (comboAluno.getItems().isEmpty()) {
+                    carregarAlunos();
+                }
+                
+                // Seleciona o aluno se existir na lista
+                // Usa um pequeno delay para garantir que o carregamento terminou
+                PauseTransition pause = new PauseTransition(javafx.util.Duration.millis(100));
+                pause.setOnFinished(e -> {
+                    if (comboAluno.getItems().contains(nomeAluno)) {
+                        comboAluno.setValue(nomeAluno);
+                    }
+                });
+                pause.play();
+            });
         }
     }
 

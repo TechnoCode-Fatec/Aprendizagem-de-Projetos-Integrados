@@ -79,6 +79,50 @@
     -fx-text-fill: #2C3E50;
 }
 
+/* === BOTÕES DO DASHBOARD DO PROFESSOR DE TG === */
+#dashboard-professor-tg .button {
+    -fx-background-color: #B82E1A;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-alignment: CENTER;
+    -fx-padding: 8 15 8 15;
+    -fx-effect: dropshadow(gaussian, rgba(184,46,26,0.3), 5, 0, 0, 2);
+}
+
+/* Hover dos botões do dashboard do professor */
+#dashboard-professor-tg .button:hover {
+    -fx-background-color: linear-gradient(to right, #B82E1A, #D43C25);
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(184,46,26,0.4), 8, 0, 0, 3);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+/* Botão desabilitado do dashboard do professor */
+#dashboard-professor-tg .button:disabled {
+    -fx-background-color: #CCCCCC;
+    -fx-text-fill: #666666;
+    -fx-opacity: 0.6;
+    -fx-effect: none;
+}
+
+/* Clique e foco dos botões do dashboard do professor */
+#dashboard-professor-tg .button:pressed, 
+#dashboard-professor-tg .button:focused {
+    -fx-background-color: #8C1F11;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(140,31,17,0.4), 5, 0, 0, 2);
+}
+
+#dashboard-professor-tg .label {
+    -fx-text-fill: #2C3E50;
+}
+
 /* Estilos para TableView moderna */
 .table-view {
     -fx-background-color: #FFFFFF;

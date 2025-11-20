@@ -12,10 +12,7 @@
             <children>
 
                 <!-- Card de Cadastro (agora inclui logo e títulos) -->
-                <VBox alignment="CENTER" maxHeight="620.0" maxWidth="420.0" prefHeight="480.0" prefWidth="380.0" spacing="12" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 25 25 30 25;">
-                    <effect>
-                        <DropShadow blurType="GAUSSIAN" height="15.63" radius="7.0625" width="14.62" />
-                    </effect>
+                <VBox alignment="CENTER" maxHeight="620.0" maxWidth="420.0" prefHeight="480.0" prefWidth="380.0" spacing="12" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 25 25 30 25; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 15, 0, 0, 5);">
 
                     <!-- Logo -->
                     <StackPane alignment="CENTER">
