@@ -100,7 +100,31 @@ public class DashboardAlunoController {
             Map<String, String> dadosAluno = Aluno.buscarDadosPorEmail(emailAluno);
             labelNomeAluno.setText(dadosAluno.get("nome") != null ? dadosAluno.get("nome") : "N/A");
 
-            // Busca orientador
+            // Busca status da solicitação mais recente primeiro (para usar depois)
+            List<Map<String, String>> solicitacoes = SolicitacaoOrientacao.buscarPorAluno(emailAluno);
+            Map<String, String> ultimaSolicitacao = null;
+            String statusSolicitacao = null;
+            
+            if (!solicitacoes.isEmpty()) {
+                ultimaSolicitacao = solicitacoes.get(0); // Já vem ordenado por data DESC
+                statusSolicitacao = ultimaSolicitacao.get("status");
+                
+                // Atualiza o label de status
+                if ("Pendente".equals(statusSolicitacao)) {
+                    labelStatusSolicitacao.setText("Pendente");
+                    labelStatusSolicitacao.setStyle("-fx-text-fill: #F57C00; -fx-font-weight: bold;");
+                } else if ("Aceita".equals(statusSolicitacao)) {
+                    labelStatusSolicitacao.setText("Aceita");
+                    labelStatusSolicitacao.setStyle("-fx-text-fill: #2E7D32; -fx-font-weight: bold;");
+                } else if ("Recusada".equals(statusSolicitacao)) {
+                    labelStatusSolicitacao.setText("Recusada");
+                    labelStatusSolicitacao.setStyle("-fx-text-fill: #C62828; -fx-font-weight: bold;");
+                }
+            } else {
+                labelStatusSolicitacao.setText("-");
+            }
+
+            // Busca orientador aceito
             try (Connection conn = new Connector().getConnection()) {
                 String sql = "SELECT orientador FROM aluno WHERE email = ?";
                 PreparedStatement pst = conn.prepareStatement(sql);
@@ -110,35 +134,32 @@ public class DashboardAlunoController {
                 if (rs.next()) {
                     String emailOrientador = rs.getString("orientador");
                     if (emailOrientador != null && !emailOrientador.isEmpty()) {
+                        // Aluno tem orientador aceito
                         Map<String, String> dadosOrientador = Orientador.buscarDadosPorEmail(emailOrientador);
                         labelNomeOrientador.setText(dadosOrientador.get("nome") != null ? dadosOrientador.get("nome") : "N/A");
+                        labelNomeOrientador.setStyle("-fx-text-fill: #2C3E50;");
                     } else {
-                        labelNomeOrientador.setText("Nenhum orientador ainda");
-                        labelNomeOrientador.setStyle("-fx-text-fill: #F57C00;");
+                        // Aluno não tem orientador aceito - verifica se há solicitação pendente
+                        if (ultimaSolicitacao != null && "Pendente".equals(statusSolicitacao)) {
+                            // Mostra o nome do orientador solicitado
+                            String nomeOrientadorSolicitado = ultimaSolicitacao.get("nome_orientador");
+                            if (nomeOrientadorSolicitado != null && !nomeOrientadorSolicitado.isEmpty()) {
+                                labelNomeOrientador.setText(nomeOrientadorSolicitado);
+                                labelNomeOrientador.setStyle("-fx-text-fill: #2C3E50;");
+                            } else {
+                                labelNomeOrientador.setText("Nenhum orientador ainda");
+                                labelNomeOrientador.setStyle("-fx-text-fill: #2C3E50;");
+                            }
+                        } else {
+                            labelNomeOrientador.setText("Nenhum orientador ainda");
+                            labelNomeOrientador.setStyle("-fx-text-fill: #2C3E50;");
+                        }
                     }
                 } else {
+                    // Caso não encontre o aluno (não deveria acontecer)
                     labelNomeOrientador.setText("Nenhum orientador ainda");
                     labelNomeOrientador.setStyle("-fx-text-fill: #F57C00;");
                 }
-            }
-
-            // Busca status da solicitação mais recente
-            List<Map<String, String>> solicitacoes = SolicitacaoOrientacao.buscarPorAluno(emailAluno);
-            if (!solicitacoes.isEmpty()) {
-                Map<String, String> ultimaSolicitacao = solicitacoes.get(0); // Já vem ordenado por data DESC
-                String status = ultimaSolicitacao.get("status");
-                if ("Pendente".equals(status)) {
-                    labelStatusSolicitacao.setText("Pendente");
-                    labelStatusSolicitacao.setStyle("-fx-text-fill: #F57C00; -fx-font-weight: bold;");
-                } else if ("Aceita".equals(status)) {
-                    labelStatusSolicitacao.setText("Aceita");
-                    labelStatusSolicitacao.setStyle("-fx-text-fill: #2E7D32; -fx-font-weight: bold;");
-                } else if ("Recusada".equals(status)) {
-                    labelStatusSolicitacao.setText("Recusada");
-                    labelStatusSolicitacao.setStyle("-fx-text-fill: #C62828; -fx-font-weight: bold;");
-                }
-            } else {
-                labelStatusSolicitacao.setText("-");
             }
 
         } catch (Exception e) {
@@ -152,9 +173,9 @@ public class DashboardAlunoController {
      */
     private void carregarAgendamentoDefesa() {
         try (Connection conn = new Connector().getConnection()) {
-            String sql = "SELECT data_defesa, horario, sala, status " +
+            String sql = "SELECT data_defesa, horario, sala " +
                         "FROM agendamento_defesa_tg " +
-                        "WHERE email_aluno = ? AND status = 'Agendado' " +
+                        "WHERE email_aluno = ? " +
                         "ORDER BY data_defesa, horario LIMIT 1";
             
             PreparedStatement pst = conn.prepareStatement(sql);

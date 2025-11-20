@@ -1,5 +1,6 @@
 package com.example.technocode;
 
+import com.example.technocode.config.DatabaseInitializer;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -12,6 +13,9 @@ import java.io.IOException;
 public class Principal extends Application {
     @Override
     public void start(Stage stage) throws IOException {
+        // Inicializa o banco de dados antes de carregar a interface
+        DatabaseInitializer.initialize();
+        
         FXMLLoader fxmlLoader = new FXMLLoader(Principal.class.getResource("login.fxml"));
         
         // Obtém as dimensões da tela primária

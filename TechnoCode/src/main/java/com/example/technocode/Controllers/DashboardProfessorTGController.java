@@ -225,7 +225,7 @@ public class DashboardProfessorTGController {
             String sql = "SELECT a.nome as nome_aluno, ad.data_defesa, ad.horario, ad.sala " +
                         "FROM agendamento_defesa_tg ad " +
                         "INNER JOIN aluno a ON ad.email_aluno = a.email " +
-                        "WHERE ad.email_professor = ? AND ad.status = 'Agendado' " +
+                        "WHERE ad.email_professor = ? " +
                         "AND ad.data_defesa >= CURDATE() " +
                         "ORDER BY ad.data_defesa ASC, ad.horario ASC " +
                         "LIMIT 3";

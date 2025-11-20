@@ -58,7 +58,8 @@ public class AgendamentoDefesaTGController {
 
     private String emailProfessorLogado;
     private String disciplinaProfessor;
-    private Integer agendamentoSelecionadoId; // ID do agendamento selecionado para edição
+    private LocalDate agendamentoSelecionadoData; // Data do agendamento selecionado para edição
+    private String agendamentoSelecionadoHorario; // Horário do agendamento selecionado para edição
 
     @FXML
     private void initialize() {
@@ -94,10 +95,24 @@ public class AgendamentoDefesaTGController {
         // Permite seleção de linha
         tabelaAgendamentos.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
+                // Extrai data e horário do agendamento selecionado
+                String dataStr = newSelection.getData();
+                agendamentoSelecionadoHorario = newSelection.getHorario();
+                
+                // Converte a string de data para LocalDate
+                try {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    agendamentoSelecionadoData = LocalDate.parse(dataStr, formatter);
+                } catch (Exception e) {
+                    agendamentoSelecionadoData = null;
+                    agendamentoSelecionadoHorario = null;
+                }
+                
                 btnEditar.setDisable(false);
                 btnExcluir.setDisable(false);
             } else {
-                agendamentoSelecionadoId = null;
+                agendamentoSelecionadoData = null;
+                agendamentoSelecionadoHorario = null;
                 btnEditar.setDisable(true);
                 btnExcluir.setDisable(true);
             }
@@ -165,7 +180,7 @@ public class AgendamentoDefesaTGController {
     @FXML
     private void carregarAgendamentos() {
         try (Connection conn = new Connector().getConnection()) {
-            String sql = "SELECT a.nome as nome_aluno, ad.data_defesa, ad.horario, ad.sala " +
+            String sql = "SELECT a.nome as nome_aluno, ad.data_defesa, ad.horario, ad.sala, ad.email_aluno " +
                     "FROM agendamento_defesa_tg ad " +
                     "INNER JOIN aluno a ON ad.email_aluno = a.email " +
                     "WHERE ad.email_professor = ? " +
@@ -183,6 +198,11 @@ public class AgendamentoDefesaTGController {
                 LocalDate data = rs.getDate("data_defesa").toLocalDate();
                 String horario = rs.getString("horario");
                 String sala = rs.getString("sala");
+                
+                // Formata o horário (remove segundos se houver)
+                if (horario != null && horario.length() > 5) {
+                    horario = horario.substring(0, 5);
+                }
 
                 agendamentos.add(new AgendamentoInfo(
                         nomeAluno,
@@ -234,7 +254,7 @@ public class AgendamentoDefesaTGController {
         }
 
         // Verifica conflitos antes de tentar inserir
-        if (verificarConflito(datePickerData.getValue(), horario, sala)) {
+        if (verificarConflito(datePickerData.getValue(), horario, sala, null, null)) {
             mostrarErro(
                     "Conflito",
                     "Já existe um agendamento para este horário na mesma data. Informe um horário com 30 minutos de diferença do já agendado!"
@@ -285,47 +305,12 @@ public class AgendamentoDefesaTGController {
 
 
 
-    private boolean verificarConflito(LocalDate data, String novoHorarioStr, String sala) {
-        try (Connection conn = new Connector().getConnection()) {
-            String sql =
-                    "SELECT horario FROM agendamento_defesa_tg " +
-                            "WHERE data_defesa = ? AND sala = ?";
-
-            PreparedStatement pst = conn.prepareStatement(sql);
-            pst.setDate(1, java.sql.Date.valueOf(data));
-            pst.setString(2, sala);
-
-            ResultSet rs = pst.executeQuery();
-
-            LocalTime novoHorario = LocalTime.parse(novoHorarioStr);
-
-            while (rs.next()) {
-                LocalTime horarioExistente = rs.getTime("horario").toLocalTime();
-
-                long diferenca = Math.abs(
-                        Duration.between(novoHorario, horarioExistente).toMinutes()
-                );
-
-                if (diferenca < 30) {
-                    return true; // conflito
-                }
-            }
-
-            return false;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return true; // por segurança, assume conflito se der erro
-        }
-    }
-
-
     /**
      * Edita um agendamento existente
      */
     @FXML
     private void editarAgendamento() {
-        if (agendamentoSelecionadoId == null) {
+        if (agendamentoSelecionadoData == null || agendamentoSelecionadoHorario == null) {
             mostrarErro("Validação", "Por favor, selecione um agendamento para editar.");
             return;
         }
@@ -354,32 +339,70 @@ public class AgendamentoDefesaTGController {
         }
 
         // Verifica conflitos (excluindo o próprio agendamento que está sendo editado)
-        if (verificarConflito(datePickerData.getValue(), horario, sala, agendamentoSelecionadoId)) {
+        if (verificarConflito(datePickerData.getValue(), horario, sala, agendamentoSelecionadoData, agendamentoSelecionadoHorario)) {
             mostrarErro("Conflito", "Já existe outro agendamento para este horário e sala na mesma data.");
             return;
         }
 
         // Atualiza o agendamento no banco
+        // Como a chave primária mudou, precisamos deletar o antigo e inserir o novo
         try (Connection conn = new Connector().getConnection()) {
-            String sql = "UPDATE agendamento_defesa_tg " +
-                    "SET data_defesa = ?, horario = ?, sala = ? " +
-                    "WHERE id = ? AND email_professor = ?";
-
-            PreparedStatement pst = conn.prepareStatement(sql);
-            pst.setDate(1, java.sql.Date.valueOf(datePickerData.getValue()));
-            pst.setString(2, horario);
-            pst.setString(3, sala);
-            pst.setInt(4, agendamentoSelecionadoId);
-            pst.setString(5, emailProfessorLogado);
-
-            int rowsAffected = pst.executeUpdate();
-
-            if (rowsAffected > 0) {
+            conn.setAutoCommit(false);
+            
+            try {
+                // Primeiro busca o email do aluno do agendamento antigo ANTES de deletar
+                String sqlBuscarAluno = "SELECT email_aluno FROM agendamento_defesa_tg " +
+                        "WHERE email_professor = ? AND data_defesa = ? AND horario = ?";
+                PreparedStatement pstBuscar = conn.prepareStatement(sqlBuscarAluno);
+                pstBuscar.setString(1, emailProfessorLogado);
+                pstBuscar.setDate(2, java.sql.Date.valueOf(agendamentoSelecionadoData));
+                pstBuscar.setString(3, agendamentoSelecionadoHorario);
+                ResultSet rs = pstBuscar.executeQuery();
+                
+                String emailAluno = null;
+                if (rs.next()) {
+                    emailAluno = rs.getString("email_aluno");
+                }
+                
+                // Se não encontrou, tenta buscar pelo aluno selecionado no combo
+                if (emailAluno == null && comboAluno.getValue() != null) {
+                    emailAluno = buscarEmailAlunoPorNome(comboAluno.getValue());
+                }
+                
+                if (emailAluno == null) {
+                    throw new SQLException("Não foi possível encontrar o aluno do agendamento.");
+                }
+                
+                // Deleta o agendamento antigo
+                String sqlDelete = "DELETE FROM agendamento_defesa_tg " +
+                        "WHERE email_professor = ? AND data_defesa = ? AND horario = ?";
+                PreparedStatement pstDelete = conn.prepareStatement(sqlDelete);
+                pstDelete.setString(1, emailProfessorLogado);
+                pstDelete.setDate(2, java.sql.Date.valueOf(agendamentoSelecionadoData));
+                pstDelete.setString(3, agendamentoSelecionadoHorario);
+                pstDelete.executeUpdate();
+                
+                // Insere o novo agendamento
+                String sqlInsert = "INSERT INTO agendamento_defesa_tg (email_professor, email_aluno, data_defesa, horario, sala) " +
+                        "VALUES (?, ?, ?, ?, ?)";
+                PreparedStatement pstInsert = conn.prepareStatement(sqlInsert);
+                pstInsert.setString(1, emailProfessorLogado);
+                pstInsert.setString(2, emailAluno);
+                pstInsert.setDate(3, java.sql.Date.valueOf(datePickerData.getValue()));
+                pstInsert.setString(4, horario);
+                pstInsert.setString(5, sala);
+                pstInsert.executeUpdate();
+                
+                conn.commit();
                 mostrarSucesso("Sucesso", "Agendamento atualizado com sucesso!");
                 limparFormulario();
                 carregarAgendamentos();
-            } else {
-                mostrarErro("Erro", "Não foi possível atualizar o agendamento.");
+                
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
             }
 
         } catch (SQLException e) {
@@ -393,7 +416,7 @@ public class AgendamentoDefesaTGController {
      */
     @FXML
     private void excluirAgendamento() {
-        if (agendamentoSelecionadoId == null) {
+        if (agendamentoSelecionadoData == null || agendamentoSelecionadoHorario == null) {
             mostrarErro("Validação", "Por favor, selecione um agendamento para excluir.");
             return;
         }
@@ -406,11 +429,13 @@ public class AgendamentoDefesaTGController {
 
         if (confirmacao.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
             try (Connection conn = new Connector().getConnection()) {
-                String sql = "DELETE FROM agendamento_defesa_tg WHERE id = ? AND email_professor = ?";
+                String sql = "DELETE FROM agendamento_defesa_tg " +
+                        "WHERE email_professor = ? AND data_defesa = ? AND horario = ?";
 
                 PreparedStatement pst = conn.prepareStatement(sql);
-                pst.setInt(1, agendamentoSelecionadoId);
-                pst.setString(2, emailProfessorLogado);
+                pst.setString(1, emailProfessorLogado);
+                pst.setDate(2, java.sql.Date.valueOf(agendamentoSelecionadoData));
+                pst.setString(3, agendamentoSelecionadoHorario);
 
                 int rowsAffected = pst.executeUpdate();
 
@@ -438,7 +463,8 @@ public class AgendamentoDefesaTGController {
         datePickerData.setValue(null);
         txtHorario.clear();
         txtSala.clear();
-        agendamentoSelecionadoId = null;
+        agendamentoSelecionadoData = null;
+        agendamentoSelecionadoHorario = null;
         tabelaAgendamentos.getSelectionModel().clearSelection();
         btnEditar.setDisable(true);
         btnExcluir.setDisable(true);
@@ -462,27 +488,31 @@ public class AgendamentoDefesaTGController {
      * @param data      Data da defesa
      * @param horario   Horário da defesa
      * @param sala      Sala da defesa
-     * @param idExcluir ID do agendamento a excluir da verificação (para edição)
+     * @param dataExcluir Data do agendamento a excluir da verificação (para edição)
+     * @param horarioExcluir Horário do agendamento a excluir da verificação (para edição)
      * @return true se houver conflito, false caso contrário
      */
-    private boolean verificarConflito(LocalDate data, String horario, String sala, Integer idExcluir) {
+    private boolean verificarConflito(LocalDate data, String horario, String sala, LocalDate dataExcluir, String horarioExcluir) {
         try (Connection conn = new Connector().getConnection()) {
 
             // Agora buscamos todas as defesas do mesmo dia para comparar horário por horário
-            String sql = "SELECT id, horario FROM agendamento_defesa_tg " +
+            String sql = "SELECT horario FROM agendamento_defesa_tg " +
                     "WHERE email_professor = ? " +
-                    "AND data_defesa = ?";
+                    "AND data_defesa = ? " +
+                    "AND sala = ?";
 
-            if (idExcluir != null) {
-                sql += " AND id != ?";
+            if (dataExcluir != null && horarioExcluir != null) {
+                sql += " AND NOT (data_defesa = ? AND horario = ?)";
             }
 
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, emailProfessorLogado);
             pst.setDate(2, java.sql.Date.valueOf(data));
+            pst.setString(3, sala);
 
-            if (idExcluir != null) {
-                pst.setInt(3, idExcluir);
+            if (dataExcluir != null && horarioExcluir != null) {
+                pst.setDate(4, java.sql.Date.valueOf(dataExcluir));
+                pst.setString(5, horarioExcluir);
             }
 
             ResultSet rs = pst.executeQuery();
