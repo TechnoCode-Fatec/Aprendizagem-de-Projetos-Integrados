@@ -9,15 +9,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -67,7 +63,7 @@ public class AgendamentoDefesaTGController {
     private void initialize() {
         // Obtém o email do professor logado
         emailProfessorLogado = LoginController.getEmailLogado();
-        
+
         if (emailProfessorLogado == null || emailProfessorLogado.isBlank()) {
             mostrarErro("Erro", "Não foi possível identificar o professor logado.");
             return;
@@ -97,7 +93,6 @@ public class AgendamentoDefesaTGController {
         // Permite seleção de linha
         tabelaAgendamentos.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
-                agendamentoSelecionadoId = newSelection.getId();
                 btnEditar.setDisable(false);
                 btnExcluir.setDisable(false);
             } else {
@@ -142,12 +137,12 @@ public class AgendamentoDefesaTGController {
     @FXML
     private void carregarAgendamentos() {
         try (Connection conn = new Connector().getConnection()) {
-            String sql = "SELECT ad.id, a.nome as nome_aluno, ad.data_defesa, ad.horario, ad.sala " +
-                        "FROM agendamento_defesa_tg ad " +
-                        "INNER JOIN aluno a ON ad.email_aluno = a.email " +
-                        "WHERE ad.email_professor = ? " +
-                        "ORDER BY ad.data_defesa, ad.horario";
-            
+            String sql = "SELECT a.nome as nome_aluno, ad.data_defesa, ad.horario, ad.sala " +
+                    "FROM agendamento_defesa_tg ad " +
+                    "INNER JOIN aluno a ON ad.email_aluno = a.email " +
+                    "WHERE ad.email_professor = ? " +
+                    "ORDER BY ad.data_defesa, ad.horario";
+
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, emailProfessorLogado);
             ResultSet rs = pst.executeQuery();
@@ -156,18 +151,16 @@ public class AgendamentoDefesaTGController {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
             while (rs.next()) {
-                int id = rs.getInt("id");
                 String nomeAluno = rs.getString("nome_aluno");
                 LocalDate data = rs.getDate("data_defesa").toLocalDate();
                 String horario = rs.getString("horario");
                 String sala = rs.getString("sala");
 
                 agendamentos.add(new AgendamentoInfo(
-                    id,
-                    nomeAluno,
-                    data.format(formatter),
-                    horario,
-                    sala
+                        nomeAluno,
+                        data.format(formatter),
+                        horario,
+                        sala
                 ));
             }
 
@@ -212,9 +205,12 @@ public class AgendamentoDefesaTGController {
             return;
         }
 
-        // Verifica conflitos de horário/sala
-        if (verificarConflito(datePickerData.getValue(), horario, sala, null)) {
-            mostrarErro("Conflito", "Já existe um agendamento para este horário na mesma data. Informe um horario com 30 minutos de diferença do já agendado!");
+        // Verifica conflitos antes de tentar inserir
+        if (verificarConflito(datePickerData.getValue(), horario, sala)) {
+            mostrarErro(
+                    "Conflito",
+                    "Já existe um agendamento para este horário na mesma data. Informe um horário com 30 minutos de diferença do já agendado!"
+            );
             return;
         }
 
@@ -245,6 +241,14 @@ public class AgendamentoDefesaTGController {
             limparFormulario();
             carregarAgendamentos();
 
+        } catch (SQLIntegrityConstraintViolationException e) {
+
+            // Se caiu aqui, o banco recusou porque horário + data já existem
+            mostrarErro(
+                    "Conflito",
+                    "Já existe um agendamento para este horário na mesma data. Informe um novo horário"
+            );
+
         } catch (SQLException e) {
             e.printStackTrace();
             mostrarErro("Erro", "Erro ao agendar defesa: " + e.getMessage());
@@ -253,54 +257,40 @@ public class AgendamentoDefesaTGController {
 
 
 
+    private boolean verificarConflito(LocalDate data, String novoHorarioStr, String sala) {
+        try (Connection conn = new Connector().getConnection()) {
+            String sql =
+                    "SELECT horario FROM agendamento_defesa_tg " +
+                            "WHERE data_defesa = ? AND sala = ?";
 
-    // Conflito exato: mesma data, horário e sala
-    private boolean verificarConflitoExato(LocalDate data, LocalTime horario, String sala) {
-        String sql = "SELECT COUNT(*) FROM agendamento_defesa_tg " +
-                "WHERE data_defesa = ? AND horario = ? AND sala = ?";
-        try (Connection conn = new Connector().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setDate(1, java.sql.Date.valueOf(data));
+            pst.setString(2, sala);
 
-            stmt.setDate(1, java.sql.Date.valueOf(data));
-            stmt.setTime(2, java.sql.Time.valueOf(horario));
-            stmt.setString(3, sala);
+            ResultSet rs = pst.executeQuery();
 
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
+            LocalTime novoHorario = LocalTime.parse(novoHorarioStr);
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    // Conflito de intervalo: menos de 30 minutos de diferença na mesma data e sala
-    private boolean verificarConflitoIntervalo(LocalDate data, LocalTime horario, String sala) {
-        final int MINUTOS_TOLERANCIA = 30;
-
-        String sql = "SELECT horario FROM agendamento_defesa_tg WHERE data_defesa = ? AND sala = ?";
-        try (Connection conn = new Connector().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setDate(1, java.sql.Date.valueOf(data));
-            stmt.setString(2, sala);
-
-            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 LocalTime horarioExistente = rs.getTime("horario").toLocalTime();
-                long diff = Math.abs(Duration.between(horarioExistente, horario).toMinutes());
-                if (diff > 0 && diff < MINUTOS_TOLERANCIA) {
-                    return true; // conflito -> intervalo menor que 30 min
+
+                long diferenca = Math.abs(
+                        Duration.between(novoHorario, horarioExistente).toMinutes()
+                );
+
+                if (diferenca < 30) {
+                    return true; // conflito
                 }
             }
 
+            return false;
+
         } catch (SQLException e) {
             e.printStackTrace();
+            return true; // por segurança, assume conflito se der erro
         }
-        return false;
     }
+
 
     /**
      * Edita um agendamento existente
@@ -344,16 +334,16 @@ public class AgendamentoDefesaTGController {
         // Atualiza o agendamento no banco
         try (Connection conn = new Connector().getConnection()) {
             String sql = "UPDATE agendamento_defesa_tg " +
-                        "SET data_defesa = ?, horario = ?, sala = ? " +
-                        "WHERE id = ? AND email_professor = ?";
-            
+                    "SET data_defesa = ?, horario = ?, sala = ? " +
+                    "WHERE id = ? AND email_professor = ?";
+
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setDate(1, java.sql.Date.valueOf(datePickerData.getValue()));
             pst.setString(2, horario);
             pst.setString(3, sala);
             pst.setInt(4, agendamentoSelecionadoId);
             pst.setString(5, emailProfessorLogado);
-            
+
             int rowsAffected = pst.executeUpdate();
 
             if (rowsAffected > 0) {
@@ -389,11 +379,11 @@ public class AgendamentoDefesaTGController {
         if (confirmacao.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
             try (Connection conn = new Connector().getConnection()) {
                 String sql = "DELETE FROM agendamento_defesa_tg WHERE id = ? AND email_professor = ?";
-                
+
                 PreparedStatement pst = conn.prepareStatement(sql);
                 pst.setInt(1, agendamentoSelecionadoId);
                 pst.setString(2, emailProfessorLogado);
-                
+
                 int rowsAffected = pst.executeUpdate();
 
                 if (rowsAffected > 0) {
@@ -440,9 +430,10 @@ public class AgendamentoDefesaTGController {
 
     /**
      * Verifica se há conflito de horário/sala para o professor
-     * @param data Data da defesa
-     * @param horario Horário da defesa
-     * @param sala Sala da defesa
+     *
+     * @param data      Data da defesa
+     * @param horario   Horário da defesa
+     * @param sala      Sala da defesa
      * @param idExcluir ID do agendamento a excluir da verificação (para edição)
      * @return true se houver conflito, false caso contrário
      */
@@ -505,7 +496,7 @@ public class AgendamentoDefesaTGController {
             pst.setString(1, nomeAluno);
             pst.setString(2, emailProfessorLogado);
             ResultSet rs = pst.executeQuery();
-            
+
             if (rs.next()) {
                 return rs.getString("email");
             }
@@ -522,9 +513,16 @@ public class AgendamentoDefesaTGController {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Erro");
         alert.setHeaderText(titulo);
-        alert.setContentText(mensagem);
+
+        Label label = new Label(mensagem);
+        label.setWrapText(true);
+
+        alert.getDialogPane().setContent(label);
+        alert.getDialogPane().setMinWidth(500);
+
         alert.showAndWait();
     }
+
 
     /**
      * Mostra mensagem de sucesso
@@ -541,22 +539,16 @@ public class AgendamentoDefesaTGController {
      * Classe auxiliar para representar um agendamento na tabela
      */
     public static class AgendamentoInfo {
-        private final Integer id;
         private final String nomeAluno;
         private final String data;
         private final String horario;
         private final String sala;
 
-        public AgendamentoInfo(Integer id, String nomeAluno, String data, String horario, String sala) {
-            this.id = id;
+        public AgendamentoInfo(String nomeAluno, String data, String horario, String sala) {
             this.nomeAluno = nomeAluno;
             this.data = data;
             this.horario = horario;
             this.sala = sala;
-        }
-
-        public Integer getId() {
-            return id;
         }
 
         public String getNomeAluno() {
@@ -576,4 +568,3 @@ public class AgendamentoDefesaTGController {
         }
     }
 }
-
