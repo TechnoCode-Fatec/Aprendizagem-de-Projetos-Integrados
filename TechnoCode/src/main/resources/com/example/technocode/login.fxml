@@ -34,10 +34,19 @@
         <VBox alignment="CENTER" fillWidth="true" spacing="15" VBox.vgrow="ALWAYS">
 
             <!-- Campo de e-mail -->
+            <!-- Campo de e-mail -->
             <VBox alignment="CENTER_LEFT" fillWidth="true" spacing="5">
-                <Label style="-fx-font-weight: bold;" text="E-mail" />
-                <TextField fx:id="txtEmail" maxWidth="Infinity" prefHeight="35" promptText="Insira seu e-mail" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #cccccc;" VBox.vgrow="NEVER" />
+                <Label style="-fx-font-weight: bold;" text="Email" />
+                <ComboBox fx:id="cbEmail"
+                          editable="true"
+                          promptText="Insira seu e-mail"
+                          maxWidth="Infinity"
+                          VBox.vgrow="NEVER"
+                          style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #cccccc;" />
             </VBox>
+
+
+
 
             <!-- Campo de senha -->
             <VBox alignment="CENTER_LEFT" fillWidth="true" spacing="5">
@@ -53,7 +62,8 @@
 
             <!-- Lembrar-me e Esqueceu senha -->
             <HBox alignment="CENTER_LEFT" spacing="60">
-                <CheckBox text="Lembrar-me" />
+                <CheckBox fx:id="lembreDeMim" text="Lembrar-me" />
+
             </HBox>
         </VBox>
 

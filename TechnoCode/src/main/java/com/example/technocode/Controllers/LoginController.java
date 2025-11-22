@@ -4,22 +4,24 @@ import com.example.technocode.Services.NavigationService;
 import com.example.technocode.model.dao.Connector;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.io.IOException;
-import java.util.Objects;
+import java.util.*;
+import java.util.prefs.Preferences;
 
 public class LoginController {
+
     @FXML
-    private TextField txtEmail;
+    private ComboBox<String> cbEmail; // ⬅️ substitui o TextField
 
     @FXML
     private PasswordField txtSenha;
+
+    @FXML
+    private CheckBox lembreDeMim;
 
     @FXML
     private TextField txtSenhaVisivel;
@@ -27,59 +29,171 @@ public class LoginController {
     @FXML
     private Button btnToggleSenha;
 
-    // 🔹 ADIÇÃO — referencie o botão "Entrar" do FXML (precisa ter fx:id="btnEntrar")
     @FXML
     private Button btnEntrar;
 
     private static String emailLogado;
 
+    // 🔹 Preferências do sistema
+    private final Preferences prefs = Preferences.userNodeForPackage(LoginController.class);
+
+    private static final String KEY_EMAILS = "emails_salvos";
+    private static final String KEY_SENHA = "senha_salva";
+    private static final String KEY_LEMBRAR = "lembrar";
+
     public static String getEmailLogado() {
         return emailLogado;
     }
 
+    // =========================================================
+    //                      LOGIN
+    // =========================================================
+    // =========================================================
+//                      LOGIN
+// =========================================================
     public void login(ActionEvent event) throws IOException {
+
+        String email = cbEmail.getEditor().getText();
         String senha = obterSenhaAtual();
 
-        if (txtEmail.getText().isEmpty() || senha.isEmpty()) {
+        if (email.isEmpty() || senha.isEmpty()) {
             mostrarAlertaErro("Campos obrigatórios", "Por favor, preencha todos os campos.");
             return;
         }
 
-        if (!validarEmail(txtEmail.getText())) {
+        if (!validarEmail(email)) {
             mostrarAlertaErro("Email inválido", "Por favor, insira um email válido.");
             return;
         }
 
         Connector connector = new Connector();
-        String tipo = connector.login(txtEmail.getText(), senha);
+        String tipo = connector.login(email, senha);
 
         if (tipo == null || tipo.isEmpty()) {
             mostrarAlertaErro("Usuário não encontrado", "Email ou senha incorretos. Por favor, tente novamente.");
             return;
-        } else {
-            emailLogado = txtEmail.getText();
         }
-        if (tipo.equals("Aluno")) {
-            NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/Aluno/aluno-principal.fxml", null);
-            return;
+
+        // ✔ E-mail do usuário logado
+        emailLogado = email;
+
+        // ✔ Salva email apenas se lembrar-me estiver marcado
+        if (lembreDeMim.isSelected()) {
+            salvarEmail(email);
         }
-        if (tipo.equals("Orientador")) {
-            NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/Orientador/orientador-principal.fxml", null);
-            return;
-        }
-        if (tipo.equals("ProfessorTG")) {
-            NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/ProfessorTG/professor-tg-principal.fxml", null);
-            return;
+
+        // ❌ Não salvar senha
+        prefs.remove(KEY_SENHA);
+        prefs.putBoolean(KEY_LEMBRAR, lembreDeMim.isSelected());
+
+        // 🔹 Redirecionar usuário
+        switch (tipo) {
+            case "Aluno":
+                NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/Aluno/aluno-principal.fxml", null);
+                return;
+            case "Orientador":
+                NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/Orientador/orientador-principal.fxml", null);
+                return;
+            case "ProfessorTG":
+                NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/ProfessorTG/professor-tg-principal.fxml", null);
+                return;
         }
     }
 
-    private String obterSenhaAtual() {
-        if (senhaVisivel) {
-            return txtSenhaVisivel.getText();
-        } else {
-            return txtSenha.getText();
+
+    // =========================================================
+//                  HISTÓRICO DE EMAILS
+// =========================================================
+    private void carregarEmailsSalvos() {
+        String emailsStr = prefs.get(KEY_EMAILS, "");
+
+        if (!emailsStr.isEmpty()) {
+            List<String> emails = Arrays.asList(emailsStr.split(";"));
+            cbEmail.getItems().addAll(emails);
         }
     }
+
+    private void salvarEmail(String email) {
+        String emailsStr = prefs.get(KEY_EMAILS, "");
+
+        Set<String> lista = new LinkedHashSet<>();
+        if (!emailsStr.isEmpty()) {
+            lista.addAll(Arrays.asList(emailsStr.split(";")));
+        }
+
+        lista.add(email); // evita duplicados
+        prefs.put(KEY_EMAILS, String.join(";", lista));
+    }
+
+
+    // =========================================================
+    //                SENHA VISÍVEL / INVISÍVEL
+    // =========================================================
+
+    private boolean senhaVisivel = false;
+
+    private final ImageView iconMostrar = new ImageView(
+            new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/technocode/imagens/Revelar.png")))
+    );
+    private final ImageView iconOcultar = new ImageView(
+            new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/technocode/imagens/Ocultar.png")))
+    );
+
+    @FXML
+    private void toggleSenha() {
+        if (senhaVisivel) {
+            txtSenha.setText(txtSenhaVisivel.getText());
+            txtSenhaVisivel.setVisible(false);
+            txtSenhaVisivel.setManaged(false);
+
+            txtSenha.setVisible(true);
+            txtSenha.setManaged(true);
+
+            btnToggleSenha.setGraphic(iconMostrar);
+
+        } else {
+            txtSenhaVisivel.setText(txtSenha.getText());
+            txtSenha.setVisible(false);
+            txtSenha.setManaged(false);
+
+            txtSenhaVisivel.setVisible(true);
+            txtSenhaVisivel.setManaged(true);
+
+            btnToggleSenha.setGraphic(iconOcultar);
+        }
+
+        senhaVisivel = !senhaVisivel;
+    }
+
+    private String obterSenhaAtual() {
+        return senhaVisivel ? txtSenhaVisivel.getText() : txtSenha.getText();
+    }
+
+    // =========================================================
+    //               LEMBRAR-ME (CARREGA AO ABRIR)
+    // =========================================================
+    private void carregarLembranca() {
+        boolean lembrar = prefs.getBoolean(KEY_LEMBRAR, false);
+        lembreDeMim.setSelected(lembrar);
+
+        if (!lembrar) return;
+
+        // Preenche o e-mail salvo no ComboBox
+        String emailsStr = prefs.get(KEY_EMAILS, "");
+        if (!emailsStr.isEmpty()) {
+            List<String> emails = Arrays.asList(emailsStr.split(";"));
+            cbEmail.getItems().setAll(emails);
+            cbEmail.getEditor().setText(emails.get(emails.size() - 1)); // último usado
+        }
+
+        // ⚠ NÃO CARREGA A SENHA
+        txtSenha.clear();
+    }
+
+
+    // =========================================================
+    //                OUTROS MÉTODOS
+    // =========================================================
 
     private boolean validarEmail(String email) {
         String regex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
@@ -98,54 +212,30 @@ public class LoginController {
         NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/cadastro.fxml", null);
     }
 
-    private boolean senhaVisivel = false;
-
-    // Ícones
-    private final ImageView iconMostrar = new ImageView(
-            new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/technocode/imagens/Revelar.png")))
-    );
-    private final ImageView iconOcultar = new ImageView(
-            new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/technocode/imagens/Ocultar.png")))
-    );
-
-    @FXML
-    private void toggleSenha() {
-        if (senhaVisivel) {
-            txtSenha.setText(txtSenhaVisivel.getText());
-            txtSenhaVisivel.setVisible(false);
-            txtSenhaVisivel.setManaged(false);
-            txtSenha.setVisible(true);
-            txtSenha.setManaged(true);
-            btnToggleSenha.setGraphic(iconMostrar);
-        } else {
-            txtSenhaVisivel.setText(txtSenha.getText());
-            txtSenha.setVisible(false);
-            txtSenha.setManaged(false);
-            txtSenhaVisivel.setVisible(true);
-            txtSenhaVisivel.setManaged(true);
-            btnToggleSenha.setGraphic(iconOcultar);
-        }
-        senhaVisivel = !senhaVisivel;
-    }
-
+    // =========================================================
+    //                    INITIALIZE
+    // =========================================================
     @FXML
     private void initialize() {
-        // Define tamanho fixo dos ícones
+
+        // Ícones do olho
         iconMostrar.setFitWidth(16);
         iconMostrar.setFitHeight(16);
         iconOcultar.setFitWidth(16);
         iconOcultar.setFitHeight(16);
-
-        iconMostrar.setPreserveRatio(true);
-        iconOcultar.setPreserveRatio(true);
-        iconMostrar.setSmooth(true);
-        iconOcultar.setSmooth(true);
-
         btnToggleSenha.setGraphic(iconMostrar);
 
-        // ADIÇÃO — faz a tecla Enter acionar o botão "Entrar"
-        txtEmail.setOnAction(e -> btnEntrar.fire());
+        // Enter faz login apenas ao DIGITAR
+        cbEmail.getEditor().setOnAction(e -> btnEntrar.fire());
         txtSenha.setOnAction(e -> btnEntrar.fire());
         txtSenhaVisivel.setOnAction(e -> btnEntrar.fire());
+
+        // 🔹 Carregar histórico
+        carregarEmailsSalvos();
+
+        // ⚠ LEMBRAR-ME só depois da tela pronta
+        javafx.application.Platform.runLater(this::carregarLembranca);
     }
+
+
 }
