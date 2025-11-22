@@ -1,68 +1,97 @@
 package com.example.technocode.Controllers;
 
-import com.example.technocode.dao.Connector;
+import com.example.technocode.Services.NavigationService;
+import com.example.technocode.model.Aluno;
+import com.example.technocode.model.Orientador;
+import com.example.technocode.model.ProfessorTG;
+import com.example.technocode.model.SolicitacaoOrientacao;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
-import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-
-import static java.sql.DriverManager.getConnection;
 
 public class CadastroController {
 
     @FXML
-    private RadioButton radioAluno, radioOrientador;
+    private RadioButton radioAluno, radioOrientador, radioProfessorTG;
     @FXML
     private TextField txtNome, txtEmail, txtSenha;
     @FXML
-    HBox hBoxOrientador, hBoxCurso;
+    private HBox hBoxOrientador, hBoxCurso, hBoxDisciplina;
     @FXML
-    ComboBox<String> comboBoxOrientador, comboBoxCurso;
+    private ComboBox<String> comboBoxOrientador, comboBoxCurso, comboBoxDisciplina;
     @FXML
     private Button btnCadastrar;
 
     private ToggleGroup grupoUsuario;
     private Map<String, String> orientadoresMap;
+    private Map<String, String> professoresTGMap; // Map com "TG 1 - Nome" -> email
 
     @FXML
     private void initialize() {
+        // Agrupamento de tipo de usuário
         grupoUsuario = new ToggleGroup();
         radioAluno.setToggleGroup(grupoUsuario);
-        radioAluno.setUserData("Aluno");
         radioOrientador.setToggleGroup(grupoUsuario);
+        radioProfessorTG.setToggleGroup(grupoUsuario);
+        radioAluno.setUserData("Aluno");
         radioOrientador.setUserData("Orientador");
+        radioProfessorTG.setUserData("ProfessorTG");
+
+        // Inicialmente invisíveis
         hBoxOrientador.setVisible(false);
+        hBoxOrientador.setManaged(false);
         hBoxCurso.setVisible(false);
-        Connector con =  new Connector();
-        orientadoresMap = con.buscarOrientadores();
+        hBoxCurso.setManaged(false);
+        hBoxDisciplina.setVisible(false);
+        hBoxDisciplina.setManaged(false);
+
+        // Vincula a visibilidade diretamente à seleção do RadioButton "Aluno"
+        hBoxOrientador.visibleProperty().bind(radioAluno.selectedProperty());
+        hBoxOrientador.managedProperty().bind(radioAluno.selectedProperty());
+        hBoxCurso.visibleProperty().bind(radioAluno.selectedProperty());
+        hBoxCurso.managedProperty().bind(radioAluno.selectedProperty());
+
+        // Vincula a visibilidade do campo Disciplina à seleção do RadioButton "ProfessorTG"
+        hBoxDisciplina.visibleProperty().bind(radioProfessorTG.selectedProperty());
+        hBoxDisciplina.managedProperty().bind(radioProfessorTG.selectedProperty());
+
+        // Carrega orientadores, disciplinas com professores e disciplinas simples
+        orientadoresMap = Orientador.buscarTodos();
         comboBoxOrientador.getItems().addAll(orientadoresMap.keySet());
-        comboBoxCurso.getItems().addAll("TG1", "TG2", "TG1/TG2");
+        
+        // Carrega disciplinas com professores para o ComboBox do aluno
+        professoresTGMap = ProfessorTG.buscarProfessoresPorDisciplina();
+        comboBoxCurso.getItems().addAll(professoresTGMap.keySet());
+        
+        // Carrega disciplinas simples para o ComboBox do professor de TG
+        comboBoxDisciplina.getItems().addAll("TG1", "TG2", "TG1/TG2");
 
+        // Atalho ENTER -> Cadastrar
+        btnCadastrar.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                newScene.setOnKeyPressed(event -> {
+                    if (event.getCode() == KeyCode.ENTER) {
+                        try {
+                            cadastrarUsuario(new ActionEvent());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
     }
+
     public void voltar(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/login.fxml"));
-        Parent root = loader.load();
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+        NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/login.fxml", null);
     }
 
-    public String getTipoUsuario(){
+    public String getTipoUsuario() {
         if (grupoUsuario.getSelectedToggle() != null) {
             return grupoUsuario.getSelectedToggle().getUserData().toString();
         }
@@ -73,7 +102,7 @@ public class CadastroController {
     private void cadastrarUsuario(ActionEvent event) throws IOException {
         String tipo = getTipoUsuario();
         if (tipo == null) {
-            mostrarAlertaErro("Tipo de usuário", "Por favor, selecione um tipo de usuário (Aluno ou Orientador).");
+            mostrarAlertaErro("Tipo de usuário", "Por favor, selecione um tipo de usuário (Aluno, Orientador ou Professor de TG).");
             return;
         }
 
@@ -87,55 +116,83 @@ public class CadastroController {
             return;
         }
 
-        if (tipo.equals("Aluno")) {
-            if (comboBoxOrientador.getValue() == null || comboBoxOrientador.getValue().isEmpty()) {
-                mostrarAlertaErro("Orientador obrigatório", "Para cadastro de aluno, é necessário selecionar um orientador.");
-                return;
-            }
-        }
-
         if (txtSenha.getText().length() < 6) {
             mostrarAlertaErro("Senha fraca", "A senha deve ter pelo menos 6 caracteres.");
             return;
         }
 
-        Connector conn = new Connector();
-
         if (tipo.equals("Aluno")) {
-            // Busca o email do orientador a partir do nome selecionado
+            if (comboBoxOrientador.getValue() == null || comboBoxOrientador.getValue().isEmpty()) {
+                mostrarAlertaErro("Orientador obrigatório", "Selecione um orientador para o aluno.");
+                return;
+            }
+
+            if (comboBoxCurso.getValue() == null || comboBoxCurso.getValue().isEmpty()) {
+                mostrarAlertaErro("Disciplina obrigatória", "Selecione uma disciplina para o aluno.");
+                return;
+            }
+
             String nomeSelecionado = comboBoxOrientador.getValue();
-            String emailOrientador = conn.buscarEmailOrientadorPorNome(nomeSelecionado);
+            String emailOrientador = Orientador.buscarEmailPorNome(nomeSelecionado);
 
             if (emailOrientador == null) {
                 mostrarAlertaErro("Orientador inválido", "Não foi possível encontrar o email do orientador selecionado.");
                 return;
             }
 
-            conn.cadastrarAluno(
+            // Extrai o email do professor de TG do texto formatado "TG 1 - Nome Professor"
+            String disciplinaSelecionada = comboBoxCurso.getValue();
+            String emailProfessorTG = professoresTGMap.get(disciplinaSelecionada);
+
+            if (emailProfessorTG == null) {
+                mostrarAlertaErro("Professor inválido", "Não foi possível encontrar o email do professor selecionado.");
+                return;
+            }
+
+            // Cadastra o aluno sem orientador inicialmente (será definido após aceitação da solicitação)
+            Aluno aluno = new Aluno(
                     txtNome.getText(),
                     txtEmail.getText(),
                     txtSenha.getText(),
-                    emailOrientador, // usa o email como FK
-                    comboBoxCurso.getValue()
+                    null, // orientador será definido após aceitação da solicitação
+                    emailProfessorTG,
+                    null  // curso removido do banco de dados
             );
-
+            aluno.cadastrar();
+            
+            // Cria uma solicitação de orientação
+            SolicitacaoOrientacao solicitacao = new SolicitacaoOrientacao(
+                    txtEmail.getText(),
+                    emailOrientador
+            );
+            solicitacao.criar();
         } else if (tipo.equals("Orientador")) {
-            conn.cadastrarOrientador(txtNome.getText(), txtEmail.getText(), txtSenha.getText());
+            Orientador orientador = new Orientador(
+                    txtNome.getText(),
+                    txtEmail.getText(),
+                    txtSenha.getText()
+            );
+            orientador.cadastrar();
 
-            // Recarrega a lista de orientadores após cadastrar um novo
-            try {
-                comboBoxOrientador.getItems().clear();
-                comboBoxOrientador.getItems().addAll(conn.buscarOrientadores().keySet());
-            } catch (Exception e) {
-                System.err.println("Erro ao recarregar comboBoxOrientador: " + e.getMessage());
+            // Atualiza lista de orientadores após novo cadastro
+            comboBoxOrientador.getItems().setAll(Orientador.buscarTodos().keySet());
+        } else if (tipo.equals("ProfessorTG")) {
+            if (comboBoxDisciplina.getValue() == null || comboBoxDisciplina.getValue().isEmpty()) {
+                mostrarAlertaErro("Disciplina obrigatória", "Selecione uma disciplina (TG1, TG2 ou TG1/TG2).");
+                return;
             }
+
+            ProfessorTG professorTG = new ProfessorTG(
+                    txtNome.getText(),
+                    txtEmail.getText(),
+                    txtSenha.getText(),
+                    comboBoxDisciplina.getValue()
+            );
+            professorTG.cadastrar();
         }
 
         mostrarAlertaSucesso("Cadastro realizado", "Usuário cadastrado com sucesso!");
     }
-
-
-
 
     private boolean validarEmail(String email) {
         String regex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
@@ -158,10 +215,6 @@ public class CadastroController {
         alert.showAndWait();
     }
 
-    @FXML
-    private void toggleHboxOrientador(ActionEvent event) {
-        RadioButton selected = (RadioButton) event.getSource();
-        hBoxOrientador.setVisible(selected == radioAluno);
-        hBoxCurso.setVisible(selected == radioAluno);
+    public void toggleHboxOrientador(ActionEvent actionEvent) {
     }
 }

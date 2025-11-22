@@ -1,86 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox alignment="CENTER" prefHeight="452.0" prefWidth="600.0" style="-fx-background-color: C4C4C4; -fx-spacing: 8;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.CadastroController">
-   <children>
+<StackPane style="-fx-background-color: linear-gradient(to bottom right, #fff5f5, #ffffff);" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.CadastroController">
 
-       <HBox prefHeight="0.0" prefWidth="600.0" style="-fx-spacing: 50; -fx-padding: 10;">
-           <Button mnemonicParsing="false" onAction="#voltar" prefHeight="50.0" prefWidth="153.0" style="-fx-background-color: #5E5555;" text="VOLTAR" textFill="WHITE">
-               <font>
-                   <Font name="Inter Regular" size="23.0" />
-               </font>
-           </Button>
-           <Label alignment="CENTER" prefHeight="47.0" prefWidth="220.0" text="CADASTRO">
-             <font>
-                <Font name="System Bold" size="32.0" />
-             </font>
-           </Label>
-       </HBox>
-       <HBox alignment="CENTER" prefHeight="48.0" prefWidth="600.0">
-           <children>
-               <Label text="Nome:">
-                   <font>
-                       <Font name="Inter Regular" size="28.0" />
-                   </font></Label>
-               <TextField fx:id="txtNome" prefHeight="36.0" prefWidth="230.0" />
-           </children></HBox>
-       <HBox alignment="CENTER" prefHeight="48.0" prefWidth="600.0">
-         <children>
-            <Label text="Email:">
-                <font>
-                    <Font name="Inter Regular" size="28.0" />
-                </font></Label>
-            <TextField fx:id="txtEmail" prefHeight="36.0" prefWidth="230.0" />
-         </children></HBox>
-      <HBox alignment="CENTER" prefHeight="42.0" prefWidth="600.0">
-         <children>
-            <Label prefHeight="35.0" prefWidth="97.0" text="Senha:">
-                <font>
-                    <Font name="Inter Regular" size="28.0" />
-                </font></Label>
-            <TextField fx:id="txtSenha" prefHeight="34.0" prefWidth="230.0" />
-         </children></HBox>
-       <HBox alignment="CENTER" prefHeight="47.0" prefWidth="600.0" style="-fx-spacing: 50;">
-           <children>
-               <RadioButton fx:id="radioAluno" onAction="#toggleHboxOrientador" text="Aluno">
-                   <font>
-                       <Font name="System Bold" size="21.0" />
-                   </font>
-               </RadioButton>
-               <RadioButton fx:id="radioOrientador" onAction="#toggleHboxOrientador" text="Orientador">
-                   <font>
-                       <Font name="System Bold" size="21.0" />
-                   </font>
-               </RadioButton>
-           </children>
-       </HBox>
-      <HBox fx:id="hBoxOrientador" alignment="CENTER" prefHeight="36.0" prefWidth="600.0" style="-fx-spacing: 10;">
-         <children>
-            <Label text="Orientador:">
-               <font>
-                  <Font name="Inter Regular" size="20.0" />
-               </font>
-            </Label>
-            <ComboBox fx:id="comboBoxOrientador" prefWidth="150.0" />
-         </children>
-      </HBox>
-       <HBox fx:id="hBoxCurso" alignment="CENTER" prefHeight="36.0" prefWidth="600.0" style="-fx-spacing: 10;">
-           <children>
-               <Label text="Curso:">
-                   <font>
-                       <Font name="Inter Regular" size="20.0" />
-                   </font>
-               </Label>
-               <ComboBox fx:id="comboBoxCurso" prefWidth="150.0" />
-           </children>
-       </HBox>
-      <Button fx:id="btnCadastrar" mnemonicParsing="false" onAction="#cadastrarUsuario" prefHeight="50.0" prefWidth="180.0" style="-fx-background-color: #5E5555;" text="CADASTRAR" textFill="WHITE">
-         <font>
-            <Font name="Inter Regular" size="23.0" />
-         </font>
-      </Button>
-   </children>
-</VBox>
+    <children>
+        <VBox alignment="CENTER" spacing="15">
+            <children>
+
+                <!-- Card de Cadastro (agora inclui logo e títulos) -->
+                <VBox alignment="CENTER" maxHeight="620.0" maxWidth="420.0" prefHeight="480.0" prefWidth="380.0" spacing="12" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 25 25 30 25; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 15, 0, 0, 5);">
+
+                    <!-- Logo -->
+                    <StackPane alignment="CENTER">
+                        <children>
+                            <Label style="-fx-background-color: #B82E1A; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 22; -fx-background-radius: 8; -fx-padding: 10 15 10 15;" text="TG">
+                                <font>
+                                    <Font name="Arial Black" size="23.0" />
+                                </font>
+                            </Label>
+                        </children>
+                    </StackPane>
+
+                    <!-- Títulos -->
+                    <Label text="TechnoTG" textFill="#222">
+                        <font>
+                            <Font name="System Bold" size="22" />
+                        </font>
+                    </Label>
+                    <Label text="Sistema de Gerenciamento de TG" textFill="#666" />
+
+                    <Separator prefWidth="260" style="-fx-opacity: 0.3;" />
+
+                    <!-- Título -->
+                    <Label style="-fx-font-size: 14; -fx-font-weight: bold;" text="Cadastro de Usuário" textFill="#333" />
+
+                    <!-- Campo Nome -->
+                    <Label style="-fx-font-weight: bold; -fx-font-size: 12;" text="Nome Completo" textFill="#333" />
+                    <TextField fx:id="txtNome" prefWidth="280" promptText="Digite seu nome completo" />
+
+                    <!-- Campo E-mail -->
+                    <Label style="-fx-font-weight: bold; -fx-font-size: 12;" text="E-mail Institucional" textFill="#333" />
+                    <TextField fx:id="txtEmail" prefWidth="280" promptText="seu.email@fatec.sp.gov.br" />
+
+                    <!-- Campo Senha -->
+                    <Label style="-fx-font-weight: bold; -fx-font-size: 12;" text="Senha" textFill="#333" />
+                    <PasswordField fx:id="txtSenha" prefWidth="280" promptText="Crie uma senha segura" />
+
+                    <!-- Tipo de usuário -->
+                    <Label style="-fx-font-weight: bold; -fx-font-size: 12;" text="Tipo de Usuário" textFill="#333" />
+                    <HBox alignment="CENTER_LEFT" spacing="15">
+                        <children>
+                            <RadioButton fx:id="radioAluno" onAction="#toggleHboxOrientador" selected="true" text="Aluno" />
+                            <RadioButton fx:id="radioOrientador" onAction="#toggleHboxOrientador" text="Orientador" />
+                            <RadioButton fx:id="radioProfessorTG" onAction="#toggleHboxOrientador" text="Professor de TG" />
+                        </children>
+                    </HBox>
+
+                    <!-- Orientador -->
+                    <HBox fx:id="hBoxOrientador" alignment="CENTER_LEFT" managed="true" spacing="10" visible="true">
+                        <children>
+                            <Label style="-fx-font-weight: bold; -fx-font-size: 12;" text="Orientador" textFill="#333" />
+                            <ComboBox fx:id="comboBoxOrientador" prefWidth="160" />
+                        </children>
+                    </HBox>
+
+                    <!-- Disciplina (para Aluno) -->
+                    <HBox fx:id="hBoxCurso" alignment="CENTER_LEFT" managed="true" spacing="10" visible="true">
+                        <children>
+                            <Label prefWidth="62.0" style="-fx-font-weight: bold; -fx-font-size: 12;" text="Disciplina" textFill="#333" />
+                            <ComboBox fx:id="comboBoxCurso" prefWidth="200" />
+                        </children>
+                    </HBox>
+
+                    <!-- Disciplina (para Professor de TG) -->
+                    <HBox fx:id="hBoxDisciplina" alignment="CENTER_LEFT" managed="false" spacing="10" visible="false">
+                        <children>
+                            <Label prefWidth="62.0" style="-fx-font-weight: bold; -fx-font-size: 12;" text="Disciplina" textFill="#333" />
+                            <ComboBox fx:id="comboBoxDisciplina" prefWidth="160" />
+                        </children>
+                    </HBox>
+
+                    <!-- Botões -->
+                    <HBox alignment="CENTER" spacing="15" style="-fx-padding: 10 0 0 0;">
+                        <children>
+                            <Button onAction="#voltar" prefHeight="35" prefWidth="120" style="-fx-background-color: #B82E1A; -fx-text-fill: white; -fx-font-size: 13; -fx-background-radius: 6;" text="Voltar" />
+                            <Button fx:id="btnCadastrar" onAction="#cadastrarUsuario" prefHeight="35" prefWidth="120" style="-fx-background-color: #B82E1A; -fx-text-fill: white; -fx-font-size: 13; -fx-background-radius: 6;" text="Cadastrar" />
+                        </children>
+                    </HBox>
+
+                </VBox>
+            </children>
+        </VBox>
+    </children>
+</StackPane>

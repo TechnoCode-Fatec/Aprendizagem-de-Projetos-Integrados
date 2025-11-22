@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane fx:id="rootPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" stylesheets="@../css/estilo.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.ProfessorTG.ProfessorTGPrincipalController">
+   <top>
+      <HBox alignment="CENTER_LEFT" style="-fx-background-color: WHITE; -fx-border-color: #c9c9c9; -fx-border-width: 0 0 1 0; -fx-padding: 10;" BorderPane.alignment="CENTER_RIGHT">
+         <children>
+            <StackPane style="-fx-padding: 0 15 0 15;">
+               <children>
+                  <Rectangle arcHeight="12.0" arcWidth="12.0" fill="#cc2424" height="30.0" smooth="false" stroke="#cc2424" strokeType="INSIDE" width="30.0" />
+                  <Label text="TG" textFill="WHITE">
+                     <font>
+                        <Font name="Arial Black" size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+               <effect>
+                  <DropShadow blurType="GAUSSIAN" height="15.63" radius="7.0625" width="14.62" />
+               </effect>
+            </StackPane>
+            <VBox alignment="CENTER_LEFT" style="-fx-padding: 0 15 0 0;">
+               <children>
+                  <Label text="TechnoTG">
+                     <font>
+                        <Font name="System Bold" size="15.0" />
+                     </font>
+                  </Label>
+                  <Label text="Sistema Academico Fatec" textFill="#767676">
+                     <font>
+                        <Font size="10.0" />
+                     </font></Label>
+               </children>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <HBox alignment="CENTER_RIGHT" spacing="10" style="-fx-padding: 5;">
+               <children>
+                  <VBox alignment="CENTER_RIGHT" style="-fx-padding: 5;">
+                     <children>
+                        <Label fx:id="labelNomeProfessor" alignment="CENTER_RIGHT" text="Prof. João da Silva" textFill="#434343">
+                           <font>
+                              <Font name="Arial Bold" size="10.0" />
+                           </font>
+                        </Label>
+                        <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" text="Professor de TG" textAlignment="RIGHT" textFill="#acacac" textOverrun="CLIP" />
+                     </children>
+                  </VBox>
+                   <Button fx:id="btnSair" contentDisplay="GRAPHIC_ONLY" onAction="#onSair" style="-fx-background-color: WHITE;">
+                       <graphic>
+                           <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                               <image>
+                                   <Image url="@../imagens/logoutver.png" />
+                               </image>
+                           </ImageView>
+                       </graphic>
+                   </Button>
+               </children>
+            </HBox>
+         </children>
+      </HBox>
+   </top>
+   <left>
+      <VBox alignment="TOP_CENTER" style="-fx-background-color: WHITE; -fx-spacing: 10; -fx-padding: 15; -fx-min-width: 158;" BorderPane.alignment="CENTER" VBox.vgrow="ALWAYS">
+          <children>
+              <!-- Botão Início -->
+              <Button contentDisplay="LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarInicio" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Dashboard">
+                  <graphic>
+                      <ImageView fitHeight="18" fitWidth="18" preserveRatio="true">
+                          <image>
+                              <Image url="@../imagens/home.png" />
+                          </image>
+                      </ImageView>
+                  </graphic>
+              </Button>
+            <Button contentDisplay="LEFT" layoutX="25.0" layoutY="25.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegaragenda" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Agendar Defesa do TG">
+               <graphic>
+                  <ImageView fitHeight="18" fitWidth="18" preserveRatio="true">
+                     <image>
+                        <Image url="@../imagens/home.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+              
+              <!-- Espaçador para empurrar o rodapé para baixo -->
+              <Region VBox.vgrow="ALWAYS" />
+              
+              <!-- Rodapé com imagem alinhada à esquerda -->
+              <HBox alignment="BOTTOM_LEFT" style="-fx-padding: 10 0 0 0;">
+                  <children>
+                      <ImageView fitWidth="250" preserveRatio="true">
+                          <image>
+                              <Image url="@../imagens/fatec1.png" />
+                          </image>
+                      </ImageView>
+                  </children>
+              </HBox>
+          </children>
+      </VBox>
+   </left>
+
+    <center>
+        <StackPane fx:id="centerContent" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+            <children>
+                <!-- Conteúdo central dinâmico -->
+                <AnchorPane fx:id="mainContent" />
+            </children>
+        </StackPane>
+    </center>
+
+</BorderPane>

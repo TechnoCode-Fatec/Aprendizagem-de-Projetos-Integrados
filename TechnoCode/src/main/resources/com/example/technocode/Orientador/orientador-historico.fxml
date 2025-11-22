@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<ScrollPane id="telas-orientador" fitToWidth="true" style="-fx-background-color: #F8F9FA; -fx-background: transparent;"
+            vbarPolicy="AS_NEEDED" hbarPolicy="NEVER"
+            stylesheets="@../css/estilo.css"
+            xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.Orientador.OrientadorHistoricoController">
+    <content>
+        <VBox style="-fx-background-color: #F8F9FA; -fx-padding: 25;" spacing="20" maxWidth="1.7976931348623157E308">
+            
+            <!-- Header Moderno -->
+            <HBox alignment="CENTER" spacing="20" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);">
+                <children>
+                    <Button mnemonicParsing="false" onAction="#voltarTelaEntregas" prefHeight="40.0" prefWidth="120.0" 
+                            style="-fx-background-color: #B82E1A; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(184,46,26,0.3), 5, 0, 0, 2);" 
+                            text="← VOLTAR" textFill="WHITE">
+                        <font>
+                            <Font name="System Bold" size="13.0" />
+                        </font>
+                    </Button>
+                    <VBox alignment="CENTER" spacing="5" HBox.hgrow="ALWAYS">
+                        <Label fx:id="labelTitulo" text="HISTÓRICO DE VERSÕES" textFill="#2C3E50">
+                            <font>
+                                <Font name="System Bold" size="24.0" />
+                            </font>
+                        </Label>
+                        <Label text="Visualize todas as versões das seções do aluno" textFill="#7F8C8D">
+                            <font>
+                                <Font size="12.0" />
+                            </font>
+                        </Label>
+                    </VBox>
+                </children>
+            </HBox>
+
+            <!-- Container para apresentações -->
+            <VBox spacing="15" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);">
+                <children>
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Region style="-fx-background-color: #E74C3C; -fx-background-radius: 4;" prefWidth="4" prefHeight="24" />
+                        <Label text="APRESENTAÇÕES" textFill="#2C3E50">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
+                        </Label>
+                    </HBox>
+                    <VBox fx:id="containerApresentacoes" spacing="12" style="-fx-padding: 15 0 0 0;">
+                    </VBox>
+                </children>
+            </VBox>
+            
+            <!-- Container para APIs -->
+            <VBox spacing="15" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);">
+                <children>
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Region style="-fx-background-color: #3498DB; -fx-background-radius: 4;" prefWidth="4" prefHeight="24" />
+                        <Label text="APIs" textFill="#2C3E50">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
+                        </Label>
+                    </HBox>
+                    <VBox fx:id="containerApis" spacing="12" style="-fx-padding: 15 0 0 0;">
+                    </VBox>
+                </children>
+            </VBox>
+        </VBox>
+    </content>
+</ScrollPane>

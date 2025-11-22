@@ -1,0 +1,628 @@
+package com.example.technocode.Controllers.ProfessorTG;
+
+import com.example.technocode.Controllers.LoginController;
+import com.example.technocode.model.ProfessorTG;
+import com.example.technocode.model.dao.Connector;
+import javafx.animation.PauseTransition;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+
+import java.sql.*;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
+
+/**
+ * Controller para a tela de Agendamento de Defesas de TG
+ * Permite ao professor agendar, editar e excluir defesas dos alunos de sua disciplina
+ */
+public class AgendamentoDefesaTGController {
+
+    @FXML
+    private ComboBox<String> comboAluno;
+
+    @FXML
+    private DatePicker datePickerData;
+
+    @FXML
+    private TextField txtHorario;
+
+    @FXML
+    private TextField txtSala;
+
+    @FXML
+    private TableView<AgendamentoInfo> tabelaAgendamentos;
+
+    @FXML
+    private TableColumn<AgendamentoInfo, String> colAluno;
+
+    @FXML
+    private TableColumn<AgendamentoInfo, String> colData;
+
+    @FXML
+    private TableColumn<AgendamentoInfo, String> colHorario;
+
+    @FXML
+    private TableColumn<AgendamentoInfo, String> colSala;
+
+    @FXML
+    private Button btnEditar;
+
+    @FXML
+    private Button btnExcluir;
+
+    private String emailProfessorLogado;
+    private String disciplinaProfessor;
+    private LocalDate agendamentoSelecionadoData; // Data do agendamento selecionado para edição
+    private String agendamentoSelecionadoHorario; // Horário do agendamento selecionado para edição
+
+    @FXML
+    private void initialize() {
+        // Obtém o email do professor logado
+        emailProfessorLogado = LoginController.getEmailLogado();
+
+        if (emailProfessorLogado == null || emailProfessorLogado.isBlank()) {
+            mostrarErro("Erro", "Não foi possível identificar o professor logado.");
+            return;
+        }
+
+        // Busca os dados do professor (incluindo disciplina)
+        Map<String, String> dadosProfessor = ProfessorTG.buscarDadosPorEmail(emailProfessorLogado);
+        disciplinaProfessor = dadosProfessor.get("disciplina");
+
+        // Configura as colunas da tabela
+        configurarTabela();
+
+        // Carrega os dados iniciais
+        carregarAlunos();
+        carregarAgendamentos();
+    }
+
+    /**
+     * Configura as colunas da tabela de agendamentos
+     */
+    private void configurarTabela() {
+        colAluno.setCellValueFactory(new PropertyValueFactory<>("nomeAluno"));
+        colData.setCellValueFactory(new PropertyValueFactory<>("data"));
+        colHorario.setCellValueFactory(new PropertyValueFactory<>("horario"));
+        colSala.setCellValueFactory(new PropertyValueFactory<>("sala"));
+
+        // Permite seleção de linha
+        tabelaAgendamentos.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                // Extrai data e horário do agendamento selecionado
+                String dataStr = newSelection.getData();
+                agendamentoSelecionadoHorario = newSelection.getHorario();
+                
+                // Converte a string de data para LocalDate
+                try {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    agendamentoSelecionadoData = LocalDate.parse(dataStr, formatter);
+                } catch (Exception e) {
+                    agendamentoSelecionadoData = null;
+                    agendamentoSelecionadoHorario = null;
+                }
+                
+                btnEditar.setDisable(false);
+                btnExcluir.setDisable(false);
+            } else {
+                agendamentoSelecionadoData = null;
+                agendamentoSelecionadoHorario = null;
+                btnEditar.setDisable(true);
+                btnExcluir.setDisable(true);
+            }
+        });
+
+        // Inicialmente desabilita os botões de editar e excluir
+        btnEditar.setDisable(true);
+        btnExcluir.setDisable(true);
+    }
+
+    /**
+     * Carrega os alunos da disciplina do professor no ComboBox
+     */
+    private void carregarAlunos() {
+        try (Connection conn = new Connector().getConnection()) {
+            String sql = "SELECT nome, email FROM aluno WHERE professor_tg = ? ORDER BY nome";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, emailProfessorLogado);
+            ResultSet rs = pst.executeQuery();
+
+            ObservableList<String> alunos = FXCollections.observableArrayList();
+            while (rs.next()) {
+                String nome = rs.getString("nome");
+                alunos.add(nome);
+            }
+
+            comboAluno.setItems(alunos);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            mostrarErro("Erro", "Erro ao carregar lista de alunos: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Método público para pré-selecionar um aluno no ComboBox
+     * Pode ser chamado externamente após a tela ser carregada
+     * @param nomeAluno Nome do aluno a ser selecionado
+     */
+    public void selecionarAluno(String nomeAluno) {
+        if (nomeAluno != null && !nomeAluno.isEmpty() && comboAluno != null) {
+            // Usa Platform.runLater para garantir que a UI esteja pronta e os alunos carregados
+            javafx.application.Platform.runLater(() -> {
+                // Garante que os alunos foram carregados
+                if (comboAluno.getItems().isEmpty()) {
+                    carregarAlunos();
+                }
+                
+                // Seleciona o aluno se existir na lista
+                // Usa um pequeno delay para garantir que o carregamento terminou
+                PauseTransition pause = new PauseTransition(javafx.util.Duration.millis(100));
+                pause.setOnFinished(e -> {
+                    if (comboAluno.getItems().contains(nomeAluno)) {
+                        comboAluno.setValue(nomeAluno);
+                    }
+                });
+                pause.play();
+            });
+        }
+    }
+
+    /**
+     * Carrega os agendamentos do professor na tabela
+     */
+    @FXML
+    private void carregarAgendamentos() {
+        try (Connection conn = new Connector().getConnection()) {
+            String sql = "SELECT a.nome as nome_aluno, ad.data_defesa, ad.horario, ad.sala, ad.email_aluno " +
+                    "FROM agendamento_defesa_tg ad " +
+                    "INNER JOIN aluno a ON ad.email_aluno = a.email " +
+                    "WHERE ad.email_professor = ? " +
+                    "ORDER BY ad.data_defesa, ad.horario";
+
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, emailProfessorLogado);
+            ResultSet rs = pst.executeQuery();
+
+            ObservableList<AgendamentoInfo> agendamentos = FXCollections.observableArrayList();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+            while (rs.next()) {
+                String nomeAluno = rs.getString("nome_aluno");
+                LocalDate data = rs.getDate("data_defesa").toLocalDate();
+                String horario = rs.getString("horario");
+                String sala = rs.getString("sala");
+                
+                // Formata o horário (remove segundos se houver)
+                if (horario != null && horario.length() > 5) {
+                    horario = horario.substring(0, 5);
+                }
+
+                agendamentos.add(new AgendamentoInfo(
+                        nomeAluno,
+                        data.format(formatter),
+                        horario,
+                        sala
+                ));
+            }
+
+            tabelaAgendamentos.setItems(agendamentos);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            mostrarErro("Erro", "Erro ao carregar agendamentos: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Agenda uma nova defesa
+     */
+    @FXML
+    private void agendarDefesa() {
+        // Validações
+        if (comboAluno.getValue() == null || comboAluno.getValue().isBlank()) {
+            mostrarErro("Validação", "Por favor, selecione um aluno.");
+            return;
+        }
+
+        if (datePickerData.getValue() == null) {
+            mostrarErro("Validação", "Por favor, selecione uma data.");
+            return;
+        }
+
+        String horario = txtHorario.getText().trim();
+        if (horario.isEmpty()) {
+            mostrarErro("Validação", "Por favor, informe o horário.");
+            return;
+        }
+
+        if (!validarFormatoHorario(horario)) {
+            mostrarErro("Validação", "Formato de horário inválido. Use o formato HH:MM (ex: 14:30).");
+            return;
+        }
+
+        String sala = txtSala.getText().trim();
+        if (sala.isEmpty()) {
+            mostrarErro("Validação", "Por favor, informe a sala.");
+            return;
+        }
+
+        // Verifica conflitos antes de tentar inserir
+        if (verificarConflito(datePickerData.getValue(), horario, sala, null, null)) {
+            mostrarErro(
+                    "Conflito",
+                    "Já existe um agendamento para este horário na mesma data. Informe um horário com 30 minutos de diferença do já agendado!"
+            );
+            return;
+        }
+
+        // Busca o email do aluno selecionado
+        String nomeAluno = comboAluno.getValue();
+        String emailAluno = buscarEmailAlunoPorNome(nomeAluno);
+
+        if (emailAluno == null) {
+            mostrarErro("Erro", "Não foi possível encontrar o email do aluno selecionado.");
+            return;
+        }
+
+        // Insere o agendamento no banco
+        try (Connection conn = new Connector().getConnection()) {
+            String sql = "INSERT INTO agendamento_defesa_tg (email_professor, email_aluno, data_defesa, horario, sala) " +
+                    "VALUES (?, ?, ?, ?, ?)";
+
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, emailProfessorLogado);
+            pst.setString(2, emailAluno);
+            pst.setDate(3, java.sql.Date.valueOf(datePickerData.getValue()));
+            pst.setString(4, horario);
+            pst.setString(5, sala);
+
+            pst.executeUpdate();
+
+            mostrarSucesso("Sucesso", "Defesa agendada com sucesso!");
+            limparFormulario();
+            carregarAgendamentos();
+
+        } catch (SQLIntegrityConstraintViolationException e) {
+
+            // Se caiu aqui, o banco recusou porque horário + data já existem
+            mostrarErro(
+                    "Conflito",
+                    "Já existe um agendamento para este horário na mesma data. Informe um novo horário"
+            );
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            mostrarErro("Erro", "Erro ao agendar defesa: " + e.getMessage());
+        }
+    }
+
+
+
+    /**
+     * Edita um agendamento existente
+     */
+    @FXML
+    private void editarAgendamento() {
+        if (agendamentoSelecionadoData == null || agendamentoSelecionadoHorario == null) {
+            mostrarErro("Validação", "Por favor, selecione um agendamento para editar.");
+            return;
+        }
+
+        // Validações
+        if (datePickerData.getValue() == null) {
+            mostrarErro("Validação", "Por favor, selecione uma data.");
+            return;
+        }
+
+        String horario = txtHorario.getText().trim();
+        if (horario.isEmpty()) {
+            mostrarErro("Validação", "Por favor, informe o horário.");
+            return;
+        }
+
+        if (!validarFormatoHorario(horario)) {
+            mostrarErro("Validação", "Formato de horário inválido. Use o formato HH:MM (ex: 14:30).");
+            return;
+        }
+
+        String sala = txtSala.getText().trim();
+        if (sala.isEmpty()) {
+            mostrarErro("Validação", "Por favor, informe a sala.");
+            return;
+        }
+
+        // Verifica conflitos (excluindo o próprio agendamento que está sendo editado)
+        if (verificarConflito(datePickerData.getValue(), horario, sala, agendamentoSelecionadoData, agendamentoSelecionadoHorario)) {
+            mostrarErro("Conflito", "Já existe outro agendamento para este horário e sala na mesma data.");
+            return;
+        }
+
+        // Atualiza o agendamento no banco
+        // Como a chave primária mudou, precisamos deletar o antigo e inserir o novo
+        try (Connection conn = new Connector().getConnection()) {
+            conn.setAutoCommit(false);
+            
+            try {
+                // Primeiro busca o email do aluno do agendamento antigo ANTES de deletar
+                String sqlBuscarAluno = "SELECT email_aluno FROM agendamento_defesa_tg " +
+                        "WHERE email_professor = ? AND data_defesa = ? AND horario = ?";
+                PreparedStatement pstBuscar = conn.prepareStatement(sqlBuscarAluno);
+                pstBuscar.setString(1, emailProfessorLogado);
+                pstBuscar.setDate(2, java.sql.Date.valueOf(agendamentoSelecionadoData));
+                pstBuscar.setString(3, agendamentoSelecionadoHorario);
+                ResultSet rs = pstBuscar.executeQuery();
+                
+                String emailAluno = null;
+                if (rs.next()) {
+                    emailAluno = rs.getString("email_aluno");
+                }
+                
+                // Se não encontrou, tenta buscar pelo aluno selecionado no combo
+                if (emailAluno == null && comboAluno.getValue() != null) {
+                    emailAluno = buscarEmailAlunoPorNome(comboAluno.getValue());
+                }
+                
+                if (emailAluno == null) {
+                    throw new SQLException("Não foi possível encontrar o aluno do agendamento.");
+                }
+                
+                // Deleta o agendamento antigo
+                String sqlDelete = "DELETE FROM agendamento_defesa_tg " +
+                        "WHERE email_professor = ? AND data_defesa = ? AND horario = ?";
+                PreparedStatement pstDelete = conn.prepareStatement(sqlDelete);
+                pstDelete.setString(1, emailProfessorLogado);
+                pstDelete.setDate(2, java.sql.Date.valueOf(agendamentoSelecionadoData));
+                pstDelete.setString(3, agendamentoSelecionadoHorario);
+                pstDelete.executeUpdate();
+                
+                // Insere o novo agendamento
+                String sqlInsert = "INSERT INTO agendamento_defesa_tg (email_professor, email_aluno, data_defesa, horario, sala) " +
+                        "VALUES (?, ?, ?, ?, ?)";
+                PreparedStatement pstInsert = conn.prepareStatement(sqlInsert);
+                pstInsert.setString(1, emailProfessorLogado);
+                pstInsert.setString(2, emailAluno);
+                pstInsert.setDate(3, java.sql.Date.valueOf(datePickerData.getValue()));
+                pstInsert.setString(4, horario);
+                pstInsert.setString(5, sala);
+                pstInsert.executeUpdate();
+                
+                conn.commit();
+                mostrarSucesso("Sucesso", "Agendamento atualizado com sucesso!");
+                limparFormulario();
+                carregarAgendamentos();
+                
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            mostrarErro("Erro", "Erro ao editar agendamento: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Exclui um agendamento
+     */
+    @FXML
+    private void excluirAgendamento() {
+        if (agendamentoSelecionadoData == null || agendamentoSelecionadoHorario == null) {
+            mostrarErro("Validação", "Por favor, selecione um agendamento para excluir.");
+            return;
+        }
+
+        // Confirmação
+        Alert confirmacao = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmacao.setTitle("Confirmar Exclusão");
+        confirmacao.setHeaderText("Deseja realmente excluir este agendamento?");
+        confirmacao.setContentText("Esta ação não pode ser desfeita.");
+
+        if (confirmacao.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
+            try (Connection conn = new Connector().getConnection()) {
+                String sql = "DELETE FROM agendamento_defesa_tg " +
+                        "WHERE email_professor = ? AND data_defesa = ? AND horario = ?";
+
+                PreparedStatement pst = conn.prepareStatement(sql);
+                pst.setString(1, emailProfessorLogado);
+                pst.setDate(2, java.sql.Date.valueOf(agendamentoSelecionadoData));
+                pst.setString(3, agendamentoSelecionadoHorario);
+
+                int rowsAffected = pst.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    mostrarSucesso("Sucesso", "Agendamento excluído com sucesso!");
+                    limparFormulario();
+                    carregarAgendamentos();
+                } else {
+                    mostrarErro("Erro", "Não foi possível excluir o agendamento.");
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                mostrarErro("Erro", "Erro ao excluir agendamento: " + e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Limpa o formulário
+     */
+    @FXML
+    private void limparFormulario() {
+        comboAluno.setValue(null);
+        datePickerData.setValue(null);
+        txtHorario.clear();
+        txtSala.clear();
+        agendamentoSelecionadoData = null;
+        agendamentoSelecionadoHorario = null;
+        tabelaAgendamentos.getSelectionModel().clearSelection();
+        btnEditar.setDisable(true);
+        btnExcluir.setDisable(true);
+    }
+
+    /**
+     * Atualiza a tabela de agendamentos
+     */
+    @FXML
+    private void atualizarTabela() {
+        carregarAgendamentos();
+    }
+
+    /**
+     * Volta para a tela anterior (dashboard)
+     */
+
+    /**
+     * Verifica se há conflito de horário/sala para o professor
+     *
+     * @param data      Data da defesa
+     * @param horario   Horário da defesa
+     * @param sala      Sala da defesa
+     * @param dataExcluir Data do agendamento a excluir da verificação (para edição)
+     * @param horarioExcluir Horário do agendamento a excluir da verificação (para edição)
+     * @return true se houver conflito, false caso contrário
+     */
+    private boolean verificarConflito(LocalDate data, String horario, String sala, LocalDate dataExcluir, String horarioExcluir) {
+        try (Connection conn = new Connector().getConnection()) {
+
+            // Agora buscamos todas as defesas do mesmo dia para comparar horário por horário
+            String sql = "SELECT horario FROM agendamento_defesa_tg " +
+                    "WHERE email_professor = ? " +
+                    "AND data_defesa = ? " +
+                    "AND sala = ?";
+
+            if (dataExcluir != null && horarioExcluir != null) {
+                sql += " AND NOT (data_defesa = ? AND horario = ?)";
+            }
+
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, emailProfessorLogado);
+            pst.setDate(2, java.sql.Date.valueOf(data));
+            pst.setString(3, sala);
+
+            if (dataExcluir != null && horarioExcluir != null) {
+                pst.setDate(4, java.sql.Date.valueOf(dataExcluir));
+                pst.setString(5, horarioExcluir);
+            }
+
+            ResultSet rs = pst.executeQuery();
+
+            // Converte horário informado
+            LocalTime novoHorario = LocalTime.parse(horario);
+
+            while (rs.next()) {
+                LocalTime horarioExistente = rs.getTime("horario").toLocalTime();
+
+                long diff = Math.abs(Duration.between(novoHorario, horarioExistente).toMinutes());
+
+                if (diff < 30) {
+                    return true; // Conflito detectado
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false; // Sem conflito
+    }
+
+    /**
+     * Valida o formato do horário (HH:MM)
+     */
+    private boolean validarFormatoHorario(String horario) {
+        return horario.matches("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$");
+    }
+
+    /**
+     * Busca o email do aluno pelo nome
+     */
+    private String buscarEmailAlunoPorNome(String nomeAluno) {
+        try (Connection conn = new Connector().getConnection()) {
+            String sql = "SELECT email FROM aluno WHERE nome = ? AND professor_tg = ?";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, nomeAluno);
+            pst.setString(2, emailProfessorLogado);
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("email");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Mostra mensagem de erro
+     */
+    private void mostrarErro(String titulo, String mensagem) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Erro");
+        alert.setHeaderText(titulo);
+
+        Label label = new Label(mensagem);
+        label.setWrapText(true);
+
+        alert.getDialogPane().setContent(label);
+        alert.getDialogPane().setMinWidth(500);
+
+        alert.showAndWait();
+    }
+
+
+    /**
+     * Mostra mensagem de sucesso
+     */
+    private void mostrarSucesso(String titulo, String mensagem) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Sucesso");
+        alert.setHeaderText(titulo);
+        alert.setContentText(mensagem);
+        alert.showAndWait();
+    }
+
+    /**
+     * Classe auxiliar para representar um agendamento na tabela
+     */
+    public static class AgendamentoInfo {
+        private final String nomeAluno;
+        private final String data;
+        private final String horario;
+        private final String sala;
+
+        public AgendamentoInfo(String nomeAluno, String data, String horario, String sala) {
+            this.nomeAluno = nomeAluno;
+            this.data = data;
+            this.horario = horario;
+            this.sala = sala;
+        }
+
+        public String getNomeAluno() {
+            return nomeAluno;
+        }
+
+        public String getData() {
+            return data;
+        }
+
+        public String getHorario() {
+            return horario;
+        }
+
+        public String getSala() {
+            return sala;
+        }
+    }
+}

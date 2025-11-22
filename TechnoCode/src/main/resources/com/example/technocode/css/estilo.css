@@ -1,0 +1,178 @@
+/* === BOTÕES GERAIS (fora do menu lateral) === */
+.button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white; /* texto branco */
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-alignment: CENTER;
+    -fx-padding: 8 15 8 15;
+}
+
+/* Hover dos botões gerais */
+.button:hover {
+    -fx-background-color: linear-gradient(to right, #b82e1a, #d43c25);
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 8, 0, 0, 2);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+/* Clique e foco dos botões gerais */
+.button:pressed, .button:focused, .button:selected {
+    -fx-background-color: #b82e1a;
+    -fx-text-fill: white;
+}
+
+/* === BOTÕES DO MENU LATERAL === */
+.menu-button {
+    -fx-background-color: white;
+    -fx-text-fill: black; /* texto vermelho no estado normal */
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 8 15 8 15;
+}
+
+/* Hover dos botões laterais */
+.menu-button:hover {
+    -fx-background-color: linear-gradient(to right, #b82e1a, #d43c25);
+    -fx-text-fill: red; /* texto vermelho no hover */
+    -fx-border-color: #b82e1a;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 8, 0, 0, 2);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+/* Botão lateral selecionado */
+.menu-button:focused, .menu-button:selected {
+    -fx-background-color: white;
+    -fx-text-fill: red !important;
+    -fx-border-color: #8c1f11;
+    -fx-border-width: 0 0 0 4;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
+
+/* Clique nos botões laterais */
+.menu-button:pressed {
+    -fx-background-color: black;
+    -fx-text-fill: red !important;
+    -fx-scale-x: 1.0;
+    -fx-scale-y: 1.0;
+}
+
+#telas-aluno .label {
+    -fx-text-fill: #2C3E50;
+}
+
+#telas-orientador .label {
+    -fx-text-fill: #2C3E50;
+}
+
+#telas-professor-tg .label {
+    -fx-text-fill: #2C3E50;
+}
+
+/* === BOTÕES DO DASHBOARD DO PROFESSOR DE TG === */
+#dashboard-professor-tg .button {
+    -fx-background-color: #B82E1A;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-alignment: CENTER;
+    -fx-padding: 8 15 8 15;
+    -fx-effect: dropshadow(gaussian, rgba(184,46,26,0.3), 5, 0, 0, 2);
+}
+
+/* Hover dos botões do dashboard do professor */
+#dashboard-professor-tg .button:hover {
+    -fx-background-color: linear-gradient(to right, #B82E1A, #D43C25);
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(184,46,26,0.4), 8, 0, 0, 3);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+/* Botão desabilitado do dashboard do professor */
+#dashboard-professor-tg .button:disabled {
+    -fx-background-color: #CCCCCC;
+    -fx-text-fill: #666666;
+    -fx-opacity: 0.6;
+    -fx-effect: none;
+}
+
+/* Clique e foco dos botões do dashboard do professor */
+#dashboard-professor-tg .button:pressed, 
+#dashboard-professor-tg .button:focused {
+    -fx-background-color: #8C1F11;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(140,31,17,0.4), 5, 0, 0, 2);
+}
+
+#dashboard-professor-tg .label {
+    -fx-text-fill: #2C3E50;
+}
+
+/* Estilos para TableView moderna */
+.table-view {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E0E0E0;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-control-inner-background: #FFFFFF;
+    -fx-text-background-color: #2C3E50;
+    -fx-table-header-border-color: transparent;
+    -fx-table-cell-border-color: #F0F0F0;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #F8F9FA;
+    -fx-background-radius: 8 8 0 0;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: #E0E0E0;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 10;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #2C3E50;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+.table-view .table-cell {
+    -fx-border-color: transparent;
+    -fx-padding: 10;
+    -fx-text-fill: #2C3E50;
+}
+
+.table-row-cell {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: transparent;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #F8F9FA;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #E3F2FD;
+    -fx-text-background-color: #1976D2;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #F0F0F0;
+}

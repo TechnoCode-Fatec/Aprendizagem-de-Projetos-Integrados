@@ -14,13 +14,37 @@ CREATE TABLE orientador(
         senha VARCHAR(100) NOT NULL
 );
 
+CREATE TABLE professor_tg(
+		email VARCHAR(120) PRIMARY KEY NOT NULL,
+        nome VARCHAR(250) NOT NULL,
+        senha VARCHAR(100) NOT NULL,
+        disciplina VARCHAR(10) NOT NULL
+);
+
 CREATE TABLE aluno(
 		email VARCHAR(120) PRIMARY KEY NOT NULL,
         nome VARCHAR(250) NOT NULL,
         senha VARCHAR(100) NOT NULL,
-        orientador VARCHAR(250),
-        curso VARCHAR(10),
-        FOREIGN KEY (orientador) REFERENCES orientador (email)
+        orientador VARCHAR(120),
+        professor_tg VARCHAR(120),
+        FOREIGN KEY (orientador) REFERENCES orientador (email),
+        FOREIGN KEY (professor_tg) REFERENCES professor_tg (email)
+);
+
+CREATE TABLE solicitacao_orientacao (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    aluno VARCHAR(120) NOT NULL,
+    orientador VARCHAR(120) NOT NULL,
+
+    status ENUM('Pendente', 'Aceita', 'Recusada') NOT NULL DEFAULT 'Pendente',
+
+    mensagem_orientador TEXT,
+    data_solicitacao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    data_resposta DATETIME,
+
+    FOREIGN KEY (aluno) REFERENCES aluno(email),
+    FOREIGN KEY (orientador) REFERENCES orientador(email)
 );
 
 CREATE TABLE secao_api(
@@ -38,6 +62,37 @@ CREATE TABLE secao_api(
         contribuicoes TEXT NOT NULL,
         hard_skills TEXT NOT NULL,
         soft_skills TEXT NOT NULL,
+		horario_secao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+	
+        status_empresa ENUM('Aprovado', 'Revisar') DEFAULT NULL,
+        feedback_empresa TEXT,
+        
+        status_descricao_empresa ENUM('Aprovado', 'Revisar') DEFAULT NULL,
+        feedback_descricao_empresa TEXT,
+
+		status_problema ENUM('Aprovado', 'Revisar') DEFAULT NULL,
+		feedback_problema TEXT,
+			
+		status_solucao ENUM('Aprovado', 'Revisar') DEFAULT NULL,
+		feedback_solucao TEXT,
+        
+        status_repositorio ENUM('Aprovado', 'Revisar') DEFAULT NULL,
+        feedback_repositorio TEXT,
+		
+		status_tecnologias ENUM('Aprovado', 'Revisar') DEFAULT NULL,
+		feedback_tecnologias TEXT,
+			
+		status_contribuicoes ENUM('Aprovado', 'Revisar') DEFAULT NULL,
+		feedback_contribuicoes TEXT,
+			
+		status_hard_skills ENUM('Aprovado', 'Revisar') DEFAULT NULL,
+		feedback_hard_skills TEXT,
+			
+		status_soft_skills ENUM('Aprovado', 'Revisar') DEFAULT NULL,
+		feedback_soft_skills TEXT,
+			
+		horario_feedback DATETIME, 
+        
         PRIMARY KEY (aluno, semestre_curso, ano, semestre_ano, versao),
         FOREIGN KEY (aluno) REFERENCES aluno(email)
 );
@@ -54,15 +109,10 @@ CREATE TABLE secao_apresentacao(
 		link_github VARCHAR(255) NOT NULL,
         link_linkedin VARCHAR(255) NOT NULL,
         principais_conhecimentos TEXT NOT NULL,
-        PRIMARY KEY(aluno, versao),
-        FOREIGN KEY (aluno) REFERENCES aluno(email)
-);
-
-CREATE TABLE feedback_apresentacao(
-		id INT AUTO_INCREMENT PRIMARY KEY,
-        horario DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+        historico_profissional TEXT NOT NULL,
+        horario_secao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, 
         
-        status_nome ENUM('Aprovado', 'Revisar') DEFAULT NULL,
+		status_nome ENUM('Aprovado', 'Revisar') DEFAULT NULL,
         feedback_nome TEXT,
         
         status_idade ENUM('Aprovado', 'Revisar') DEFAULT NULL,
@@ -86,39 +136,26 @@ CREATE TABLE feedback_apresentacao(
 		status_conhecimentos ENUM('Aprovado', 'Revisar') DEFAULT NULL,
         feedback_conhecimentos TEXT,
         
-        aluno VARCHAR(120) NOT NULL,
-        versao INT NOT NULL,
-        FOREIGN KEY (aluno, versao) REFERENCES secao_apresentacao(aluno, versao)
+        status_historico_profissional ENUM('Aprovado', 'Revisar') DEFAULT NULL,
+        feedback_historico_profissional TEXT,
+        			
+		horario_feedback DATETIME, 
+        
+        PRIMARY KEY(aluno, versao),
+        FOREIGN KEY (aluno) REFERENCES aluno(email)
 );
 
-CREATE TABLE feedback_api (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    horario DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    
-    status_problema ENUM('Aprovado', 'Revisar') DEFAULT NULL,
-    feedback_problema TEXT,
-    
-    status_solucao ENUM('Aprovado', 'Revisar') DEFAULT NULL,
-    feedback_solucao TEXT,
-    
-    status_tecnologias ENUM('Aprovado', 'Revisar') DEFAULT NULL,
-    feedback_tecnologias TEXT,
-    
-    status_contribuicoes ENUM('Aprovado', 'Revisar') DEFAULT NULL,
-    feedback_contribuicoes TEXT,
-    
-    status_hard_skills ENUM('Aprovado', 'Revisar') DEFAULT NULL,
-    feedback_hard_skills TEXT,
-    
-    status_soft_skills ENUM('Aprovado', 'Revisar') DEFAULT NULL,
-    feedback_soft_skills TEXT,
-
-    aluno VARCHAR(250) NOT NULL,
-    semestre_curso VARCHAR(18) NOT NULL,
-    ano YEAR NOT NULL,
-    semestre_ano ENUM('1', '2') NOT NULL,
-    versao INT NOT NULL,
-    
-    FOREIGN KEY (aluno, semestre_curso, ano, semestre_ano, versao)
-        REFERENCES secao_api(aluno, semestre_curso, ano, semestre_ano, versao)
+CREATE TABLE agendamento_defesa_tg (
+    email_professor VARCHAR(120) NOT NULL,
+    email_aluno VARCHAR(120) NOT NULL,
+    data_defesa DATE NOT NULL,
+    horario TIME NOT NULL,
+    sala VARCHAR(50) NOT NULL,
+    FOREIGN KEY (email_professor) REFERENCES professor_tg(email)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    FOREIGN KEY (email_aluno) REFERENCES aluno(email)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    PRIMARY KEY (data_defesa, horario)
 );

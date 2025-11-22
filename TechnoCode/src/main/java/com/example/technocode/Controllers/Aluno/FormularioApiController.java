@@ -1,18 +1,15 @@
 package com.example.technocode.Controllers.Aluno;
 
 import com.example.technocode.Controllers.LoginController;
-import com.example.technocode.dao.Connector;
+import com.example.technocode.Services.NavigationService;
+import com.example.technocode.model.SecaoApi;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 
@@ -22,12 +19,12 @@ public class FormularioApiController {
     @FXML
     private TextField txtAno, txtEmpresa, txtLinkRepositorio;
     @FXML
-    private TextArea txtProblema, txtSolucao, txtTecnologias, txtContribuicoes, txtHardSkills, txtSoftSkills;
+    private TextArea txtDescricaoEmpresa, txtProblema, txtSolucao, txtTecnologias, txtContribuicoes, txtHardSkills, txtSoftSkills;
 
     @FXML
-    private void initialize(){
-        choiceBoxSemestre.getItems().addAll("1","2");
-        choiceBoxSemestreDoCurso.getItems().addAll("1º Semestre","2º Semestre","3º Semestre","4º Semestre","5º Semestre","6º Semestre");
+    private void initialize() {
+        choiceBoxSemestre.getItems().addAll("1", "2");
+        choiceBoxSemestreDoCurso.getItems().addAll("1º Semestre", "2º Semestre", "3º Semestre", "4º Semestre", "5º Semestre", "6º Semestre");
     }
 
     /**
@@ -35,7 +32,7 @@ public class FormularioApiController {
      * para criar uma nova versão baseada na anterior
      */
     public void setDadosVersaoAnterior(String semestreCurso, String ano, String semestre, 
-                                        String empresa, String linkRepositorio, 
+                                        String empresa, String descricaoEmpresa, String linkRepositorio, 
                                         String problema, String solucao, 
                                         String tecnologias, String contribuicoes, 
                                         String hardSkills, String softSkills) {
@@ -59,6 +56,9 @@ public class FormularioApiController {
         }
         
         // Preenche os TextAreas
+        if (descricaoEmpresa != null && !descricaoEmpresa.isEmpty()) {
+            txtDescricaoEmpresa.setText(descricaoEmpresa);
+        }
         if (problema != null && !problema.isEmpty()) {
             txtProblema.setText(problema);
         }
@@ -84,6 +84,7 @@ public class FormularioApiController {
                 (choiceBoxSemestreDoCurso.getValue() == null) ||
                 txtAno.getText().isEmpty() ||
                 txtEmpresa.getText().isEmpty() ||
+                txtDescricaoEmpresa.getText().isEmpty() ||
                 txtLinkRepositorio.getText().isEmpty() ||
                 txtProblema.getText().isEmpty() ||
                 txtSolucao.getText().isEmpty() ||
@@ -95,15 +96,29 @@ public class FormularioApiController {
             mostrarAlerta("Campos obrigatórios", "Por favor, preencha todos os campos antes de enviar.");
             return;
         }
-        Connector connector = new Connector();
         String emailAluno = LoginController.getEmailLogado();
         
         // Busca a próxima versão disponível automaticamente
-        int proximaVersao = connector.getProximaVersaoApi(emailAluno, choiceBoxSemestreDoCurso.getValue(), Integer.parseInt(txtAno.getText()), choiceBoxSemestre.getValue());
+        int proximaVersao = SecaoApi.getProximaVersao(emailAluno, choiceBoxSemestreDoCurso.getValue(), Integer.parseInt(txtAno.getText()), choiceBoxSemestre.getValue());
         
-        connector.cadastrarSessaoApi(emailAluno, choiceBoxSemestreDoCurso.getValue(), Integer.parseInt(txtAno.getText()), choiceBoxSemestre.getValue(), proximaVersao,
-                txtEmpresa.getText(), txtProblema.getText(), txtSolucao.getText(),txtLinkRepositorio.getText(),txtTecnologias.getText(),
-                txtContribuicoes.getText(),txtHardSkills.getText(),txtSoftSkills.getText());
+        // Cria e cadastra objeto SecaoApi
+        SecaoApi secaoApi = new SecaoApi(
+                emailAluno,
+                choiceBoxSemestreDoCurso.getValue(),
+                Integer.parseInt(txtAno.getText()),
+                choiceBoxSemestre.getValue(),
+                proximaVersao,
+                txtEmpresa.getText(),
+                txtDescricaoEmpresa.getText(),
+                txtProblema.getText(),
+                txtSolucao.getText(),
+                txtLinkRepositorio.getText(),
+                txtTecnologias.getText(),
+                txtContribuicoes.getText(),
+                txtHardSkills.getText(),
+                txtSoftSkills.getText()
+        );
+        secaoApi.cadastrar();
         
         // Volta para a tela inicial e recarrega as seções
         try {
@@ -121,22 +136,15 @@ public class FormularioApiController {
         alerta.showAndWait();    }
 
     public void voltar(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/technocode/Aluno/tela-inicial-aluno.fxml"));
-        Parent root = loader.load();
-        
-        TelaInicialAlunoController controller = loader.getController();
-        controller.recarregarSecoes();
-
-        Stage stage;
-        if (event != null && event.getSource() != null) {
-            stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        } else {
-            // Se chamado programaticamente, pega a janela atual
-            stage = (Stage) txtEmpresa.getScene().getWindow();
-        }
-
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+        Node node = (event != null && event.getSource() != null) 
+            ? (Node) event.getSource() 
+            : txtEmpresa;
+            
+        NavigationService.navegarParaTelaInterna(node, "/com/example/technocode/Aluno/sessoes-atuais.fxml", 
+            controller -> {
+                if (controller instanceof SessoesAtuaisAlunoController) {
+                    ((SessoesAtuaisAlunoController) controller).recarregarSecoes();
+                }
+            });
     }
 }
