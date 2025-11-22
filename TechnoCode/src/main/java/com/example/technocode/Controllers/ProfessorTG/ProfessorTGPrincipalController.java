@@ -125,9 +125,9 @@ public class ProfessorTGPrincipalController {
     private void navegarInicio() {
         navegarParaTela("/com/example/technocode/ProfessorTG/dashboard-professor-tg-content.fxml",
                 controller -> {
-                    if (controller instanceof com.example.technocode.Controllers.DashboardProfessorTGController) {
+                    if (controller instanceof DashboardProfessorTGController) {
                         // Atualiza o dashboard quando volta para ele
-                        ((com.example.technocode.Controllers.DashboardProfessorTGController) controller).atualizarDashboard();
+                        ((DashboardProfessorTGController) controller).atualizarDashboard();
                     }
                 });
     }
@@ -136,9 +136,9 @@ public class ProfessorTGPrincipalController {
     private void navegaragenda() {
         navegarParaTela("/com/example/technocode/ProfessorTG/AgendamentoDefesaTGView.fxml",
                 controller -> {
-                    if (controller instanceof com.example.technocode.Controllers.DashboardProfessorTGController) {
+                    if (controller instanceof DashboardProfessorTGController) {
                         // Atualiza o dashboard quando volta para ele
-                        ((com.example.technocode.Controllers.DashboardProfessorTGController) controller).atualizarDashboard();
+                        ((DashboardProfessorTGController) controller).atualizarDashboard();
                     }
                 });
     }

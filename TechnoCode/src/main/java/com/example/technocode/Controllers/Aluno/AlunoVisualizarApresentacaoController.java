@@ -6,7 +6,9 @@ import com.example.technocode.model.SecaoApresentacao;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextArea;
+import java.net.URI;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -26,8 +28,9 @@ public class AlunoVisualizarApresentacaoController {
     @FXML private TextArea alunoTextCurso;
     @FXML private TextArea alunoTextMotivacao;
     @FXML private TextArea alunoTextHistorico;
-    @FXML private TextArea alunoTextGithub;
-    @FXML private TextArea alunoTextLinkedin;
+    @FXML private TextArea alunoTextHistoricoProfissional;
+    @FXML private Hyperlink linkGithub;
+    @FXML private Hyperlink linkLinkedin;
     @FXML private TextArea alunoTextConhecimentos;
     @FXML private Button btnFeedback;
 
@@ -42,6 +45,16 @@ public class AlunoVisualizarApresentacaoController {
         }
     }
 
+    /**
+     * Esconde o botão de feedback (usado quando acessado por professor TG)
+     */
+    public void esconderBotaoFeedback() {
+        if (btnFeedback != null) {
+            btnFeedback.setVisible(false);
+            btnFeedback.setManaged(false);
+        }
+    }
+
     // Carrega dados da secao_apresentacao
     public void carregarSecaoAluno() {
         if (secaoApresentacao == null || secaoApresentacao.getEmailAluno() == null) return;
@@ -53,22 +66,51 @@ public class AlunoVisualizarApresentacaoController {
             pst.setInt(2, secaoApresentacao.getVersao());
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
-                    if (alunoTextNome != null) alunoTextNome.setText(rs.getString("nome"));
+                    if (alunoTextNome != null) alunoTextNome.setText(rs.getString("nome") != null ? rs.getString("nome") : "");
                     if (alunoTextIdade != null) {
                         String dataNascimentoStr = rs.getString("idade"); // ex: "2002-05-10"
                         if (dataNascimentoStr != null && !dataNascimentoStr.isBlank()) {
-                            LocalDate dataNascimento = LocalDate.parse(dataNascimentoStr);
-                            LocalDate hoje = LocalDate.now();
-                            int idade = Period.between(dataNascimento, hoje).getYears();
-                            alunoTextIdade.setText(String.valueOf(idade));
+                            try {
+                                LocalDate dataNascimento = LocalDate.parse(dataNascimentoStr);
+                                LocalDate hoje = LocalDate.now();
+                                int idade = Period.between(dataNascimento, hoje).getYears();
+                                alunoTextIdade.setText(String.valueOf(idade));
+                            } catch (Exception e) {
+                                alunoTextIdade.setText(dataNascimentoStr);
+                            }
+                        } else {
+                            alunoTextIdade.setText("");
                         }
                     }
-                    if (alunoTextCurso != null) alunoTextCurso.setText(rs.getString("curso"));
-                    if (alunoTextMotivacao != null) alunoTextMotivacao.setText(rs.getString("motivacao"));
-                    if (alunoTextHistorico != null) alunoTextHistorico.setText(rs.getString("historico"));
-                    if (alunoTextGithub != null) alunoTextGithub.setText(rs.getString("link_github"));
-                    if (alunoTextLinkedin != null) alunoTextLinkedin.setText(rs.getString("link_linkedin"));
-                    if (alunoTextConhecimentos != null) alunoTextConhecimentos.setText(rs.getString("principais_conhecimentos"));
+                    if (alunoTextCurso != null) alunoTextCurso.setText(rs.getString("curso") != null ? rs.getString("curso") : "");
+                    if (alunoTextMotivacao != null) alunoTextMotivacao.setText(rs.getString("motivacao") != null ? rs.getString("motivacao") : "");
+                    if (alunoTextHistorico != null) alunoTextHistorico.setText(rs.getString("historico") != null ? rs.getString("historico") : "");
+                    if (alunoTextHistoricoProfissional != null) alunoTextHistoricoProfissional.setText(rs.getString("historico_profissional") != null ? rs.getString("historico_profissional") : "");
+                    
+                    // Configurar links GitHub e LinkedIn
+                    if (linkGithub != null) {
+                        String githubUrl = rs.getString("link_github");
+                        if (githubUrl != null && !githubUrl.isBlank()) {
+                            linkGithub.setText(githubUrl);
+                            linkGithub.setOnAction(e -> abrirURL(githubUrl, linkGithub));
+                        } else {
+                            linkGithub.setText("N/A");
+                            linkGithub.setDisable(true);
+                        }
+                    }
+                    
+                    if (linkLinkedin != null) {
+                        String linkedinUrl = rs.getString("link_linkedin");
+                        if (linkedinUrl != null && !linkedinUrl.isBlank()) {
+                            linkLinkedin.setText(linkedinUrl);
+                            linkLinkedin.setOnAction(e -> abrirURL(linkedinUrl, linkLinkedin));
+                        } else {
+                            linkLinkedin.setText("N/A");
+                            linkLinkedin.setDisable(true);
+                        }
+                    }
+                    
+                    if (alunoTextConhecimentos != null) alunoTextConhecimentos.setText(rs.getString("principais_conhecimentos") != null ? rs.getString("principais_conhecimentos") : "");
                 }
             }
         } catch (SQLException e) {
@@ -109,6 +151,32 @@ public class AlunoVisualizarApresentacaoController {
     private void mostrarErro(String titulo, Exception e) {
         System.err.println(titulo + ": " + e.getMessage());
         e.printStackTrace();
+    }
+
+    private void abrirURL(String url, javafx.scene.Node node) {
+        try {
+            // Garante que a URL tenha protocolo
+            if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                url = "https://" + url;
+            }
+            // Tenta usar Desktop via reflection (funciona mesmo sem módulo java.desktop)
+            try {
+                Class<?> desktopClass = Class.forName("java.awt.Desktop");
+                Object desktop = desktopClass.getMethod("getDesktop").invoke(null);
+                Boolean isSupported = (Boolean) desktopClass.getMethod("isDesktopSupported").invoke(desktop);
+                if (isSupported != null && isSupported) {
+                    desktopClass.getMethod("browse", URI.class).invoke(desktop, new URI(url));
+                    return;
+                }
+            } catch (Exception e) {
+                // Ignora erros de reflection
+            }
+            // Se Desktop não funcionar, mostra mensagem
+            System.err.println("Não foi possível abrir a URL automaticamente: " + url);
+            System.out.println("Por favor, copie e cole a URL no navegador: " + url);
+        } catch (Exception e) {
+            System.err.println("Erro ao abrir URL: " + e.getMessage());
+        }
     }
 
     /**

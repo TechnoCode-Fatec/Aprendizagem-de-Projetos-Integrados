@@ -179,16 +179,7 @@
                                     </font>
                                 </Label>
                             </HBox>
-                            <VBox alignment="CENTER" spacing="10" VBox.vgrow="ALWAYS">
-                                <Region VBox.vgrow="ALWAYS" />
-                                <Label fx:id="labelSolicitacoesPendentes" style="-fx-font-size: 48px; -fx-font-weight: bold;" text="0" textFill="#9B59B6" />
-                                <Button onAction="#navegarParaSolicitacoes" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #B82E1A; -fx-background-radius: 8; -fx-cursor: hand;" text="Ver Solicitações" textFill="WHITE">
-                                    <font>
-                                        <Font name="System Bold" size="12.0" />
-                                    </font>
-                                </Button>
-                                <Region VBox.vgrow="ALWAYS" />
-                            </VBox>
+                            <VBox fx:id="vboxSolicitacoesPendentes" spacing="10" VBox.vgrow="ALWAYS" style="-fx-padding: 5;" />
                         </children>
                     </VBox>
 

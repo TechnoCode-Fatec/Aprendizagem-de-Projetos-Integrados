@@ -6,7 +6,10 @@ import com.example.technocode.model.SecaoApi;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import java.net.URI;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -19,6 +22,9 @@ public class AlunoVisualizarApiController {
     // Identificador da seção usando classe modelo
     private SecaoApi secaoApi;
 
+    @FXML private TextField alunoEmpresa;
+    @FXML private TextArea alunoDescricaoEmpresa;
+    @FXML private Hyperlink linkRepositorio;
     @FXML private TextArea alunoProblema;
     @FXML private TextArea alunoSolucao;
     @FXML private TextArea alunoTecnologias;
@@ -40,10 +46,20 @@ public class AlunoVisualizarApiController {
         }
     }
 
+    /**
+     * Esconde o botão de feedback (usado quando acessado por professor TG)
+     */
+    public void esconderBotaoFeedback() {
+        if (btnFeedback != null) {
+            btnFeedback.setVisible(false);
+            btnFeedback.setManaged(false);
+        }
+    }
+
     // Carrega dados da secao_api
     public void carregarSecaoAluno() {
         if (secaoApi == null || secaoApi.getEmailAluno() == null) return;
-        String sql = "SELECT problema, solucao, tecnologias, contribuicoes, hard_skills, soft_skills " +
+        String sql = "SELECT empresa, descricao_empresa, link_repositorio, problema, solucao, tecnologias, contribuicoes, hard_skills, soft_skills " +
                 "FROM secao_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? AND semestre_ano = ? AND versao = ?";
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
@@ -54,12 +70,27 @@ public class AlunoVisualizarApiController {
             pst.setInt(5, secaoApi.getVersao());
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
-                    if (alunoProblema != null) alunoProblema.setText(rs.getString("problema"));
-                    if (alunoSolucao != null) alunoSolucao.setText(rs.getString("solucao"));
-                    if (alunoTecnologias != null) alunoTecnologias.setText(rs.getString("tecnologias"));
-                    if (alunoContribuicoes != null) alunoContribuicoes.setText(rs.getString("contribuicoes"));
-                    if (alunoHardSkills != null) alunoHardSkills.setText(rs.getString("hard_skills"));
-                    if (alunoSoftSkills != null) alunoSoftSkills.setText(rs.getString("soft_skills"));
+                    if (alunoEmpresa != null) alunoEmpresa.setText(rs.getString("empresa") != null ? rs.getString("empresa") : "");
+                    if (alunoDescricaoEmpresa != null) alunoDescricaoEmpresa.setText(rs.getString("descricao_empresa") != null ? rs.getString("descricao_empresa") : "");
+                    
+                    // Configurar link do repositório
+                    if (linkRepositorio != null) {
+                        String repositorioUrl = rs.getString("link_repositorio");
+                        if (repositorioUrl != null && !repositorioUrl.isBlank()) {
+                            linkRepositorio.setText(repositorioUrl);
+                            linkRepositorio.setOnAction(e -> abrirURL(repositorioUrl, linkRepositorio));
+                        } else {
+                            linkRepositorio.setText("N/A");
+                            linkRepositorio.setDisable(true);
+                        }
+                    }
+                    
+                    if (alunoProblema != null) alunoProblema.setText(rs.getString("problema") != null ? rs.getString("problema") : "");
+                    if (alunoSolucao != null) alunoSolucao.setText(rs.getString("solucao") != null ? rs.getString("solucao") : "");
+                    if (alunoTecnologias != null) alunoTecnologias.setText(rs.getString("tecnologias") != null ? rs.getString("tecnologias") : "");
+                    if (alunoContribuicoes != null) alunoContribuicoes.setText(rs.getString("contribuicoes") != null ? rs.getString("contribuicoes") : "");
+                    if (alunoHardSkills != null) alunoHardSkills.setText(rs.getString("hard_skills") != null ? rs.getString("hard_skills") : "");
+                    if (alunoSoftSkills != null) alunoSoftSkills.setText(rs.getString("soft_skills") != null ? rs.getString("soft_skills") : "");
                 }
             }
         } catch (SQLException e) {
@@ -104,6 +135,32 @@ public class AlunoVisualizarApiController {
     private void mostrarErro(String titulo, Exception e) {
         System.err.println(titulo + ": " + e.getMessage());
         e.printStackTrace();
+    }
+
+    private void abrirURL(String url, javafx.scene.Node node) {
+        try {
+            // Garante que a URL tenha protocolo
+            if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                url = "https://" + url;
+            }
+            // Tenta usar Desktop via reflection (funciona mesmo sem módulo java.desktop)
+            try {
+                Class<?> desktopClass = Class.forName("java.awt.Desktop");
+                Object desktop = desktopClass.getMethod("getDesktop").invoke(null);
+                Boolean isSupported = (Boolean) desktopClass.getMethod("isDesktopSupported").invoke(desktop);
+                if (isSupported != null && isSupported) {
+                    desktopClass.getMethod("browse", URI.class).invoke(desktop, new URI(url));
+                    return;
+                }
+            } catch (Exception e) {
+                // Ignora erros de reflection
+            }
+            // Se Desktop não funcionar, mostra mensagem
+            System.err.println("Não foi possível abrir a URL automaticamente: " + url);
+            System.out.println("Por favor, copie e cole a URL no navegador: " + url);
+        } catch (Exception e) {
+            System.err.println("Erro ao abrir URL: " + e.getMessage());
+        }
     }
 
 

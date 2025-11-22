@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<ScrollPane id="dashboard-professor-tg" fitToWidth="true" prefHeight="800.0" prefWidth="1200.0" style="-fx-background-color: #F8F9FA; -fx-background: transparent;" vbarPolicy="AS_NEEDED" stylesheets="@../css/estilo.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.DashboardProfessorTGController">
+<ScrollPane id="dashboard-professor-tg" fitToWidth="true" prefHeight="800.0" prefWidth="1200.0" style="-fx-background-color: #F8F9FA; -fx-background: transparent;" vbarPolicy="AS_NEEDED" stylesheets="@../css/estilo.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.ProfessorTG.DashboardProfessorTGController">
     <content>
         <VBox alignment="TOP_CENTER" prefWidth="1180.0" style="-fx-spacing: 20; -fx-padding: 20;">
             

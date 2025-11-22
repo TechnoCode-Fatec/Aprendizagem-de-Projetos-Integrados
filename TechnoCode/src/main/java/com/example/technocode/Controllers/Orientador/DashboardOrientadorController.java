@@ -2,15 +2,23 @@ package com.example.technocode.Controllers.Orientador;
 
 import com.example.technocode.Controllers.LoginController;
 import com.example.technocode.model.Orientador;
+import com.example.technocode.model.SolicitacaoOrientacao;
 import com.example.technocode.model.dao.Connector;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 public class DashboardOrientadorController {
@@ -27,6 +35,8 @@ public class DashboardOrientadorController {
     private Label labelSecoesPendentes;
     @FXML
     private Label labelSolicitacoesPendentes;
+    @FXML
+    private VBox vboxSolicitacoesPendentes;
 
     private String emailOrientador;
 
@@ -35,6 +45,7 @@ public class DashboardOrientadorController {
         emailOrientador = LoginController.getEmailLogado();
         carregarInformacoesOrientador();
         carregarEstatisticas();
+        carregarSolicitacoesPendentes();
     }
 
     private void carregarInformacoesOrientador() {
@@ -222,6 +233,105 @@ public class DashboardOrientadorController {
     @FXML
     private void clicarCardSecoesPendentes(ActionEvent event) {
         navegarParaAlunosOrientados(event);
+    }
+
+    private void carregarSolicitacoesPendentes() {
+        try {
+            List<Map<String, String>> solicitacoes = SolicitacaoOrientacao.buscarPendentesPorOrientador(emailOrientador);
+            vboxSolicitacoesPendentes.getChildren().clear();
+
+            if (solicitacoes.isEmpty()) {
+                Label labelSemSolicitacoes = new Label("Nenhuma solicitação pendente");
+                labelSemSolicitacoes.setStyle("-fx-text-fill: #7F8C8D; -fx-font-size: 12px;");
+                vboxSolicitacoesPendentes.getChildren().add(labelSemSolicitacoes);
+            } else {
+                for (Map<String, String> solicitacao : solicitacoes) {
+                    String nomeAluno = solicitacao.get("nome_aluno");
+                    int solicitacaoId = Integer.parseInt(solicitacao.get("id"));
+                    
+                    // Criar HBox para cada solicitação
+                    HBox hboxSolicitacao = new HBox(10);
+                    hboxSolicitacao.setStyle("-fx-alignment: CENTER_LEFT; -fx-padding: 10; -fx-background-color: #F8F9FA; -fx-background-radius: 6;");
+                    hboxSolicitacao.setPrefWidth(Double.MAX_VALUE);
+                    
+                    // Label com nome do aluno
+                    Label labelNome = new Label(nomeAluno);
+                    labelNome.setStyle("-fx-font-size: 14px; -fx-text-fill: #2C3E50; -fx-font-weight: bold;");
+                    
+                    // Region para empurrar os botões para a direita
+                    Region spacer = new Region();
+                    HBox.setHgrow(spacer, Priority.ALWAYS);
+                    
+                    // Botão Aceitar com ícone
+                    Button btnAceitar = new Button("✓ Aceitar");
+                    btnAceitar.setStyle("-fx-background-color: #27AE60; -fx-background-radius: 6; -fx-text-fill: WHITE; -fx-cursor: hand; -fx-padding: 8 15; -fx-font-size: 13px; -fx-font-weight: bold;");
+                    btnAceitar.setOnAction(e -> aceitarSolicitacao(solicitacaoId));
+                    
+                    // Botão Recusar com ícone
+                    Button btnRecusar = new Button("✗ Recusar");
+                    btnRecusar.setStyle("-fx-background-color: #E74C3C; -fx-background-radius: 6; -fx-text-fill: WHITE; -fx-cursor: hand; -fx-padding: 8 15; -fx-font-size: 13px; -fx-font-weight: bold;");
+                    btnRecusar.setOnAction(e -> recusarSolicitacao(solicitacaoId));
+                    
+                    hboxSolicitacao.getChildren().addAll(labelNome, spacer, btnAceitar, btnRecusar);
+                    vboxSolicitacoesPendentes.getChildren().add(hboxSolicitacao);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Label labelErro = new Label("Erro ao carregar solicitações");
+            labelErro.setStyle("-fx-text-fill: #E74C3C; -fx-font-size: 12px;");
+            vboxSolicitacoesPendentes.getChildren().clear();
+            vboxSolicitacoesPendentes.getChildren().add(labelErro);
+        }
+    }
+
+    private void aceitarSolicitacao(int solicitacaoId) {
+        try {
+            SolicitacaoOrientacao solicitacao = SolicitacaoOrientacao.buscarPorId(solicitacaoId);
+            if (solicitacao != null) {
+                solicitacao.aceitar();
+                mostrarAlertaSucesso("Sucesso", "Solicitação aceita com sucesso! O aluno foi vinculado ao seu perfil.");
+                
+                // Recarrega as estatísticas e a lista de solicitações
+                carregarEstatisticas();
+                carregarSolicitacoesPendentes();
+            } else {
+                mostrarAlertaErro("Erro", "Solicitação não encontrada.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarAlertaErro("Erro", "Não foi possível aceitar a solicitação. Erro: " + e.getMessage());
+        }
+    }
+
+    private void recusarSolicitacao(int solicitacaoId) {
+        // Navega para a tela de responder solicitação
+        if (OrientadorPrincipalController.getInstance() != null) {
+            OrientadorPrincipalController.getInstance().navegarParaTelaDoCenter(
+                "/com/example/technocode/Orientador/responder-solicitacao.fxml",
+                c -> {
+                    if (c instanceof ResponderSolicitacaoController) {
+                        ((ResponderSolicitacaoController) c).setSolicitacaoId(solicitacaoId);
+                    }
+                }
+            );
+        }
+    }
+
+    private void mostrarAlertaErro(String titulo, String mensagem) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Erro");
+        alert.setHeaderText(titulo);
+        alert.setContentText(mensagem);
+        alert.showAndWait();
+    }
+
+    private void mostrarAlertaSucesso(String titulo, String mensagem) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Sucesso");
+        alert.setHeaderText(titulo);
+        alert.setContentText(mensagem);
+        alert.showAndWait();
     }
 }
 

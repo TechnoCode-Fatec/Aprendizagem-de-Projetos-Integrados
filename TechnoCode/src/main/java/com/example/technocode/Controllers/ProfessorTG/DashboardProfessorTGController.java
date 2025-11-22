@@ -1,4 +1,4 @@
-package com.example.technocode.Controllers;
+package com.example.technocode.Controllers.ProfessorTG;
 
 import com.example.technocode.model.ProfessorTG;
 import com.example.technocode.model.dao.Connector;
@@ -102,6 +102,18 @@ public class DashboardProfessorTGController {
                     setGraphic(btnAgendar);
                 }
             }
+        });
+        
+        // Adiciona evento de clique duplo na linha da tabela para visualizar seções
+        tabelaAlunos.setRowFactory(tv -> {
+            TableRow<AlunoProgresso> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    AlunoProgresso aluno = row.getItem();
+                    visualizarSecoesAluno(aluno);
+                }
+            });
+            return row;
         });
     }
 
@@ -525,6 +537,28 @@ public class DashboardProfessorTGController {
         } catch (Exception e) {
             e.printStackTrace();
             mostrarErro("Erro", "Não foi possível abrir a tela de agendamento.");
+        }
+    }
+
+    /**
+     * Navega para a tela de visualização de seções do aluno
+     */
+    private void visualizarSecoesAluno(AlunoProgresso aluno) {
+        try {
+            String emailAluno = aluno.getEmail();
+            com.example.technocode.Controllers.ProfessorTG.ProfessorTGPrincipalController.getInstance()
+                .navegarParaTelaDoCenter("/com/example/technocode/ProfessorTG/visualizar-secoes-aluno.fxml", 
+                    controller -> {
+                        if (controller instanceof com.example.technocode.Controllers.ProfessorTG.VisualizarSecoesAlunoController) {
+                            VisualizarSecoesAlunoController visualizarController = 
+                                (VisualizarSecoesAlunoController) controller;
+                            visualizarController.setDadosAluno(emailAluno);
+                            visualizarController.setEmailAlunoParaConsulta(emailAluno);
+                        }
+                    });
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarErro("Erro", "Não foi possível abrir a visualização de seções.");
         }
     }
 

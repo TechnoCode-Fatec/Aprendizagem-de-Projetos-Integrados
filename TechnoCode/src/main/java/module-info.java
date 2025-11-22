@@ -25,4 +25,6 @@ module com.example.technocode {
     exports com.example.technocode.Controllers.Aluno;
     exports com.example.technocode.Controllers.Orientador;
     exports com.example.technocode.model;
+    exports com.example.technocode.Controllers.ProfessorTG;
+    exports com.example.technocode.Services;
 }
