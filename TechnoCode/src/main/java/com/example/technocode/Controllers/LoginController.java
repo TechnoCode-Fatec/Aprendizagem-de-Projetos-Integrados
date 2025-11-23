@@ -37,12 +37,16 @@ public class LoginController {
     // 🔹 Preferências do sistema
     private final Preferences prefs = Preferences.userNodeForPackage(LoginController.class);
 
-    private static final String KEY_EMAILS = "emails_salvos";
-    private static final String KEY_SENHA = "senha_salva";
-    private static final String KEY_LEMBRAR = "lembrar";
+    static final String KEY_EMAILS = "emails_salvos";
+    static final String KEY_SENHA = "senha_salva";
+    static final String KEY_LEMBRAR = "lembrar";
 
     public static String getEmailLogado() {
         return emailLogado;
+    }
+    
+    public static void setEmailLogado(String email) {
+        emailLogado = email;
     }
 
     // =========================================================
@@ -210,6 +214,20 @@ public class LoginController {
 
     public void cadastrarUsuario(ActionEvent event) throws IOException {
         NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/cadastro.fxml", null);
+    }
+
+    // =========================================================
+    //               RESETAR INFORMAÇÕES SALVAS
+    // =========================================================
+    /**
+     * Remove todas as informações salvas pelo "lembrar-me"
+     * Útil para resetar o histórico de emails e a preferência de lembrar
+     */
+    public static void resetarInformacoesSalvas() {
+        Preferences prefs = Preferences.userNodeForPackage(LoginController.class);
+        prefs.remove(KEY_EMAILS);
+        prefs.remove(KEY_SENHA);
+        prefs.remove(KEY_LEMBRAR);
     }
 
     // =========================================================

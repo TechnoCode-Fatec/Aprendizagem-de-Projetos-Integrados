@@ -29,6 +29,7 @@ CREATE TABLE aluno(
     senha VARCHAR(100) NOT NULL,
     orientador VARCHAR(120),
     professor_tg VARCHAR(120) NOT NULL,
+    disciplina_tg ENUM('TG1', 'TG2', 'TG1/TG2') NOT NULL,
     FOREIGN KEY (orientador) REFERENCES orientador (email),
     FOREIGN KEY (professor_tg) REFERENCES professor_tg (email)
 );

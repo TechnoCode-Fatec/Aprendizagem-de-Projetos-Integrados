@@ -178,5 +178,45 @@ public class ProfessorTG {
         Map<String, String> professoresMap = buscarProfessoresPorDisciplina();
         return professoresMap.get(textoFormatado);
     }
+
+    /**
+     * Busca todos os professores de TG retornando um Map com nome -> email
+     */
+    public static Map<String, String> buscarTodosProfessores() {
+        Map<String, String> professoresMap = new HashMap<>();
+        try (Connection conn = new Connector().getConnection()) {
+            String sql = "SELECT nome, email FROM professor_tg ORDER BY nome";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            ResultSet rs = pst.executeQuery();
+
+            while (rs.next()) {
+                String nome = rs.getString("nome");
+                String email = rs.getString("email");
+                professoresMap.put(nome, email);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar professores de TG", e);
+        }
+        return professoresMap;
+    }
+
+    /**
+     * Busca a disciplina de um professor por email
+     */
+    public static String buscarDisciplinaPorEmail(String emailProfessor) {
+        try (Connection conn = new Connector().getConnection()) {
+            String sql = "SELECT disciplina FROM professor_tg WHERE email = ?";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, emailProfessor);
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("disciplina");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar disciplina do professor", e);
+        }
+        return null;
+    }
 }
 

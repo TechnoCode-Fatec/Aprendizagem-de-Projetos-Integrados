@@ -3,9 +3,11 @@ package com.example.technocode.Controllers.ProfessorTG;
 import com.example.technocode.model.Aluno;
 import com.example.technocode.model.SecaoApi;
 import com.example.technocode.model.SecaoApresentacao;
+import com.example.technocode.model.SolicitacaoOrientacao;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 
 import java.io.IOException;
@@ -42,10 +44,25 @@ public class VisualizarSecoesAlunoController {
     @FXML 
     private TableColumn<Map<String, String>, Void> colVisualizar;
 
+    // Tabela de solicitações de orientação
+    @FXML 
+    private TableView<Map<String, String>> tabelaSolicitacoes;
+    @FXML 
+    private TableColumn<Map<String, String>, String> colOrientadorSolicitacao;
+    @FXML 
+    private TableColumn<Map<String, String>, String> colStatusSolicitacao;
+    @FXML 
+    private TableColumn<Map<String, String>, String> colDataSolicitacao;
+    @FXML 
+    private TableColumn<Map<String, String>, String> colDataResposta;
+    @FXML 
+    private TableColumn<Map<String, String>, String> colMensagemOrientador;
+
     public void setEmailAlunoParaConsulta(String email) {
         this.emailAlunoParaConsulta = email;
         // se initialize já rodou, podemos carregar os dados agora
         carregarSecoesDoAluno();
+        carregarSolicitacoesOrientacao();
     }
 
     @FXML
@@ -126,11 +143,16 @@ public class VisualizarSecoesAlunoController {
             tabelaSecao.setStyle("-fx-control-inner-background: #ffffff; -fx-text-background-color: black;");
 
             addButtonToTable();
+            
+            // Configura tabela de solicitações de orientação
+            configurarTabelaSolicitacoes();
 
             // só carrega dados se já tiver o e-mail (pode ser setado após o load)
-            carregarSecoesDoAluno();
-
-            tabelaSecao.refresh();
+            if (emailAlunoParaConsulta != null && !emailAlunoParaConsulta.isBlank()) {
+                carregarSecoesDoAluno();
+                carregarSolicitacoesOrientacao();
+                tabelaSecao.refresh();
+            }
         } catch (Exception e) {
             System.err.println("Erro durante a inicialização: " + e.getMessage());
             e.printStackTrace();
@@ -160,6 +182,179 @@ public class VisualizarSecoesAlunoController {
         }
         
         tabelaSecao.getItems().setAll(todasSecoes);
+    }
+    
+    /**
+     * Configura as colunas da tabela de solicitações de orientação
+     */
+    private void configurarTabelaSolicitacoes() {
+        if (tabelaSolicitacoes == null || colOrientadorSolicitacao == null || colStatusSolicitacao == null) {
+            System.err.println("Tabela de solicitações não inicializada corretamente");
+            return;
+        }
+        
+        colOrientadorSolicitacao.setCellValueFactory(data -> {
+            String nome = data.getValue().getOrDefault("nome_orientador", null);
+            return new SimpleStringProperty(nome != null && !nome.isEmpty() ? nome : "-");
+        });
+        colOrientadorSolicitacao.setCellFactory(column -> new TableCell<Map<String, String>, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                    setAlignment(Pos.CENTER);
+                }
+            }
+        });
+        
+        colStatusSolicitacao.setCellValueFactory(data -> {
+            String status = data.getValue().getOrDefault("status", null);
+            return new SimpleStringProperty(status != null && !status.isEmpty() ? status : "-");
+        });
+        colStatusSolicitacao.setCellFactory(col -> new TableCell<Map<String, String>, String>() {
+            @Override
+            protected void updateItem(String status, boolean empty) {
+                super.updateItem(status, empty);
+                
+                if (empty || status == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(status);
+                    setAlignment(Pos.CENTER);
+                    
+                    // Aplica cor baseada no status
+                    if ("Aceita".equals(status)) {
+                        setStyle("-fx-text-fill: #2E7D32; -fx-font-weight: bold;"); // Verde escuro
+                    } else if ("Pendente".equals(status)) {
+                        setStyle("-fx-text-fill: #F57C00; -fx-font-weight: bold;"); // Laranja
+                    } else if ("Recusada".equals(status)) {
+                        setStyle("-fx-text-fill: #C62828; -fx-font-weight: bold;"); // Vermelho escuro
+                    } else {
+                        setStyle(""); // Padrão
+                    }
+                }
+            }
+        });
+        
+        colDataSolicitacao.setCellValueFactory(data -> {
+            String dataStr = data.getValue().getOrDefault("data_solicitacao", null);
+            if (dataStr != null && !dataStr.isEmpty() && !dataStr.equals("null")) {
+                try {
+                    // Remove milissegundos se houver (formato: 2024-01-15 10:30:00.0)
+                    if (dataStr.contains(".")) {
+                        dataStr = dataStr.substring(0, dataStr.indexOf("."));
+                    }
+                    // Tenta parsear como Timestamp
+                    java.sql.Timestamp timestamp = java.sql.Timestamp.valueOf(dataStr);
+                    java.time.LocalDateTime localDateTime = timestamp.toLocalDateTime();
+                    java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+                    return new SimpleStringProperty(localDateTime.format(formatter));
+                } catch (Exception e) {
+                    System.err.println("Erro ao formatar data_solicitacao: " + dataStr + " - " + e.getMessage());
+                    return new SimpleStringProperty(dataStr);
+                }
+            }
+            return new SimpleStringProperty("-");
+        });
+        colDataSolicitacao.setCellFactory(column -> new TableCell<Map<String, String>, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                    setAlignment(Pos.CENTER);
+                }
+            }
+        });
+        
+        colDataResposta.setCellValueFactory(data -> {
+            String dataStr = data.getValue().getOrDefault("data_resposta", null);
+            if (dataStr != null && !dataStr.isEmpty() && !dataStr.equals("null")) {
+                try {
+                    // Remove milissegundos se houver (formato: 2024-01-15 10:30:00.0)
+                    if (dataStr.contains(".")) {
+                        dataStr = dataStr.substring(0, dataStr.indexOf("."));
+                    }
+                    // Tenta parsear como Timestamp
+                    java.sql.Timestamp timestamp = java.sql.Timestamp.valueOf(dataStr);
+                    java.time.LocalDateTime localDateTime = timestamp.toLocalDateTime();
+                    java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+                    return new SimpleStringProperty(localDateTime.format(formatter));
+                } catch (Exception e) {
+                    System.err.println("Erro ao formatar data_resposta: " + dataStr + " - " + e.getMessage());
+                    return new SimpleStringProperty(dataStr);
+                }
+            }
+            return new SimpleStringProperty("-");
+        });
+        colDataResposta.setCellFactory(column -> new TableCell<Map<String, String>, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                    setAlignment(Pos.CENTER);
+                }
+            }
+        });
+        
+        colMensagemOrientador.setCellValueFactory(data -> {
+            String mensagem = data.getValue().getOrDefault("mensagem_orientador", null);
+            return new SimpleStringProperty(mensagem != null && !mensagem.isEmpty() ? mensagem : "-");
+        });
+        colMensagemOrientador.setCellFactory(column -> new TableCell<Map<String, String>, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                    setAlignment(Pos.CENTER);
+                    setWrapText(true);
+                }
+            }
+        });
+        
+        tabelaSolicitacoes.setStyle("-fx-control-inner-background: #ffffff; -fx-text-background-color: black;");
+    }
+    
+    /**
+     * Carrega as solicitações de orientação do aluno
+     */
+    private void carregarSolicitacoesOrientacao() {
+        if (emailAlunoParaConsulta == null || emailAlunoParaConsulta.isBlank()) {
+            return;
+        }
+        
+        if (tabelaSolicitacoes == null) {
+            System.err.println("Tabela de solicitações não inicializada");
+            return;
+        }
+        
+        try {
+            List<Map<String, String>> solicitacoes = SolicitacaoOrientacao.buscarPorAluno(emailAlunoParaConsulta);
+            
+            // Limpa a tabela antes de adicionar novos itens
+            tabelaSolicitacoes.getItems().clear();
+            
+            if (!solicitacoes.isEmpty()) {
+                tabelaSolicitacoes.getItems().addAll(solicitacoes);
+            }
+            
+            tabelaSolicitacoes.refresh();
+        } catch (Exception e) {
+            System.err.println("Erro ao carregar solicitações de orientação: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     private String determinarStatusFeedback(Map<String, String> secao) {
@@ -302,7 +497,9 @@ public class VisualizarSecoesAlunoController {
     public void recarregarDados() {
         if (emailAlunoParaConsulta != null && !emailAlunoParaConsulta.isBlank()) {
             carregarSecoesDoAluno();
+            carregarSolicitacoesOrientacao();
             tabelaSecao.refresh();
+            tabelaSolicitacoes.refresh();
         }
     }
 

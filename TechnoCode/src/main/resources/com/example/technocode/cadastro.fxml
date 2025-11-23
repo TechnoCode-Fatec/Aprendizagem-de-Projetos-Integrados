@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.effect.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.effect.DropShadow?>
 <StackPane style="-fx-background-color: linear-gradient(to bottom right, #fff5f5, #ffffff);" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.CadastroController">
 
     <children>
@@ -15,14 +16,18 @@
                 <VBox alignment="CENTER" maxHeight="620.0" maxWidth="420.0" prefHeight="480.0" prefWidth="380.0" spacing="12" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 25 25 30 25; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 15, 0, 0, 5);">
 
                     <!-- Logo -->
-                    <StackPane alignment="CENTER">
+                    <StackPane prefWidth="320.0" style="-fx-padding: 0 15 0 15;">
                         <children>
-                            <Label style="-fx-background-color: #B82E1A; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 22; -fx-background-radius: 8; -fx-padding: 10 15 10 15;" text="TG">
+                            <Rectangle arcHeight="12.0" arcWidth="12.0" fill="#cc2424" height="50.0" smooth="false" stroke="#cc2424" strokeType="INSIDE" width="50.0" />
+                            <Label text="TG" textFill="WHITE">
                                 <font>
                                     <Font name="Arial Black" size="23.0" />
                                 </font>
                             </Label>
                         </children>
+                        <effect>
+                            <DropShadow blurType="GAUSSIAN" height="15.63" radius="7.0625" width="14.62" />
+                        </effect>
                     </StackPane>
 
                     <!-- Títulos -->
@@ -60,19 +65,29 @@
                         </children>
                     </HBox>
 
-                    <!-- Orientador -->
+                    <!-- Orientador (Opcional) -->
                     <HBox fx:id="hBoxOrientador" alignment="CENTER_LEFT" managed="true" spacing="10" visible="true">
                         <children>
-                            <Label style="-fx-font-weight: bold; -fx-font-size: 12;" text="Orientador" textFill="#333" />
-                            <ComboBox fx:id="comboBoxOrientador" prefWidth="160" />
+                            <Label prefHeight="18.0" prefWidth="92.0" style="-fx-font-weight: bold; -fx-font-size: 12;" text="Orientador" textFill="#333" />
+                            <ComboBox fx:id="comboBoxOrientador" prefHeight="26.0" prefWidth="200.0" promptText="Selecione um orientador..." />
                         </children>
                     </HBox>
 
-                    <!-- Disciplina (para Aluno) -->
+                    <!-- Professor de TG (para Aluno) -->
                     <HBox fx:id="hBoxCurso" alignment="CENTER_LEFT" managed="true" spacing="10" visible="true">
                         <children>
-                            <Label prefWidth="62.0" style="-fx-font-weight: bold; -fx-font-size: 12;" text="Disciplina" textFill="#333" />
-                            <ComboBox fx:id="comboBoxCurso" prefWidth="200" />
+                            <Label prefHeight="18.0" prefWidth="92.0" style="-fx-font-weight: bold; -fx-font-size: 12;" text="Professor de TG" textFill="#333" />
+                            <ChoiceBox fx:id="choiceBoxProfessorTG" prefHeight="30.0" prefWidth="200" />
+                        </children>
+                    </HBox>
+
+                    <!-- Disciplina TG (para Aluno quando professor for TG1/TG2) -->
+                    <HBox fx:id="hBoxDisciplinaToggle" alignment="CENTER_LEFT" managed="false" spacing="15" visible="false">
+                        <children>
+                            <Label prefHeight="18.0" prefWidth="92.0" style="-fx-font-weight: bold; -fx-font-size: 12;" text="Disciplina TG" textFill="#333" />
+                            <RadioButton fx:id="radioTG1" text="TG1" />
+                            <RadioButton fx:id="radioTG2" text="TG2" />
+                            <RadioButton fx:id="radioTG1TG2" text="TG1/TG2" />
                         </children>
                     </HBox>
 

@@ -57,8 +57,19 @@ public class DashboardProfessorTGController {
     // Campo de busca
     @FXML
     private TextField txtBuscaAluno;
+    
+    @FXML
+    private VBox cardAlunosOrientados;
+    
+    // Filtro de disciplina (para professores TG1/TG2)
+    @FXML
+    private ComboBox<String> comboBoxFiltroDisciplina;
+    @FXML
+    private Label labelFiltroDisciplina;
 
     private String emailProfessorLogado;
+    private String disciplinaProfessor;
+    private boolean filtrarSemOrientador = false;
 
     @FXML
     public void initialize() {
@@ -78,12 +89,71 @@ public class DashboardProfessorTGController {
      * Configura as colunas da tabela de alunos
      */
     private void configurarTabelas() {
+        // Coluna Nome - centralizada
         colNomeAluno.setCellValueFactory(new PropertyValueFactory<>("nome"));
-        colEmailAluno.setCellValueFactory(new PropertyValueFactory<>("email"));
-        colOrientador.setCellValueFactory(new PropertyValueFactory<>("orientador"));
-        colProgresso.setCellValueFactory(new PropertyValueFactory<>("progresso"));
+        colNomeAluno.setCellFactory(column -> new TableCell<AlunoProgresso, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    setText(item);
+                    setAlignment(Pos.CENTER);
+                }
+            }
+        });
         
-        // Coluna de ação com botão agendar
+        // Coluna Email - centralizada
+        colEmailAluno.setCellValueFactory(new PropertyValueFactory<>("email"));
+        colEmailAluno.setCellFactory(column -> new TableCell<AlunoProgresso, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    setText(item);
+                    setAlignment(Pos.CENTER);
+                }
+            }
+        });
+        
+        // Coluna Orientador - centralizada
+        colOrientador.setCellValueFactory(new PropertyValueFactory<>("orientador"));
+        colOrientador.setCellFactory(column -> new TableCell<AlunoProgresso, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    setText(item);
+                    setAlignment(Pos.CENTER);
+                }
+            }
+        });
+        
+        // Coluna Progresso - centralizada
+        colProgresso.setCellValueFactory(new PropertyValueFactory<>("progresso"));
+        colProgresso.setCellFactory(column -> new TableCell<AlunoProgresso, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    setText(item);
+                    setAlignment(Pos.CENTER);
+                }
+            }
+        });
+        
+        // Coluna de ação com botão agendar - centralizada
         colAcao.setCellValueFactory(new PropertyValueFactory<>("acao"));
         colAcao.setCellFactory(column -> new TableCell<AlunoProgresso, String>() {
             private final Button btnAgendar = new Button("Agendar");
@@ -100,6 +170,7 @@ public class DashboardProfessorTGController {
                     // Aplica estilo CSS específico do dashboard do professor
                     btnAgendar.getStyleClass().add("button");
                     setGraphic(btnAgendar);
+                    setAlignment(Pos.CENTER);
                 }
             }
         });
@@ -135,15 +206,28 @@ public class DashboardProfessorTGController {
         try {
             Map<String, String> dadosProfessor = ProfessorTG.buscarDadosPorEmail(emailProfessorLogado);
             String nome = dadosProfessor.get("nome");
-            String disciplina = dadosProfessor.get("disciplina");
+            disciplinaProfessor = dadosProfessor.get("disciplina");
 
             labelNomeProfessor.setText(nome != null ? nome : "N/A");
             
             // Formata a disciplina (TG1 -> TG 1, TG2 -> TG 2)
-            if (disciplina != null) {
-                String disciplinaFormatada = disciplina.equals("TG1") ? "TG 1" : 
-                                           disciplina.equals("TG2") ? "TG 2" : disciplina;
+            if (disciplinaProfessor != null) {
+                String disciplinaFormatada = disciplinaProfessor.equals("TG1") ? "TG 1" : 
+                                           disciplinaProfessor.equals("TG2") ? "TG 2" : disciplinaProfessor;
                 labelDisciplina.setText(disciplinaFormatada);
+                
+                // Configura filtro de disciplina se o professor for TG1/TG2
+                if (disciplinaProfessor.equals("TG1/TG2") && comboBoxFiltroDisciplina != null && labelFiltroDisciplina != null) {
+                    comboBoxFiltroDisciplina.getItems().addAll("Todas", "TG1", "TG2", "TG1/TG2");
+                    comboBoxFiltroDisciplina.setValue("Todas");
+                    comboBoxFiltroDisciplina.setVisible(true);
+                    labelFiltroDisciplina.setVisible(true);
+                    comboBoxFiltroDisciplina.setOnAction(e -> {
+                        carregarTabelaAlunos();
+                        carregarQtdAlunosOrientados();
+                        carregarOrientadores();
+                    });
+                }
             } else {
                 labelDisciplina.setText("N/A");
             }
@@ -155,46 +239,63 @@ public class DashboardProfessorTGController {
     }
 
     /**
-     * Carrega quantidade de alunos da disciplina sendo orientados
+     * Carrega quantidade de alunos do professor sendo orientados e total de alunos
      */
     private void carregarQtdAlunosOrientados() {
         try (Connection conn = new Connector().getConnection()) {
-            String sql = "SELECT COUNT(DISTINCT a.email) as qtd " +
-                        "FROM aluno a " +
-                        "WHERE a.professor_tg = ? AND a.orientador IS NOT NULL";
+            // Busca apenas alunos do professor específico
+            String disciplinaFiltro = obterDisciplinaFiltro();
+            
+            String sql = "SELECT " +
+                     "COUNT(DISTINCT CASE WHEN a.orientador IS NOT NULL THEN a.email END) as orientados, " +
+                     "COUNT(DISTINCT a.email) as total " +
+                     "FROM aluno a " +
+                     "WHERE a.professor_tg = ?";
+            
+            if (disciplinaFiltro != null) {
+                sql += " AND a.disciplina_tg = ?";
+            }
             
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, emailProfessorLogado);
+            
+            if (disciplinaFiltro != null) {
+                pst.setString(2, disciplinaFiltro);
+            }
+            
             ResultSet rs = pst.executeQuery();
             
             if (rs.next()) {
-                int qtd = rs.getInt("qtd");
-                labelQtdAlunosOrientados.setText(String.valueOf(qtd));
+                int orientados = rs.getInt("orientados");
+                int total = rs.getInt("total");
+                labelQtdAlunosOrientados.setText(orientados + " / " + total);
             } else {
-                labelQtdAlunosOrientados.setText("0");
+                labelQtdAlunosOrientados.setText("0 / 0");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            labelQtdAlunosOrientados.setText("0");
+            labelQtdAlunosOrientados.setText("0 / 0");
         }
     }
+    
 
     /**
-     * Carrega lista de orientadores com quantidade de alunos
+     * Carrega lista de orientadores com quantidade total de alunos que estão orientando (geral, não apenas do professor)
+     * Inclui os que não orientam ninguém
      */
     private void carregarOrientadores() {
         vboxOrientadores.getChildren().clear();
         
         try (Connection conn = new Connector().getConnection()) {
-            String sql = "SELECT o.nome, COUNT(a.email) as qtd_alunos " +
-                        "FROM orientador o " +
-                        "LEFT JOIN aluno a ON o.email = a.orientador AND a.professor_tg = ? " +
-                        "GROUP BY o.email, o.nome " +
-                        "HAVING COUNT(a.email) > 0 " +
-                        "ORDER BY qtd_alunos DESC, o.nome";
+            // Busca todos os orientadores e conta quantos alunos estão orientando no total (geral)
+            String sql = "SELECT o.nome, " +
+                     "COUNT(DISTINCT a.email) as qtd_alunos " +
+                     "FROM orientador o " +
+                     "LEFT JOIN aluno a ON o.email = a.orientador " +
+                     "GROUP BY o.email, o.nome " +
+                     "ORDER BY qtd_alunos DESC, o.nome";
             
             PreparedStatement pst = conn.prepareStatement(sql);
-            pst.setString(1, emailProfessorLogado);
             ResultSet rs = pst.executeQuery();
             
             while (rs.next()) {
@@ -206,11 +307,21 @@ public class DashboardProfessorTGController {
                 labelNome.setStyle("-fx-font-weight: bold; -fx-text-fill: #2C3E50;");
                 labelNome.setFont(Font.font(12));
                 
-                Label labelQtd = new Label(String.valueOf(qtdAlunos) + " aluno(s)");
-                labelQtd.setStyle("-fx-text-fill: #7F8C8D;");
-                labelQtd.setFont(Font.font(12));
+                String textoQtd;
+                if (qtdAlunos == 0) {
+                    textoQtd = "Sem alunos";
+                    Label labelQtd = new Label(textoQtd);
+                    labelQtd.setStyle("-fx-text-fill: #E74C3C; -fx-font-style: italic;");
+                    labelQtd.setFont(Font.font(12));
+                    hbox.getChildren().addAll(labelNome, labelQtd);
+                } else {
+                    textoQtd = String.valueOf(qtdAlunos) + " aluno(s)";
+                    Label labelQtd = new Label(textoQtd);
+                    labelQtd.setStyle("-fx-text-fill: #7F8C8D;");
+                    labelQtd.setFont(Font.font(12));
+                    hbox.getChildren().addAll(labelNome, labelQtd);
+                }
                 
-                hbox.getChildren().addAll(labelNome, labelQtd);
                 vboxOrientadores.getChildren().add(hbox);
             }
             
@@ -324,14 +435,31 @@ public class DashboardProfessorTGController {
     }
 
     /**
-     * Carrega a tabela de alunos da disciplina do professor
+     * Obtém a disciplina para filtrar (considera filtro do ComboBox se for TG1/TG2)
+     * Retorna a disciplina ou null se deve buscar todas
+     */
+    private String obterDisciplinaFiltro() {
+        // Se o professor é TG1/TG2 e há um filtro selecionado
+        if (disciplinaProfessor != null && disciplinaProfessor.equals("TG1/TG2") && comboBoxFiltroDisciplina != null) {
+            String filtro = comboBoxFiltroDisciplina.getValue();
+            if (filtro != null && !filtro.equals("Todas")) {
+                return filtro; // Retorna TG1, TG2 ou TG1/TG2
+            }
+        }
+        // Se não houver filtro ou não for TG1/TG2, retorna null para buscar todos
+        return null;
+    }
+
+    /**
+     * Carrega a tabela de alunos do professor específico
      * Calcula o progresso apenas com as versões mais recentes de cada seção
+     * Filtra diretamente pelo professor_tg e opcionalmente por disciplina_tg
      */
     private void carregarTabelaAlunos() {
         try (Connection conn = new Connector().getConnection()) {
             String buscaAluno = txtBuscaAluno.getText().trim().toLowerCase();
 
-            // Query corrigida para considerar apenas versões mais recentes
+            // Query para buscar apenas alunos do professor específico
             String sql = "SELECT a.nome, a.email, o.nome as orientador_nome, " +
                         // Total de seções (apenas versões mais recentes)
                         "(SELECT COUNT(*) FROM ( " +
@@ -375,6 +503,15 @@ public class DashboardProfessorTGController {
                         "LEFT JOIN orientador o ON a.orientador = o.email " +
                         "WHERE a.professor_tg = ? ";
 
+            String disciplinaFiltro = obterDisciplinaFiltro();
+            if (disciplinaFiltro != null) {
+                sql += "AND a.disciplina_tg = ? ";
+            }
+
+            if (filtrarSemOrientador) {
+                sql += "AND a.orientador IS NULL ";
+            }
+
             if (!buscaAluno.isEmpty()) {
                 sql += "AND LOWER(a.nome) LIKE ? ";
             }
@@ -382,9 +519,14 @@ public class DashboardProfessorTGController {
             sql += "ORDER BY a.nome";
 
             PreparedStatement pst = conn.prepareStatement(sql);
-            pst.setString(1, emailProfessorLogado);
+            int paramIndex = 1;
             
-            int paramIndex = 2;
+            pst.setString(paramIndex++, emailProfessorLogado);
+            
+            if (disciplinaFiltro != null) {
+                pst.setString(paramIndex++, disciplinaFiltro);
+            }
+            
             if (!buscaAluno.isEmpty()) {
                 pst.setString(paramIndex++, "%" + buscaAluno + "%");
             }
@@ -414,6 +556,26 @@ public class DashboardProfessorTGController {
             e.printStackTrace();
             mostrarErro("Erro ao carregar tabela de alunos", e.getMessage());
         }
+    }
+    
+    /**
+     * Filtra a tabela para mostrar apenas alunos sem orientador
+     * Alterna entre filtrar e não filtrar ao clicar no card
+     */
+    @FXML
+    private void filtrarAlunosSemOrientador() {
+        filtrarSemOrientador = !filtrarSemOrientador;
+        
+        // Atualiza estilo visual do card
+        if (cardAlunosOrientados != null) {
+            if (filtrarSemOrientador) {
+                cardAlunosOrientados.setStyle("-fx-background-color: #E8F5E9; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2); -fx-cursor: hand;");
+            } else {
+                cardAlunosOrientados.setStyle("-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2); -fx-cursor: hand;");
+            }
+        }
+        
+        carregarTabelaAlunos();
     }
 
     /**

@@ -5,6 +5,7 @@ import com.example.technocode.model.Aluno;
 import com.example.technocode.model.Orientador;
 import com.example.technocode.model.ProfessorTG;
 import com.example.technocode.model.SolicitacaoOrientacao;
+import com.example.technocode.model.dao.Connector;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -21,15 +22,20 @@ public class CadastroController {
     @FXML
     private TextField txtNome, txtEmail, txtSenha;
     @FXML
-    private HBox hBoxOrientador, hBoxCurso, hBoxDisciplina;
+    private HBox hBoxOrientador, hBoxCurso, hBoxDisciplina, hBoxDisciplinaToggle;
     @FXML
     private ComboBox<String> comboBoxOrientador, comboBoxCurso, comboBoxDisciplina;
+    @FXML
+    private ChoiceBox<String> choiceBoxProfessorTG;
+    @FXML
+    private RadioButton radioTG1, radioTG2, radioTG1TG2;
     @FXML
     private Button btnCadastrar;
 
     private ToggleGroup grupoUsuario;
+    private ToggleGroup grupoDisciplina;
     private Map<String, String> orientadoresMap;
-    private Map<String, String> professoresTGMap; // Map com "TG 1 - Nome" -> email
+    private Map<String, String> professoresTGMap; // Map com nome -> email
 
     @FXML
     private void initialize() {
@@ -49,24 +55,47 @@ public class CadastroController {
         hBoxCurso.setManaged(false);
         hBoxDisciplina.setVisible(false);
         hBoxDisciplina.setManaged(false);
+        if (hBoxDisciplinaToggle != null) {
+            hBoxDisciplinaToggle.setVisible(false);
+            hBoxDisciplinaToggle.setManaged(false);
+        }
 
         // Vincula a visibilidade diretamente à seleção do RadioButton "Aluno"
         hBoxOrientador.visibleProperty().bind(radioAluno.selectedProperty());
         hBoxOrientador.managedProperty().bind(radioAluno.selectedProperty());
         hBoxCurso.visibleProperty().bind(radioAluno.selectedProperty());
         hBoxCurso.managedProperty().bind(radioAluno.selectedProperty());
+        // hBoxDisciplinaToggle será controlado dinamicamente pelo método verificarDisciplinaProfessor()
 
         // Vincula a visibilidade do campo Disciplina à seleção do RadioButton "ProfessorTG"
         hBoxDisciplina.visibleProperty().bind(radioProfessorTG.selectedProperty());
         hBoxDisciplina.managedProperty().bind(radioProfessorTG.selectedProperty());
 
-        // Carrega orientadores, disciplinas com professores e disciplinas simples
+        // Configura toggle group para disciplina
+        grupoDisciplina = new ToggleGroup();
+        if (radioTG1 != null) {
+            radioTG1.setToggleGroup(grupoDisciplina);
+            radioTG1.setUserData("TG1");
+        }
+        if (radioTG2 != null) {
+            radioTG2.setToggleGroup(grupoDisciplina);
+            radioTG2.setUserData("TG2");
+        }
+        if (radioTG1TG2 != null) {
+            radioTG1TG2.setToggleGroup(grupoDisciplina);
+            radioTG1TG2.setUserData("TG1/TG2");
+        }
+
+        // Carrega orientadores
         orientadoresMap = Orientador.buscarTodos();
         comboBoxOrientador.getItems().addAll(orientadoresMap.keySet());
         
-        // Carrega disciplinas com professores para o ComboBox do aluno
-        professoresTGMap = ProfessorTG.buscarProfessoresPorDisciplina();
-        comboBoxCurso.getItems().addAll(professoresTGMap.keySet());
+        // Carrega professores de TG para o ChoiceBox do aluno
+        professoresTGMap = ProfessorTG.buscarTodosProfessores();
+        if (choiceBoxProfessorTG != null) {
+            choiceBoxProfessorTG.getItems().addAll(professoresTGMap.keySet());
+            choiceBoxProfessorTG.setOnAction(e -> verificarDisciplinaProfessor());
+        }
         
         // Carrega disciplinas simples para o ComboBox do professor de TG
         comboBoxDisciplina.getItems().addAll("TG1", "TG2", "TG1/TG2");
@@ -122,50 +151,69 @@ public class CadastroController {
         }
 
         if (tipo.equals("Aluno")) {
-            if (comboBoxOrientador.getValue() == null || comboBoxOrientador.getValue().isEmpty()) {
-                mostrarAlertaErro("Orientador obrigatório", "Selecione um orientador para o aluno.");
+            if (choiceBoxProfessorTG == null || choiceBoxProfessorTG.getValue() == null || choiceBoxProfessorTG.getValue().isEmpty()) {
+                mostrarAlertaErro("Professor obrigatório", "Selecione um professor de TG para o aluno.");
                 return;
             }
 
-            if (comboBoxCurso.getValue() == null || comboBoxCurso.getValue().isEmpty()) {
-                mostrarAlertaErro("Disciplina obrigatória", "Selecione uma disciplina para o aluno.");
-                return;
+            // Orientador é opcional - verifica se foi selecionado
+            String emailOrientador = null;
+            String nomeOrientadorSelecionado = comboBoxOrientador.getValue();
+            
+            if (nomeOrientadorSelecionado != null && !nomeOrientadorSelecionado.isEmpty()) {
+                emailOrientador = Orientador.buscarEmailPorNome(nomeOrientadorSelecionado);
+                
+                if (emailOrientador == null) {
+                    mostrarAlertaErro("Orientador inválido", "Não foi possível encontrar o email do orientador selecionado.");
+                    return;
+                }
             }
 
-            String nomeSelecionado = comboBoxOrientador.getValue();
-            String emailOrientador = Orientador.buscarEmailPorNome(nomeSelecionado);
-
-            if (emailOrientador == null) {
-                mostrarAlertaErro("Orientador inválido", "Não foi possível encontrar o email do orientador selecionado.");
-                return;
-            }
-
-            // Extrai o email do professor de TG do texto formatado "TG 1 - Nome Professor"
-            String disciplinaSelecionada = comboBoxCurso.getValue();
-            String emailProfessorTG = professoresTGMap.get(disciplinaSelecionada);
+            // Busca o email do professor selecionado
+            String nomeProfessor = choiceBoxProfessorTG.getValue();
+            String emailProfessorTG = professoresTGMap.get(nomeProfessor);
 
             if (emailProfessorTG == null) {
                 mostrarAlertaErro("Professor inválido", "Não foi possível encontrar o email do professor selecionado.");
                 return;
             }
 
-            // Cadastra o aluno sem orientador inicialmente (será definido após aceitação da solicitação)
+            // Busca a disciplina do professor
+            String disciplinaProfessor = ProfessorTG.buscarDisciplinaPorEmail(emailProfessorTG);
+            String disciplinaTG;
+
+            // Se o professor for TG1/TG2, verifica se o aluno escolheu uma disciplina específica
+            if ("TG1/TG2".equals(disciplinaProfessor)) {
+                if (grupoDisciplina.getSelectedToggle() == null) {
+                    mostrarAlertaErro("Disciplina obrigatória", "Selecione uma disciplina (TG1, TG2 ou TG1/TG2).");
+                    return;
+                }
+                disciplinaTG = grupoDisciplina.getSelectedToggle().getUserData().toString();
+            } else {
+                // Se o professor não for TG1/TG2, usa a disciplina do professor
+                disciplinaTG = disciplinaProfessor;
+            }
+
+            // Cadastra o aluno (com ou sem orientador, dependendo da escolha)
             Aluno aluno = new Aluno(
                     txtNome.getText(),
                     txtEmail.getText(),
                     txtSenha.getText(),
-                    null, // orientador será definido após aceitação da solicitação
+                    emailOrientador, // pode ser null se não foi selecionado
                     emailProfessorTG,
+                    disciplinaTG,
                     null  // curso removido do banco de dados
             );
             aluno.cadastrar();
             
-            // Cria uma solicitação de orientação
-            SolicitacaoOrientacao solicitacao = new SolicitacaoOrientacao(
-                    txtEmail.getText(),
-                    emailOrientador
-            );
-            solicitacao.criar();
+            // Cria uma solicitação de orientação apenas se um orientador foi selecionado
+            if (emailOrientador != null) {
+                SolicitacaoOrientacao solicitacao = new SolicitacaoOrientacao(
+                        txtEmail.getText(),
+                        emailOrientador
+                );
+                solicitacao.criar();
+            }
         } else if (tipo.equals("Orientador")) {
             Orientador orientador = new Orientador(
                     txtNome.getText(),
@@ -191,7 +239,46 @@ public class CadastroController {
             professorTG.cadastrar();
         }
 
-        mostrarAlertaSucesso("Cadastro realizado", "Usuário cadastrado com sucesso!");
+        // Faz login automático após cadastro bem-sucedido
+        fazerLoginAutomatico(event, txtEmail.getText(), txtSenha.getText(), tipo);
+    }
+    
+    /**
+     * Realiza login automático após cadastro e navega para a tela apropriada
+     */
+    private void fazerLoginAutomatico(ActionEvent event, String email, String senha, String tipo) throws IOException {
+        try {
+            // Realiza login usando o Connector
+            Connector connector = new Connector();
+            String tipoUsuario = connector.login(email, senha);
+            
+            if (tipoUsuario == null || tipoUsuario.isEmpty()) {
+                mostrarAlertaErro("Erro no login", "Cadastro realizado, mas não foi possível fazer login automático. Por favor, faça login manualmente.");
+                return;
+            }
+            
+            // Define o email logado no LoginController
+            LoginController.setEmailLogado(email);
+            
+            // Navega para a tela apropriada
+            switch (tipoUsuario) {
+                case "Aluno":
+                    NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/Aluno/aluno-principal.fxml", null);
+                    break;
+                case "Orientador":
+                    NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/Orientador/orientador-principal.fxml", null);
+                    break;
+                case "ProfessorTG":
+                    NavigationService.navegarParaTelaCheia(event, "/com/example/technocode/ProfessorTG/professor-tg-principal.fxml", null);
+                    break;
+                default:
+                    mostrarAlertaErro("Erro no login", "Tipo de usuário não reconhecido.");
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarAlertaErro("Erro no login", "Cadastro realizado, mas ocorreu um erro ao fazer login automático. Por favor, faça login manualmente.");
+        }
     }
 
     private boolean validarEmail(String email) {
@@ -207,14 +294,40 @@ public class CadastroController {
         alert.showAndWait();
     }
 
-    private void mostrarAlertaSucesso(String titulo, String mensagem) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Cadastro Realizado");
-        alert.setHeaderText(titulo);
-        alert.setContentText(mensagem);
-        alert.showAndWait();
-    }
-
     public void toggleHboxOrientador(ActionEvent actionEvent) {
+    }
+    
+    /**
+     * Verifica a disciplina do professor selecionado e mostra/oculta o toggle de disciplina
+     */
+    private void verificarDisciplinaProfessor() {
+        if (choiceBoxProfessorTG == null || choiceBoxProfessorTG.getValue() == null) {
+            if (hBoxDisciplinaToggle != null) {
+                hBoxDisciplinaToggle.setVisible(false);
+                hBoxDisciplinaToggle.setManaged(false);
+            }
+            return;
+        }
+
+        String nomeProfessor = choiceBoxProfessorTG.getValue();
+        String emailProfessor = professoresTGMap.get(nomeProfessor);
+        
+        if (emailProfessor != null) {
+            String disciplinaProfessor = ProfessorTG.buscarDisciplinaPorEmail(emailProfessor);
+            
+            // Se o professor for TG1/TG2, mostra o toggle para escolher disciplina
+            if ("TG1/TG2".equals(disciplinaProfessor) && hBoxDisciplinaToggle != null) {
+                hBoxDisciplinaToggle.setVisible(true);
+                hBoxDisciplinaToggle.setManaged(true);
+                // Limpa seleção anterior
+                grupoDisciplina.selectToggle(null);
+            } else {
+                // Se não for TG1/TG2, oculta o toggle
+                if (hBoxDisciplinaToggle != null) {
+                    hBoxDisciplinaToggle.setVisible(false);
+                    hBoxDisciplinaToggle.setManaged(false);
+                }
+            }
+        }
     }
 }

@@ -20,6 +20,7 @@ public class Aluno {
     private String senha;
     private String orientador; // email do orientador
     private String professorTG; // email do professor de TG
+    private String disciplinaTG; // TG1, TG2 ou TG1/TG2
     private String curso;
 
     /**
@@ -29,15 +30,24 @@ public class Aluno {
      * @param senha Senha do aluno
      * @param orientador Email do orientador
      * @param professorTG Email do professor de TG
+     * @param disciplinaTG Disciplina TG (TG1, TG2 ou TG1/TG2)
      * @param curso Curso do aluno (pode ser null)
      */
-    public Aluno(String nome, String email, String senha, String orientador, String professorTG, String curso) {
+    public Aluno(String nome, String email, String senha, String orientador, String professorTG, String disciplinaTG, String curso) {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
         this.orientador = orientador;
         this.professorTG = professorTG;
+        this.disciplinaTG = disciplinaTG;
         this.curso = curso;
+    }
+    
+    /**
+     * Constructor sem disciplinaTG (para compatibilidade)
+     */
+    public Aluno(String nome, String email, String senha, String orientador, String professorTG, String curso) {
+        this(nome, email, senha, orientador, professorTG, null, curso);
     }
 
     /**
@@ -91,13 +101,21 @@ public class Aluno {
         this.professorTG = professorTG;
     }
 
+    public String getDisciplinaTG() {
+        return disciplinaTG;
+    }
+
+    public void setDisciplinaTG(String disciplinaTG) {
+        this.disciplinaTG = disciplinaTG;
+    }
+
     // ============ MÉTODOS DAO ============
 
     /**
      * Cadastra um novo aluno no banco de dados
      */
     public void cadastrar() {
-        String insertSql = "INSERT INTO aluno (nome, email, senha, orientador, professor_tg) VALUES (?, ?, ?, ?, ?)";
+        String insertSql = "INSERT INTO aluno (nome, email, senha, orientador, professor_tg, disciplina_tg) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection con = new Connector().getConnection();
              PreparedStatement pst = con.prepareStatement(insertSql)) {
@@ -106,7 +124,8 @@ public class Aluno {
             pst.setString(2, this.email);
             pst.setString(3, this.senha);
             pst.setString(4, this.orientador);
-            pst.setString(5, this.professorTG); // pode ser null
+            pst.setString(5, this.professorTG);
+            pst.setString(6, this.disciplinaTG);
             pst.executeUpdate();
 
         } catch (SQLException ex) {

@@ -1,5 +1,6 @@
 package com.example.technocode;
 
+import com.example.technocode.Controllers.LoginController;
 import com.example.technocode.config.DatabaseInitializer;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
