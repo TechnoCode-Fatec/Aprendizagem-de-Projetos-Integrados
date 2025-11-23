@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -16,6 +17,14 @@ public class Principal extends Application {
     public void start(Stage stage) throws IOException {
         // Inicializa o banco de dados antes de carregar a interface
         DatabaseInitializer.initialize();
+        
+        // Define o ícone da aplicação
+        try {
+            Image icon = new Image(Principal.class.getResourceAsStream("/com/example/technocode/imagens/icone.png"));
+            stage.getIcons().add(icon);
+        } catch (Exception e) {
+            System.err.println("Erro ao carregar ícone da aplicação: " + e.getMessage());
+        }
         
         FXMLLoader fxmlLoader = new FXMLLoader(Principal.class.getResource("login.fxml"));
         
@@ -45,5 +54,3 @@ public class Principal extends Application {
         });
     }
 }
-
-// feat (us-10): jajbbqjcda

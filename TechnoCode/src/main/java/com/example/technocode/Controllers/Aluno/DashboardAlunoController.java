@@ -5,18 +5,27 @@ import com.example.technocode.model.Aluno;
 import com.example.technocode.model.Orientador;
 import com.example.technocode.model.SolicitacaoOrientacao;
 import com.example.technocode.model.dao.Connector;
+import com.example.technocode.Controllers.Aluno.AlunoFeedbackApiController;
+import com.example.technocode.Controllers.Aluno.AlunoFeedbackApresentacaoController;
+import com.example.technocode.Controllers.Aluno.PrincipalAlunoController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,29 +46,9 @@ public class DashboardAlunoController {
     @FXML
     private Button btnEnviarApresentacao;
     @FXML
-    private Label labelDataUltimoFeedback;
+    private VBox vboxUltimosFeedbacks;
     @FXML
-    private Button btnVerDetalhesFeedback;
-    @FXML
-    private Label labelSecoesApiEnviadas;
-    @FXML
-    private Label labelSecoesApiAvaliadas;
-    @FXML
-    private Label labelPendenciasApi;
-    @FXML
-    private Label labelPendenciasApresentacao;
-    @FXML
-    private Label labelUltimaSecaoEnviada;
-    @FXML
-    private Label labelUltimaVersaoApi;
-    @FXML
-    private Label labelDataHoraUltimaSecao;
-    @FXML
-    private Label labelStatusApresentacao;
-    @FXML
-    private Label labelPendenciasApresentacaoDetalhe;
-    @FXML
-    private Label labelVersaoAtualApresentacao;
+    private VBox vboxProgressoGeral;
     @FXML
     private Label labelDataDefesa;
     @FXML
@@ -68,8 +57,7 @@ public class DashboardAlunoController {
     private Label labelSalaDefesa;
 
     private String emailAluno;
-    private String ultimoFeedbackTipo; // "api" ou "apresentacao"
-    private Map<String, String> ultimoFeedbackDados;
+    private List<Map<String, Object>> ultimosFeedbacks = new ArrayList<>();
 
     @FXML
     public void initialize() {
@@ -84,10 +72,8 @@ public class DashboardAlunoController {
      */
     private void carregarDados() {
         carregarInformacoesAluno();
-        carregarUltimoFeedback();
+        carregarUltimosFeedbacks();
         carregarProgressoGeral();
-        carregarMinhasSecoes();
-        carregarMinhaApresentacao();
         carregarAgendamentoDefesa();
     }
 
@@ -229,179 +215,277 @@ public class DashboardAlunoController {
     }
 
     /**
-     * Carrega informações do último feedback
+     * Carrega os últimos 3 feedbacks (API e Apresentação combinados)
      */
-    private void carregarUltimoFeedback() {
+    private void carregarUltimosFeedbacks() {
+        ultimosFeedbacks.clear();
+        
         try (Connection conn = new Connector().getConnection()) {
-            // Busca último feedback de API (ordenado por horario_feedback)
-            String sqlApi = "SELECT sa.aluno, sa.semestre_curso, sa.ano, sa.semestre_ano, sa.versao, sa.horario_feedback " +
+            // Busca últimos feedbacks de API (formatando horário diretamente no SQL para evitar problemas de timezone)
+            String sqlApi = "SELECT sa.semestre_curso, sa.ano, sa.semestre_ano, sa.versao, " +
+                    "DATE_FORMAT(sa.horario_feedback, '%d/%m/%Y às %H:%i') as horario_formatado, " +
+                    "sa.empresa, sa.horario_feedback " +
                     "FROM secao_api sa " +
                     "WHERE sa.aluno = ? AND sa.horario_feedback IS NOT NULL " +
                     "AND (sa.status_empresa IS NOT NULL OR sa.status_problema IS NOT NULL) " +
-                    "ORDER BY sa.horario_feedback DESC LIMIT 1";
-            
-            Timestamp dataUltimoFeedbackApi = null;
-            Map<String, String> dadosFeedbackApi = null;
+                    "ORDER BY sa.horario_feedback DESC LIMIT 3";
             
             PreparedStatement pstApi = conn.prepareStatement(sqlApi);
             pstApi.setString(1, emailAluno);
             ResultSet rsApi = pstApi.executeQuery();
-            if (rsApi.next()) {
-                dataUltimoFeedbackApi = rsApi.getTimestamp("horario_feedback");
-                dadosFeedbackApi = new java.util.HashMap<>();
-                dadosFeedbackApi.put("tipo", "api");
-                dadosFeedbackApi.put("semestre_curso", rsApi.getString("semestre_curso"));
-                dadosFeedbackApi.put("ano", String.valueOf(rsApi.getInt("ano")));
-                dadosFeedbackApi.put("semestre_ano", rsApi.getString("semestre_ano"));
-                dadosFeedbackApi.put("versao", String.valueOf(rsApi.getInt("versao")));
+            
+            while (rsApi.next()) {
+                Map<String, Object> feedback = new java.util.HashMap<>();
+                feedback.put("tipo", "api");
+                feedback.put("semestre_curso", rsApi.getString("semestre_curso"));
+                feedback.put("ano", rsApi.getInt("ano"));
+                feedback.put("semestre_ano", rsApi.getString("semestre_ano"));
+                feedback.put("versao", rsApi.getInt("versao"));
+                feedback.put("empresa", rsApi.getString("empresa"));
+                feedback.put("horario_feedback_formatado", rsApi.getString("horario_formatado"));
+                feedback.put("horario_feedback_timestamp", rsApi.getTimestamp("horario_feedback")); // Para ordenação
+                ultimosFeedbacks.add(feedback);
             }
 
-            // Busca último feedback de Apresentação (ordenado por horario_feedback)
-            String sqlApresentacao = "SELECT sa.aluno, sa.versao, sa.horario_feedback " +
+            // Busca últimos feedbacks de Apresentação (formatando horário diretamente no SQL)
+            String sqlApresentacao = "SELECT sa.versao, DATE_FORMAT(sa.horario_feedback, '%d/%m/%Y às %H:%i') as horario_formatado, " +
+                    "sa.horario_feedback " +
                     "FROM secao_apresentacao sa " +
                     "WHERE sa.aluno = ? AND sa.horario_feedback IS NOT NULL " +
                     "AND (sa.status_nome IS NOT NULL OR sa.status_idade IS NOT NULL) " +
-                    "ORDER BY sa.horario_feedback DESC LIMIT 1";
-            
-            Timestamp dataUltimoFeedbackApresentacao = null;
-            Map<String, String> dadosFeedbackApresentacao = null;
+                    "ORDER BY sa.horario_feedback DESC LIMIT 3";
             
             PreparedStatement pstApresentacao = conn.prepareStatement(sqlApresentacao);
             pstApresentacao.setString(1, emailAluno);
             ResultSet rsApresentacao = pstApresentacao.executeQuery();
-            if (rsApresentacao.next()) {
-                dataUltimoFeedbackApresentacao = rsApresentacao.getTimestamp("horario_feedback");
-                dadosFeedbackApresentacao = new java.util.HashMap<>();
-                dadosFeedbackApresentacao.put("tipo", "apresentacao");
-                dadosFeedbackApresentacao.put("versao", String.valueOf(rsApresentacao.getInt("versao")));
+            
+            while (rsApresentacao.next()) {
+                Map<String, Object> feedback = new java.util.HashMap<>();
+                feedback.put("tipo", "apresentacao");
+                feedback.put("versao", rsApresentacao.getInt("versao"));
+                feedback.put("horario_feedback_formatado", rsApresentacao.getString("horario_formatado"));
+                feedback.put("horario_feedback_timestamp", rsApresentacao.getTimestamp("horario_feedback")); // Para ordenação
+                ultimosFeedbacks.add(feedback);
             }
 
-            // Compara qual é mais recente usando horario_feedback
-            if (dataUltimoFeedbackApi != null && dataUltimoFeedbackApresentacao != null) {
-                // Compara qual feedback é mais recente
-                if (dataUltimoFeedbackApi.after(dataUltimoFeedbackApresentacao)) {
-                    mostrarUltimoFeedback(dataUltimoFeedbackApi, dadosFeedbackApi);
-                } else {
-                    mostrarUltimoFeedback(dataUltimoFeedbackApresentacao, dadosFeedbackApresentacao);
-                }
-            } else if (dataUltimoFeedbackApi != null) {
-                mostrarUltimoFeedback(dataUltimoFeedbackApi, dadosFeedbackApi);
-            } else if (dataUltimoFeedbackApresentacao != null) {
-                mostrarUltimoFeedback(dataUltimoFeedbackApresentacao, dadosFeedbackApresentacao);
-            } else {
-                labelDataUltimoFeedback.setText("Nenhum feedback ainda");
-                btnVerDetalhesFeedback.setVisible(false);
+            // Ordena todos os feedbacks por data (mais recente primeiro) usando o timestamp original
+            ultimosFeedbacks.sort((f1, f2) -> {
+                Timestamp t1 = (Timestamp) f1.get("horario_feedback_timestamp");
+                Timestamp t2 = (Timestamp) f2.get("horario_feedback_timestamp");
+                if (t1 == null && t2 == null) return 0;
+                if (t1 == null) return 1;
+                if (t2 == null) return -1;
+                return t2.compareTo(t1); // Ordem decrescente
+            });
+            
+            // Limita aos 3 mais recentes
+            if (ultimosFeedbacks.size() > 3) {
+                ultimosFeedbacks = new ArrayList<>(ultimosFeedbacks.subList(0, 3));
             }
+            
+            if (ultimosFeedbacks.size() > 3) {
+                ultimosFeedbacks = ultimosFeedbacks.subList(0, 3);
+            }
+            
+            mostrarUltimosFeedbacks();
 
         } catch (Exception e) {
             e.printStackTrace();
-            labelDataUltimoFeedback.setText("Erro ao carregar");
+            Label labelErro = new Label("Erro ao carregar feedbacks");
+            labelErro.setTextFill(Color.web("#E74C3C"));
+            vboxUltimosFeedbacks.getChildren().clear();
+            vboxUltimosFeedbacks.getChildren().add(labelErro);
         }
     }
 
-    private void mostrarUltimoFeedback(Timestamp data, Map<String, String> dados) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-        String tipoSecao = "api".equals(dados.get("tipo")) ? "API" : "Apresentação";
-        labelDataUltimoFeedback.setText(sdf.format(data) + " - Seção " + tipoSecao);
-        btnVerDetalhesFeedback.setVisible(true);
-        ultimoFeedbackTipo = dados.get("tipo");
-        ultimoFeedbackDados = dados;
+    private void mostrarUltimosFeedbacks() {
+        vboxUltimosFeedbacks.getChildren().clear();
+        
+        if (ultimosFeedbacks.isEmpty()) {
+            Label labelVazio = new Label("Nenhum feedback ainda");
+            labelVazio.setTextFill(Color.web("#7F8C8D"));
+            labelVazio.setFont(javafx.scene.text.Font.font(11.0));
+            vboxUltimosFeedbacks.getChildren().add(labelVazio);
+            return;
+        }
+        
+        // Cria botões clicáveis para cada feedback
+        for (int i = 0; i < Math.min(3, ultimosFeedbacks.size()); i++) {
+            Map<String, Object> feedback = ultimosFeedbacks.get(i);
+            String horarioFormatado = (String) feedback.get("horario_feedback_formatado");
+            String tipo = (String) feedback.get("tipo");
+            
+            String identificador = "";
+            
+            if ("api".equals(tipo)) {
+                String semestreCurso = (String) feedback.get("semestre_curso");
+                String empresa = (String) feedback.get("empresa");
+                if (semestreCurso != null && empresa != null) {
+                    identificador = semestreCurso + " - " + empresa;
+                } else if (semestreCurso != null) {
+                    identificador = semestreCurso;
+                } else {
+                    identificador = "API";
+                }
+            } else {
+                identificador = "Apresentação";
+            }
+            
+            // Cria um botão estilizado para cada feedback
+            Button btnFeedback = new Button();
+            btnFeedback.setStyle("-fx-background-color: #E8F4F8; -fx-background-radius: 8; -fx-cursor: hand; " +
+                    "-fx-border-color: #3498DB; -fx-border-radius: 8; -fx-border-width: 1; " +
+                    "-fx-padding: 10 15; -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.2), 3, 0, 0, 1);");
+            btnFeedback.setMaxWidth(Double.MAX_VALUE);
+            btnFeedback.setAlignment(Pos.CENTER_LEFT);
+            
+            // Cria HBox com identificador à esquerda e horário à direita
+            HBox hboxFeedback = new HBox();
+            hboxFeedback.setSpacing(10);
+            hboxFeedback.setAlignment(Pos.CENTER_LEFT);
+            
+            Label labelIdentificador = new Label(identificador);
+            labelIdentificador.setTextFill(Color.web("#7F8C8D"));
+            labelIdentificador.setFont(javafx.scene.text.Font.font(11.0));
+            
+            // Region para empurrar o horário para a direita
+            Region spacer = new Region();
+            HBox.setHgrow(spacer, Priority.ALWAYS);
+            
+            Label labelHorario = new Label(horarioFormatado != null ? horarioFormatado : "");
+            labelHorario.setTextFill(Color.web("#2C3E50"));
+            labelHorario.setFont(javafx.scene.text.Font.font("System Bold", 11.0));
+            
+            hboxFeedback.getChildren().addAll(labelIdentificador, spacer, labelHorario);
+            btnFeedback.setGraphic(hboxFeedback);
+            
+            // Adiciona ação de clique
+            final Map<String, Object> feedbackFinal = feedback;
+            final String tipoFinal = tipo;
+            btnFeedback.setOnAction(e -> abrirFeedback(feedbackFinal, tipoFinal));
+            
+            // Efeito hover
+            btnFeedback.setOnMouseEntered(e -> {
+                btnFeedback.setStyle("-fx-background-color: #D6EAF8; -fx-background-radius: 8; -fx-cursor: hand; " +
+                        "-fx-border-color: #3498DB; -fx-border-radius: 8; -fx-border-width: 1.5; " +
+                        "-fx-padding: 10 15; -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.3), 5, 0, 0, 2);");
+            });
+            btnFeedback.setOnMouseExited(e -> {
+                btnFeedback.setStyle("-fx-background-color: #E8F4F8; -fx-background-radius: 8; -fx-cursor: hand; " +
+                        "-fx-border-color: #3498DB; -fx-border-radius: 8; -fx-border-width: 1; " +
+                        "-fx-padding: 10 15; -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.2), 3, 0, 0, 1);");
+            });
+            
+            vboxUltimosFeedbacks.getChildren().add(btnFeedback);
+        }
+    }
+    
+    private void abrirFeedback(Map<String, Object> feedback, String tipo) {
+        if ("api".equals(tipo)) {
+            String semestreCurso = (String) feedback.get("semestre_curso");
+            int ano = (Integer) feedback.get("ano");
+            String semestreAno = (String) feedback.get("semestre_ano");
+            int versao = (Integer) feedback.get("versao");
+            
+            PrincipalAlunoController.getInstance().navegarParaTelaDoCenter(
+                "/com/example/technocode/Aluno/aluno-feedback-api.fxml",
+                controller -> {
+                    if (controller instanceof AlunoFeedbackApiController) {
+                        ((AlunoFeedbackApiController) controller).setIdentificadorSecao(
+                            emailAluno, semestreCurso, ano, semestreAno, versao
+                        );
+                    }
+                }
+            );
+        } else {
+            int versao = (Integer) feedback.get("versao");
+            
+            PrincipalAlunoController.getInstance().navegarParaTelaDoCenter(
+                "/com/example/technocode/Aluno/aluno-feedback-apresentacao.fxml",
+                controller -> {
+                    if (controller instanceof AlunoFeedbackApresentacaoController) {
+                        ((AlunoFeedbackApresentacaoController) controller).setIdentificadorSecao(
+                            emailAluno, versao
+                        );
+                    }
+                }
+            );
+        }
     }
 
     /**
-     * Carrega progresso geral
+     * Carrega progresso geral no formato X/9 com status de aprovação
      */
     private void carregarProgressoGeral() {
+        vboxProgressoGeral.getChildren().clear();
+        
         try (Connection conn = new Connector().getConnection()) {
-            // Seções API enviadas
-            int secoesApiEnviadas = contarSecoesApiEnviadas(conn);
-            labelSecoesApiEnviadas.setText(String.valueOf(secoesApiEnviadas));
-
-            // Seções API avaliadas
-            int secoesApiAvaliadas = contarSecoesApiAvaliadas(conn);
-            labelSecoesApiAvaliadas.setText(String.valueOf(secoesApiAvaliadas));
-
-            // Pendências API
-            int pendenciasApi = contarPendenciasApi(conn);
-            labelPendenciasApi.setText(String.valueOf(pendenciasApi));
-
-            // Pendências Apresentação
-            int pendenciasApresentacao = contarPendenciasApresentacao(conn);
-            labelPendenciasApresentacao.setText(String.valueOf(pendenciasApresentacao));
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    private int contarSecoesApresentacaoEnviadas(Connection conn) throws SQLException {
-        String sql = "SELECT COUNT(DISTINCT versao) FROM secao_apresentacao WHERE aluno = ?";
-        PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, emailAluno);
-        ResultSet rs = pst.executeQuery();
-        return rs.next() ? rs.getInt(1) : 0;
-    }
-
-    private int contarSecoesApresentacaoAvaliadas(Connection conn) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM ( " +
-                "SELECT aluno, MAX(versao) as versao_recente " +
-                "FROM secao_apresentacao WHERE aluno = ? " +
-                "GROUP BY aluno " +
-                ") AS versoes_recentes " +
-                "INNER JOIN secao_apresentacao fa ON " +
-                "  versoes_recentes.aluno = fa.aluno AND " +
-                "  versoes_recentes.versao_recente = fa.versao " +
-                "WHERE (fa.status_nome IS NOT NULL OR fa.status_idade IS NOT NULL)";
-        PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, emailAluno);
-        ResultSet rs = pst.executeQuery();
-        return rs.next() ? rs.getInt(1) : 0;
-    }
-
-    /**
-     * Carrega informações das últimas seções
-     */
-    private void carregarMinhasSecoes() {
-        try (Connection conn = new Connector().getConnection()) {
-            // Busca última seção API enviada (com data)
-            String sqlUltimaApi = "SELECT semestre_curso, ano, semestre_ano, versao, horario_secao " +
+            // Busca todas as seções API (última versão de cada semestre)
+            String sqlApi = "SELECT sa.semestre_curso, sa.ano, sa.semestre_ano, sa.versao, sa.empresa " +
+                    "FROM ( " +
+                    "SELECT aluno, semestre_curso, ano, semestre_ano, MAX(versao) as versao_recente " +
                     "FROM secao_api WHERE aluno = ? " +
-                    "ORDER BY horario_secao DESC LIMIT 1";
+                    "GROUP BY aluno, semestre_curso, ano, semestre_ano " +
+                    ") AS versoes_recentes " +
+                    "INNER JOIN secao_api sa ON " +
+                    "  versoes_recentes.aluno = sa.aluno AND " +
+                    "  versoes_recentes.semestre_curso = sa.semestre_curso AND " +
+                    "  versoes_recentes.ano = sa.ano AND " +
+                    "  versoes_recentes.semestre_ano = sa.semestre_ano AND " +
+                    "  versoes_recentes.versao_recente = sa.versao";
             
-            PreparedStatement pstApi = conn.prepareStatement(sqlUltimaApi);
+            PreparedStatement pstApi = conn.prepareStatement(sqlApi);
             pstApi.setString(1, emailAluno);
             ResultSet rsApi = pstApi.executeQuery();
             
-            // Busca última versão de apresentação (sem data, ordenado por versão)
-            String sqlUltimaApresentacao = "SELECT versao " +
-                    "FROM secao_apresentacao WHERE aluno = ? " +
-                    "ORDER BY versao DESC LIMIT 1";
+            List<Map<String, Object>> secoesApi = new ArrayList<>();
+            while (rsApi.next()) {
+                Map<String, Object> secao = new java.util.HashMap<>();
+                secao.put("tipo", "api");
+                secao.put("semestre_curso", rsApi.getString("semestre_curso"));
+                secao.put("ano", rsApi.getInt("ano"));
+                secao.put("semestre_ano", rsApi.getString("semestre_ano"));
+                secao.put("versao", rsApi.getInt("versao"));
+                secao.put("empresa", rsApi.getString("empresa"));
+                secoesApi.add(secao);
+            }
             
-            PreparedStatement pstApresentacao = conn.prepareStatement(sqlUltimaApresentacao);
+            // Ordena as seções API pelo número do semestre do curso (1°, 2°, 3°, etc.)
+            secoesApi.sort((s1, s2) -> {
+                String sem1 = (String) s1.get("semestre_curso");
+                String sem2 = (String) s2.get("semestre_curso");
+                
+                if (sem1 == null && sem2 == null) return 0;
+                if (sem1 == null) return 1;
+                if (sem2 == null) return -1;
+                
+                // Extrai o número do semestre (ex: "1°Semestre" -> 1)
+                int num1 = extrairNumeroSemestre(sem1);
+                int num2 = extrairNumeroSemestre(sem2);
+                
+                return Integer.compare(num1, num2);
+            });
+            
+            // Busca última versão de apresentação
+            String sqlApresentacao = "SELECT MAX(versao) as versao_maxima " +
+                    "FROM secao_apresentacao WHERE aluno = ?";
+            
+            PreparedStatement pstApresentacao = conn.prepareStatement(sqlApresentacao);
             pstApresentacao.setString(1, emailAluno);
             ResultSet rsApresentacao = pstApresentacao.executeQuery();
             
-            boolean temApi = rsApi.next();
-            boolean temApresentacao = rsApresentacao.next();
+            if (rsApresentacao.next() && rsApresentacao.getInt("versao_maxima") > 0) {
+                Map<String, Object> apresentacao = new java.util.HashMap<>();
+                apresentacao.put("tipo", "apresentacao");
+                apresentacao.put("versao", rsApresentacao.getInt("versao_maxima"));
+                
+                // Adiciona apresentação primeiro
+                adicionarItemProgresso(apresentacao, conn);
+            }
             
-            if (temApi) {
-                // Prioriza mostrar API se existir, pois tem data
-                labelUltimaSecaoEnviada.setText("Seção API");
-                labelUltimaVersaoApi.setText("Versão " + rsApi.getInt("versao"));
-                Timestamp horario = rsApi.getTimestamp("horario_secao");
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-                labelDataHoraUltimaSecao.setText(sdf.format(horario));
-            } else if (temApresentacao) {
-                // Se só tiver apresentação, mostra ela
-                labelUltimaSecaoEnviada.setText("Seção de Apresentação");
-                labelUltimaVersaoApi.setText("Versão " + rsApresentacao.getInt("versao"));
-                labelDataHoraUltimaSecao.setText("Data não disponível");
-            } else {
-                labelUltimaSecaoEnviada.setText("Nenhuma seção ainda");
-                labelUltimaVersaoApi.setText("-");
-                labelDataHoraUltimaSecao.setText("-");
+            // Adiciona seções API
+            for (Map<String, Object> secao : secoesApi) {
+                adicionarItemProgresso(secao, conn);
             }
 
         } catch (Exception e) {
@@ -409,177 +493,202 @@ public class DashboardAlunoController {
         }
     }
 
-    /**
-     * Carrega informações da apresentação
-     */
-    private void carregarMinhaApresentacao() {
-        try (Connection conn = new Connector().getConnection()) {
-            String sql = "SELECT MAX(versao) as versao_maxima, COUNT(*) as total " +
-                    "FROM secao_apresentacao WHERE aluno = ?";
+    private void adicionarItemProgresso(Map<String, Object> secao, Connection conn) throws SQLException {
+        String tipo = (String) secao.get("tipo");
+        int aprovados = 0;
+        boolean aprovada = false;
+        String nome = "";
+        
+        if ("apresentacao".equals(tipo)) {
+            int versao = (Integer) secao.get("versao");
+            nome = "Apresentação";
+            
+            String sql = "SELECT status_nome, status_idade, status_curso, status_motivacao, " +
+                        "status_historico, status_historico_profissional, status_github, " +
+                        "status_linkedin, status_conhecimentos " +
+                        "FROM secao_apresentacao WHERE aluno = ? AND versao = ?";
             
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, emailAluno);
+            pst.setInt(2, versao);
             ResultSet rs = pst.executeQuery();
             
-            if (rs.next() && rs.getInt("total") > 0) {
-                int versaoMaxima = rs.getInt("versao_maxima");
-                labelVersaoAtualApresentacao.setText("Versão " + versaoMaxima);
+            if (rs.next()) {
+                if ("Aprovado".equals(rs.getString("status_nome"))) aprovados++;
+                if ("Aprovado".equals(rs.getString("status_idade"))) aprovados++;
+                if ("Aprovado".equals(rs.getString("status_curso"))) aprovados++;
+                if ("Aprovado".equals(rs.getString("status_motivacao"))) aprovados++;
+                if ("Aprovado".equals(rs.getString("status_historico"))) aprovados++;
+                if ("Aprovado".equals(rs.getString("status_historico_profissional"))) aprovados++;
+                if ("Aprovado".equals(rs.getString("status_github"))) aprovados++;
+                if ("Aprovado".equals(rs.getString("status_linkedin"))) aprovados++;
+                if ("Aprovado".equals(rs.getString("status_conhecimentos"))) aprovados++;
                 
-                // Primeiro verifica se a apresentação foi avaliada (se algum status não é NULL)
-                String sqlAvaliada = "SELECT COUNT(*) as avaliada " +
-                        "FROM secao_apresentacao " +
-                        "WHERE aluno = ? AND versao = ? " +
-                        "AND (status_nome IS NOT NULL OR status_idade IS NOT NULL OR status_curso IS NOT NULL " +
-                        "OR status_motivacao IS NOT NULL OR status_historico IS NOT NULL OR status_github IS NOT NULL " +
-                        "OR status_linkedin IS NOT NULL OR status_conhecimentos IS NOT NULL)";
-                
-                PreparedStatement pstAvaliada = conn.prepareStatement(sqlAvaliada);
-                pstAvaliada.setString(1, emailAluno);
-                pstAvaliada.setInt(2, versaoMaxima);
-                ResultSet rsAvaliada = pstAvaliada.executeQuery();
-                
-                boolean foiAvaliada = false;
-                if (rsAvaliada.next()) {
-                    foiAvaliada = rsAvaliada.getInt("avaliada") > 0;
-                }
-                
-                if (!foiAvaliada) {
-                    // Apresentação ainda não foi avaliada pelo orientador
-                    labelStatusApresentacao.setText("Aguardando avaliação");
-                    labelStatusApresentacao.setStyle("-fx-text-fill: #F57C00;");
-                    labelPendenciasApresentacaoDetalhe.setText("0");
-                } else {
-                    // Verifica se há status "Revisar"
-                    String sqlStatus = "SELECT COUNT(*) as pendentes " +
-                            "FROM secao_apresentacao " +
-                            "WHERE aluno = ? AND versao = ? " +
-                            "AND (status_nome = 'Revisar' OR status_idade = 'Revisar' OR status_curso = 'Revisar' " +
-                            "OR status_motivacao = 'Revisar' OR status_historico = 'Revisar' OR status_github = 'Revisar' " +
-                            "OR status_linkedin = 'Revisar' OR status_conhecimentos = 'Revisar')";
-                    
-                    PreparedStatement pstStatus = conn.prepareStatement(sqlStatus);
-                    pstStatus.setString(1, emailAluno);
-                    pstStatus.setInt(2, versaoMaxima);
-                    ResultSet rsStatus = pstStatus.executeQuery();
-                    
-                    if (rsStatus.next()) {
-                        int pendentes = rsStatus.getInt("pendentes");
-                        labelPendenciasApresentacaoDetalhe.setText(String.valueOf(pendentes));
-                        
-                        if (pendentes > 0) {
-                            labelStatusApresentacao.setText("Revisão necessária");
-                            labelStatusApresentacao.setStyle("-fx-text-fill: #E74C3C;");
-                        } else {
-                            labelStatusApresentacao.setText("Aprovada");
-                            labelStatusApresentacao.setStyle("-fx-text-fill: #27AE60;");
-                        }
-                    }
-                }
-            } else {
-                labelStatusApresentacao.setText("Nenhuma apresentação");
-                labelVersaoAtualApresentacao.setText("-");
-                labelPendenciasApresentacaoDetalhe.setText("0");
+                aprovada = aprovados == 9;
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        } else {
+            String semestreCurso = (String) secao.get("semestre_curso");
+            int ano = (Integer) secao.get("ano");
+            String semestreAno = (String) secao.get("semestre_ano");
+            int versao = (Integer) secao.get("versao");
+            String empresa = (String) secao.get("empresa");
+            
+            if (semestreCurso != null && empresa != null) {
+                nome = semestreCurso + " - " + empresa;
+            } else if (semestreCurso != null) {
+                nome = semestreCurso;
+            } else {
+                nome = "API";
+            }
+            
+            String sql = "SELECT status_empresa, status_descricao_empresa, status_repositorio, " +
+                        "status_problema, status_solucao, status_tecnologias, status_contribuicoes, " +
+                        "status_hard_skills, status_soft_skills " +
+                        "FROM secao_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? " +
+                        "AND semestre_ano = ? AND versao = ?";
+            
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, emailAluno);
+            pst.setString(2, semestreCurso);
+            pst.setInt(3, ano);
+            pst.setString(4, semestreAno);
+            pst.setInt(5, versao);
+            ResultSet rs = pst.executeQuery();
+            
+            if (rs.next()) {
+                if ("Aprovado".equals(rs.getString("status_empresa"))) aprovados++;
+                if ("Aprovado".equals(rs.getString("status_descricao_empresa"))) aprovados++;
+                if ("Aprovado".equals(rs.getString("status_repositorio"))) aprovados++;
+                if ("Aprovado".equals(rs.getString("status_problema"))) aprovados++;
+                if ("Aprovado".equals(rs.getString("status_solucao"))) aprovados++;
+                if ("Aprovado".equals(rs.getString("status_tecnologias"))) aprovados++;
+                if ("Aprovado".equals(rs.getString("status_contribuicoes"))) aprovados++;
+                if ("Aprovado".equals(rs.getString("status_hard_skills"))) aprovados++;
+                if ("Aprovado".equals(rs.getString("status_soft_skills"))) aprovados++;
+                
+                aprovada = aprovados == 9;
+            }
         }
+        
+        // Cria um botão clicável para o progresso (estilo similar aos feedbacks, mais estreito)
+        Button btnProgresso = new Button();
+        btnProgresso.setMaxWidth(Double.MAX_VALUE);
+        btnProgresso.setAlignment(Pos.CENTER_LEFT);
+        btnProgresso.setStyle("-fx-background-color: #E8F4F8; -fx-background-radius: 8; -fx-cursor: hand; " +
+                "-fx-border-color: #27AE60; -fx-border-radius: 8; -fx-border-width: 1; " +
+                "-fx-padding: 10 12; -fx-effect: dropshadow(gaussian, rgba(39,174,96,0.2), 3, 0, 0, 1);");
+        
+        HBox hboxConteudo = new HBox();
+        hboxConteudo.setSpacing(10);
+        hboxConteudo.setAlignment(Pos.CENTER_LEFT);
+        
+        Label labelNome = new Label(nome);
+        labelNome.setTextFill(Color.web("#7F8C8D"));
+        labelNome.setFont(javafx.scene.text.Font.font(11.0));
+        
+        // Region para empurrar o progresso para a direita
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        
+        String textoProgresso = String.format("%d/9", aprovados);
+        if (aprovada) {
+            textoProgresso += " ✓ Aprovada";
+        }
+        
+        Label labelProgresso = new Label(textoProgresso);
+        labelProgresso.setTextFill(aprovada ? Color.web("#27AE60") : Color.web("#2C3E50"));
+        labelProgresso.setFont(javafx.scene.text.Font.font("System Bold", 11.0));
+        
+        hboxConteudo.getChildren().addAll(labelNome, spacer, labelProgresso);
+        btnProgresso.setGraphic(hboxConteudo);
+        
+        // Adiciona ação de clique
+        final Map<String, Object> secaoFinal = secao;
+        final String tipoFinal = tipo;
+        btnProgresso.setOnAction(e -> abrirSecaoProgresso(secaoFinal, tipoFinal));
+        
+        // Efeito hover (ajustado para não sumir no scroll pane)
+        btnProgresso.setOnMouseEntered(e -> {
+            btnProgresso.setStyle("-fx-background-color: #D6EAF8; -fx-background-radius: 8; -fx-cursor: hand; " +
+                    "-fx-border-color: #27AE60; -fx-border-radius: 8; -fx-border-width: 1.5; " +
+                    "-fx-padding: 10 12; -fx-effect: dropshadow(gaussian, rgba(39,174,96,0.3), 4, 0, 0, 1.5);");
+        });
+        btnProgresso.setOnMouseExited(e -> {
+            btnProgresso.setStyle("-fx-background-color: #E8F4F8; -fx-background-radius: 8; -fx-cursor: hand; " +
+                    "-fx-border-color: #27AE60; -fx-border-radius: 8; -fx-border-width: 1; " +
+                    "-fx-padding: 10 12; -fx-effect: dropshadow(gaussian, rgba(39,174,96,0.2), 3, 0, 0, 1);");
+        });
+        
+        vboxProgressoGeral.getChildren().add(btnProgresso);
     }
-
-    // Métodos auxiliares para contar estatísticas
-    private int contarSecoesApiEnviadas(Connection conn) throws SQLException {
-        String sql = "SELECT COUNT(DISTINCT CONCAT(semestre_curso, '-', ano, '-', semestre_ano)) " +
-                "FROM secao_api WHERE aluno = ?";
-        PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, emailAluno);
-        ResultSet rs = pst.executeQuery();
-        return rs.next() ? rs.getInt(1) : 0;
-    }
-
-    private int contarSecoesApiAvaliadas(Connection conn) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM ( " +
-                "SELECT aluno, semestre_curso, ano, semestre_ano, MAX(versao) as versao_recente " +
-                "FROM secao_api WHERE aluno = ? " +
-                "GROUP BY aluno, semestre_curso, ano, semestre_ano " +
-                ") AS versoes_recentes " +
-                "INNER JOIN secao_api fa ON " +
-                "  versoes_recentes.aluno = fa.aluno AND " +
-                "  versoes_recentes.semestre_curso = fa.semestre_curso AND " +
-                "  versoes_recentes.ano = fa.ano AND " +
-                "  versoes_recentes.semestre_ano = fa.semestre_ano AND " +
-                "  versoes_recentes.versao_recente = fa.versao " +
-                "WHERE (fa.status_empresa IS NOT NULL OR fa.status_problema IS NOT NULL)";
-        PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, emailAluno);
-        ResultSet rs = pst.executeQuery();
-        return rs.next() ? rs.getInt(1) : 0;
-    }
-
-    private int contarPendenciasApi(Connection conn) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM ( " +
-                "SELECT aluno, semestre_curso, ano, semestre_ano, MAX(versao) as versao_recente " +
-                "FROM secao_api WHERE aluno = ? " +
-                "GROUP BY aluno, semestre_curso, ano, semestre_ano " +
-                ") AS versoes_recentes " +
-                "INNER JOIN secao_api fa ON " +
-                "  versoes_recentes.aluno = fa.aluno AND " +
-                "  versoes_recentes.semestre_curso = fa.semestre_curso AND " +
-                "  versoes_recentes.ano = fa.ano AND " +
-                "  versoes_recentes.semestre_ano = fa.semestre_ano AND " +
-                "  versoes_recentes.versao_recente = fa.versao " +
-                "WHERE fa.status_empresa = 'Revisar' OR fa.status_problema = 'Revisar' " +
-                "OR fa.status_solucao = 'Revisar' OR fa.status_tecnologias = 'Revisar'";
-        PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, emailAluno);
-        ResultSet rs = pst.executeQuery();
-        return rs.next() ? rs.getInt(1) : 0;
-    }
-
-    private int contarPendenciasApresentacao(Connection conn) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM ( " +
-                "SELECT aluno, MAX(versao) as versao_recente " +
-                "FROM secao_apresentacao WHERE aluno = ? " +
-                "GROUP BY aluno " +
-                ") AS versoes_recentes " +
-                "INNER JOIN secao_apresentacao fa ON " +
-                "  versoes_recentes.aluno = fa.aluno AND " +
-                "  versoes_recentes.versao_recente = fa.versao " +
-                "WHERE fa.status_nome = 'Revisar' OR fa.status_idade = 'Revisar' " +
-                "OR fa.status_curso = 'Revisar' OR fa.status_motivacao = 'Revisar'";
-        PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, emailAluno);
-        ResultSet rs = pst.executeQuery();
-        return rs.next() ? rs.getInt(1) : 0;
-    }
-
-    // Métodos de navegação
-    @FXML
-    private void verDetalhesFeedback(ActionEvent event) throws IOException {
-        if (ultimoFeedbackDados == null) return;
+    
+    private void abrirSecaoProgresso(Map<String, Object> secao, String tipo) {
+        if ("apresentacao".equals(tipo)) {
+            int versao = (Integer) secao.get("versao");
         
         PrincipalAlunoController.getInstance().navegarParaTelaDoCenter(
-            "api".equals(ultimoFeedbackTipo) ? 
-                "/com/example/technocode/Aluno/aluno-feedback-api.fxml" :
                 "/com/example/technocode/Aluno/aluno-feedback-apresentacao.fxml",
             controller -> {
-                if ("api".equals(ultimoFeedbackTipo) && controller instanceof AlunoFeedbackApiController) {
-                    ((AlunoFeedbackApiController) controller).setIdentificadorSecao(
-                        emailAluno,
-                        ultimoFeedbackDados.get("semestre_curso"),
-                        Integer.parseInt(ultimoFeedbackDados.get("ano")),
-                        ultimoFeedbackDados.get("semestre_ano"),
-                        Integer.parseInt(ultimoFeedbackDados.get("versao"))
-                    );
-                } else if ("apresentacao".equals(ultimoFeedbackTipo) && controller instanceof AlunoFeedbackApresentacaoController) {
+                    if (controller instanceof AlunoFeedbackApresentacaoController) {
                     ((AlunoFeedbackApresentacaoController) controller).setIdentificadorSecao(
-                        emailAluno,
-                        Integer.parseInt(ultimoFeedbackDados.get("versao"))
+                            emailAluno, versao
                     );
                 }
             }
         );
+        } else {
+            String semestreCurso = (String) secao.get("semestre_curso");
+            int ano = (Integer) secao.get("ano");
+            String semestreAno = (String) secao.get("semestre_ano");
+            int versao = (Integer) secao.get("versao");
+            
+            PrincipalAlunoController.getInstance().navegarParaTelaDoCenter(
+                "/com/example/technocode/Aluno/aluno-feedback-api.fxml",
+                controller -> {
+                    if (controller instanceof AlunoFeedbackApiController) {
+                        ((AlunoFeedbackApiController) controller).setIdentificadorSecao(
+                            emailAluno, semestreCurso, ano, semestreAno, versao
+                        );
+                    }
+                }
+            );
+        }
     }
 
+
+
+
+    /**
+     * Extrai o número do semestre do curso (ex: "1°Semestre" -> 1)
+     */
+    private int extrairNumeroSemestre(String semestreCurso) {
+        if (semestreCurso == null || semestreCurso.isEmpty()) {
+            return 0;
+        }
+        
+        // Remove espaços e tenta encontrar o número
+        String temp = semestreCurso.trim();
+        // Procura por um número seguido de °
+        int inicio = 0;
+        while (inicio < temp.length() && !Character.isDigit(temp.charAt(inicio))) {
+            inicio++;
+        }
+        
+        if (inicio >= temp.length()) {
+            return 0;
+        }
+        
+        int fim = inicio;
+        while (fim < temp.length() && Character.isDigit(temp.charAt(fim))) {
+            fim++;
+        }
+        
+        try {
+            return Integer.parseInt(temp.substring(inicio, fim));
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
 
     /**
      * Método público para atualizar estatísticas
