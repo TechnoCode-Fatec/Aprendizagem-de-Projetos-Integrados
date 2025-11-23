@@ -9,10 +9,18 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TableCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.geometry.Pos;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.input.MouseEvent;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,8 +45,25 @@ public class DashboardOrientadorController {
     private Label labelSolicitacoesPendentes;
     @FXML
     private VBox vboxSolicitacoesPendentes;
+    @FXML
+    private VBox cardSecoesPendentes;
+    @FXML
+    private VBox vboxTabelaSecoesPendentes;
+    @FXML
+    private TableView<Map<String, String>> tabelaSecoesPendentes;
+    @FXML
+    private TableColumn<Map<String, String>, String> colNomeAluno;
+    @FXML
+    private TableColumn<Map<String, String>, String> colEmailAluno;
+    @FXML
+    private TableColumn<Map<String, String>, String> colTipoSecao;
+    @FXML
+    private TableColumn<Map<String, String>, String> colIdentificador;
+    @FXML
+    private TableColumn<Map<String, String>, String> colAcao;
 
     private String emailOrientador;
+    private boolean tabelaSecoesPendentesVisivel = false;
 
     @FXML
     public void initialize() {
@@ -46,6 +71,7 @@ public class DashboardOrientadorController {
         carregarInformacoesOrientador();
         carregarEstatisticas();
         carregarSolicitacoesPendentes();
+        configurarTabelaSecoesPendentes();
     }
 
     private void carregarInformacoesOrientador() {
@@ -231,8 +257,188 @@ public class DashboardOrientadorController {
     }
 
     @FXML
-    private void clicarCardSecoesPendentes(ActionEvent event) {
-        navegarParaAlunosOrientados(event);
+    private void clicarCardSecoesPendentes(MouseEvent event) {
+        // Alterna a visibilidade da tabela
+        tabelaSecoesPendentesVisivel = !tabelaSecoesPendentesVisivel;
+        
+        if (tabelaSecoesPendentesVisivel) {
+            vboxTabelaSecoesPendentes.setVisible(true);
+            vboxTabelaSecoesPendentes.setManaged(true);
+            carregarTabelaSecoesPendentes();
+        } else {
+            vboxTabelaSecoesPendentes.setVisible(false);
+            vboxTabelaSecoesPendentes.setManaged(false);
+        }
+    }
+    
+    private void configurarTabelaSecoesPendentes() {
+        // Configura colunas da tabela
+        colNomeAluno.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("nome_aluno")));
+        colNomeAluno.setCellFactory(col -> criarCellCentralizado());
+        
+        colEmailAluno.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("email_aluno")));
+        colEmailAluno.setCellFactory(col -> criarCellCentralizado());
+        
+        colTipoSecao.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("tipo_secao")));
+        colTipoSecao.setCellFactory(col -> criarCellCentralizado());
+        
+        colIdentificador.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("identificador")));
+        colIdentificador.setCellFactory(col -> criarCellCentralizado());
+        
+        // Coluna de ação com botão para abrir a seção
+        colAcao.setCellValueFactory(data -> new SimpleStringProperty(""));
+        colAcao.setCellFactory(col -> new TableCell<Map<String, String>, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    Map<String, String> secao = getTableView().getItems().get(getIndex());
+                    Button btnAbrir = new Button("Abrir");
+                    btnAbrir.setStyle("-fx-background-color: #3498DB; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white; -fx-padding: 5 15; -fx-font-size: 12px;");
+                    btnAbrir.setOnAction(e -> abrirSecao(secao));
+                    setGraphic(btnAbrir);
+                    setAlignment(Pos.CENTER);
+                }
+            }
+        });
+    }
+    
+    private TableCell<Map<String, String>, String> criarCellCentralizado() {
+        TableCell<Map<String, String>, String> cell = new TableCell<Map<String, String>, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                }
+                setAlignment(Pos.CENTER);
+            }
+        };
+        return cell;
+    }
+    
+    private void carregarTabelaSecoesPendentes() {
+        try (Connection conn = new Connector().getConnection()) {
+            ObservableList<Map<String, String>> secoes = FXCollections.observableArrayList();
+            
+            // Busca apresentações pendentes
+            String sqlApresentacao = "SELECT a.nome as nome_aluno, a.email as email_aluno, " +
+                    "'Apresentação' as tipo_secao, " +
+                    "CONCAT('Versão ', sa.versao) as identificador, " +
+                    "sa.aluno, sa.versao " +
+                    "FROM ( " +
+                    "  SELECT aluno, MAX(versao) as versao " +
+                    "  FROM secao_apresentacao " +
+                    "  WHERE aluno IN (SELECT email FROM aluno WHERE orientador = ?) " +
+                    "  GROUP BY aluno " +
+                    ") AS versoes_recentes " +
+                    "INNER JOIN secao_apresentacao sa ON " +
+                    "  versoes_recentes.aluno = sa.aluno AND versoes_recentes.versao = sa.versao " +
+                    "INNER JOIN aluno a ON sa.aluno = a.email " +
+                    "WHERE (sa.status_nome IS NULL AND sa.status_idade IS NULL AND sa.status_curso IS NULL " +
+                    "  AND sa.status_motivacao IS NULL AND sa.status_historico IS NULL " +
+                    "  AND sa.status_historico_profissional IS NULL AND sa.status_github IS NULL " +
+                    "  AND sa.status_linkedin IS NULL AND sa.status_conhecimentos IS NULL)";
+            
+            PreparedStatement pst1 = conn.prepareStatement(sqlApresentacao);
+            pst1.setString(1, emailOrientador);
+            ResultSet rs1 = pst1.executeQuery();
+            
+            while (rs1.next()) {
+                Map<String, String> secao = new java.util.HashMap<>();
+                secao.put("nome_aluno", rs1.getString("nome_aluno"));
+                secao.put("email_aluno", rs1.getString("email_aluno"));
+                secao.put("tipo_secao", rs1.getString("tipo_secao"));
+                secao.put("identificador", rs1.getString("identificador"));
+                secao.put("tipo", "apresentacao");
+                secao.put("aluno", rs1.getString("aluno"));
+                secao.put("versao", String.valueOf(rs1.getInt("versao")));
+                secoes.add(secao);
+            }
+            
+            // Busca seções API pendentes
+            String sqlApi = "SELECT a.nome as nome_aluno, a.email as email_aluno, " +
+                    "'API' as tipo_secao, " +
+                    "CONCAT(sa.semestre_curso, ' (', sa.ano, '-', sa.semestre_ano, ') - Versão ', sa.versao) as identificador, " +
+                    "sa.aluno, sa.semestre_curso, sa.ano, sa.semestre_ano, sa.versao " +
+                    "FROM ( " +
+                    "  SELECT aluno, semestre_curso, ano, semestre_ano, MAX(versao) as versao " +
+                    "  FROM secao_api " +
+                    "  WHERE aluno IN (SELECT email FROM aluno WHERE orientador = ?) " +
+                    "  GROUP BY aluno, semestre_curso, ano, semestre_ano " +
+                    ") AS vr " +
+                    "INNER JOIN secao_api sa ON " +
+                    "  vr.aluno = sa.aluno AND vr.semestre_curso = sa.semestre_curso " +
+                    "  AND vr.ano = sa.ano AND vr.semestre_ano = sa.semestre_ano AND vr.versao = sa.versao " +
+                    "INNER JOIN aluno a ON sa.aluno = a.email " +
+                    "WHERE (sa.status_empresa IS NULL AND sa.status_descricao_empresa IS NULL " +
+                    "  AND sa.status_repositorio IS NULL AND sa.status_problema IS NULL " +
+                    "  AND sa.status_solucao IS NULL AND sa.status_tecnologias IS NULL " +
+                    "  AND sa.status_contribuicoes IS NULL AND sa.status_hard_skills IS NULL " +
+                    "  AND sa.status_soft_skills IS NULL)";
+            
+            PreparedStatement pst2 = conn.prepareStatement(sqlApi);
+            pst2.setString(1, emailOrientador);
+            ResultSet rs2 = pst2.executeQuery();
+            
+            while (rs2.next()) {
+                Map<String, String> secao = new java.util.HashMap<>();
+                secao.put("nome_aluno", rs2.getString("nome_aluno"));
+                secao.put("email_aluno", rs2.getString("email_aluno"));
+                secao.put("tipo_secao", rs2.getString("tipo_secao"));
+                secao.put("identificador", rs2.getString("identificador"));
+                secao.put("tipo", "api");
+                secao.put("aluno", rs2.getString("aluno"));
+                secao.put("semestre_curso", rs2.getString("semestre_curso"));
+                secao.put("ano", String.valueOf(rs2.getInt("ano")));
+                secao.put("semestre_ano", rs2.getString("semestre_ano"));
+                secao.put("versao", String.valueOf(rs2.getInt("versao")));
+                secoes.add(secao);
+            }
+            
+            tabelaSecoesPendentes.setItems(secoes);
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            mostrarAlertaErro("Erro", "Erro ao carregar seções pendentes: " + e.getMessage());
+        }
+    }
+    
+    private void abrirSecao(Map<String, String> secao) {
+        String tipo = secao.get("tipo");
+        String emailAluno = secao.get("aluno");
+        
+        if (OrientadorPrincipalController.getInstance() != null) {
+            if ("apresentacao".equals(tipo)) {
+                int versao = Integer.parseInt(secao.get("versao"));
+                OrientadorPrincipalController.getInstance().navegarParaTelaDoCenter(
+                    "/com/example/technocode/Orientador/orientador-corrigir-apresentacao.fxml",
+                    controller -> {
+                        if (controller instanceof OrientadorCorrigirApresentacaoController) {
+                            ((OrientadorCorrigirApresentacaoController) controller).setIdentificadorSecao(emailAluno, versao);
+                        }
+                    }
+                );
+            } else if ("api".equals(tipo)) {
+                String semestreCurso = secao.get("semestre_curso");
+                int ano = Integer.parseInt(secao.get("ano"));
+                String semestreAno = secao.get("semestre_ano");
+                int versao = Integer.parseInt(secao.get("versao"));
+                OrientadorPrincipalController.getInstance().navegarParaTelaDoCenter(
+                    "/com/example/technocode/Orientador/orientador-corrigir-api.fxml",
+                    controller -> {
+                        if (controller instanceof OrientadorCorrigirApiController) {
+                            ((OrientadorCorrigirApiController) controller).setIdentificadorSecao(emailAluno, semestreCurso, ano, semestreAno, versao);
+                        }
+                    }
+                );
+            }
+        }
     }
 
     private void carregarSolicitacoesPendentes() {
@@ -305,13 +511,13 @@ public class DashboardOrientadorController {
     }
 
     private void recusarSolicitacao(int solicitacaoId) {
-        // Navega para a tela de responder solicitação
+        // Navega para a tela de responder solicitação já com o card de justificativa visível
         if (OrientadorPrincipalController.getInstance() != null) {
             OrientadorPrincipalController.getInstance().navegarParaTelaDoCenter(
                 "/com/example/technocode/Orientador/responder-solicitacao.fxml",
                 c -> {
                     if (c instanceof ResponderSolicitacaoController) {
-                        ((ResponderSolicitacaoController) c).setSolicitacaoId(solicitacaoId);
+                        ((ResponderSolicitacaoController) c).setSolicitacaoIdComRecusa(solicitacaoId);
                     }
                 }
             );

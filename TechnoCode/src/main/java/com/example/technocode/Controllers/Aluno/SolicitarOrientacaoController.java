@@ -6,14 +6,17 @@ import com.example.technocode.model.SolicitacaoOrientacao;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableCell;
+import javafx.scene.control.Button;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 
 import java.util.List;
 import java.util.Map;
@@ -39,6 +42,9 @@ public class SolicitarOrientacaoController {
     private TableColumn<Map<String, String>, String> colMensagem;
 
     @FXML
+    private TableColumn<Map<String, String>, String> colAcao;
+
+    @FXML
     private Label labelStatusAtual;
 
     @FXML
@@ -49,6 +55,7 @@ public class SolicitarOrientacaoController {
 
     private String emailAluno;
     private boolean temOrientador = false;
+    private boolean temSolicitacaoPendente = false;
 
     @FXML
     public void initialize() {
@@ -56,20 +63,9 @@ public class SolicitarOrientacaoController {
         
         // Configura colunas da tabela
         colOrientador.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("nome_orientador")));
+        colOrientador.setCellFactory(col -> criarCellCentralizado());
+        
         colStatus.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("status")));
-        colDataSolicitacao.setCellValueFactory(data -> {
-            String dataStr = data.getValue().get("data_solicitacao");
-            if (dataStr != null && dataStr.length() > 19) {
-                return new SimpleStringProperty(dataStr.substring(0, 19));
-            }
-            return new SimpleStringProperty(dataStr != null ? dataStr : "");
-        });
-        colMensagem.setCellValueFactory(data -> {
-            String msg = data.getValue().get("mensagem_orientador");
-            return new SimpleStringProperty(msg != null ? msg : "");
-        });
-
-        // Aplica estilo customizado na coluna de status
         colStatus.setCellFactory(col -> new TableCell<Map<String, String>, String>() {
             @Override
             protected void updateItem(String status, boolean empty) {
@@ -80,6 +76,7 @@ public class SolicitarOrientacaoController {
                     setStyle("");
                 } else {
                     setText(status);
+                    setAlignment(Pos.CENTER);
                     
                     if ("Aceita".equals(status)) {
                         setStyle("-fx-text-fill: #2E7D32; -fx-font-weight: bold;");
@@ -89,6 +86,58 @@ public class SolicitarOrientacaoController {
                         setStyle("-fx-text-fill: #F57C00; -fx-font-weight: bold;");
                     } else {
                         setStyle("");
+                    }
+                }
+            }
+        });
+        
+        colDataSolicitacao.setCellValueFactory(data -> {
+            String dataStr = data.getValue().get("data_solicitacao");
+            if (dataStr != null && dataStr.length() > 19) {
+                return new SimpleStringProperty(dataStr.substring(0, 19));
+            }
+            return new SimpleStringProperty(dataStr != null ? dataStr : "");
+        });
+        colDataSolicitacao.setCellFactory(col -> criarCellCentralizado());
+        
+        colMensagem.setCellValueFactory(data -> {
+            String msg = data.getValue().get("mensagem_orientador");
+            return new SimpleStringProperty(msg != null ? msg : "");
+        });
+        colMensagem.setCellFactory(col -> criarCellCentralizado());
+        
+        // Coluna de ação com botão de apagar
+        colAcao.setCellValueFactory(data -> new SimpleStringProperty(""));
+        colAcao.setCellFactory(col -> new TableCell<Map<String, String>, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    Map<String, String> solicitacao = getTableView().getItems().get(getIndex());
+                    String status = solicitacao.get("status");
+                    
+                    if ("Pendente".equals(status)) {
+                        Label labelIcone = new Label("🗑");
+                        labelIcone.setStyle("-fx-text-fill: WHITE; -fx-font-size: 16;");
+                        
+                        Button btnApagar = new Button();
+                        btnApagar.setGraphic(labelIcone);
+                        btnApagar.setStyle("-fx-background-color: #E74C3C; -fx-background-radius: 4; " +
+                                "-fx-cursor: hand; -fx-padding: 5 10; -fx-min-width: 40; -fx-pref-width: 40; -fx-max-width: 40;");
+                        btnApagar.setTooltip(new javafx.scene.control.Tooltip("Apagar solicitação"));
+                        btnApagar.setOnAction(e -> {
+                            String idStr = solicitacao.get("id");
+                            if (idStr != null) {
+                                apagarSolicitacao(Integer.parseInt(idStr));
+                            }
+                        });
+                        setGraphic(btnApagar);
+                        setAlignment(Pos.CENTER);
+                    } else {
+                        setGraphic(null);
                     }
                 }
             }
@@ -144,6 +193,80 @@ public class SolicitarOrientacaoController {
                     }
                 } else {
                     temOrientador = false;
+                    
+                    // Verifica se existe alguma solicitação pendente
+                    temSolicitacaoPendente = SolicitacaoOrientacao.existeAlgumaSolicitacaoPendente(emailAluno);
+                    
+                    if (temSolicitacaoPendente) {
+                        // Busca a solicitação pendente para mostrar o nome do orientador
+                        Map<String, String> solicitacaoPendente = SolicitacaoOrientacao.buscarSolicitacaoPendente(emailAluno);
+                        if (solicitacaoPendente != null) {
+                            String nomeOrientador = solicitacaoPendente.get("nome_orientador");
+                            labelStatusAtual.setText(nomeOrientador + " (Pendente)");
+                        } else {
+                            labelStatusAtual.setText("Você possui uma solicitação pendente");
+                        }
+                        labelStatusAtual.setStyle("-fx-text-fill: #F57C00; -fx-font-weight: bold;");
+                        
+                        // Mostra mensagem informativa
+                        if (labelMensagemInfo != null) {
+                            labelMensagemInfo.setText("Você possui uma solicitação pendente. Aguarde a resposta ou cancele a solicitação antes de criar uma nova.");
+                            labelMensagemInfo.setStyle("-fx-text-fill: #F57C00; -fx-font-weight: bold;");
+                        }
+                        
+                        // Desabilita o comboBox e botão se tiver solicitação pendente
+                        comboBoxOrientadores.setDisable(true);
+                        if (btnSolicitar != null) {
+                            btnSolicitar.setDisable(true);
+                            btnSolicitar.setStyle("-fx-background-color: #95A5A6; -fx-background-radius: 8; -fx-cursor: default;");
+                        }
+                    } else {
+                        labelStatusAtual.setText("Nenhum orientador atribuído");
+                        labelStatusAtual.setStyle("-fx-text-fill: #F57C00; -fx-font-weight: bold;");
+                        
+                        // Limpa mensagem informativa
+                        if (labelMensagemInfo != null) {
+                            labelMensagemInfo.setText("");
+                        }
+                        
+                        // Habilita o comboBox e botão se não tiver orientador nem solicitação pendente
+                        comboBoxOrientadores.setDisable(false);
+                        if (btnSolicitar != null) {
+                            btnSolicitar.setDisable(false);
+                            btnSolicitar.setStyle("-fx-background-color: #27AE60; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(39,174,96,0.3), 5, 0, 0, 2);");
+                        }
+                    }
+                }
+            } else {
+                temOrientador = false;
+                
+                // Verifica se existe alguma solicitação pendente
+                temSolicitacaoPendente = SolicitacaoOrientacao.existeAlgumaSolicitacaoPendente(emailAluno);
+                
+                if (temSolicitacaoPendente) {
+                    // Busca a solicitação pendente para mostrar o nome do orientador
+                    Map<String, String> solicitacaoPendente = SolicitacaoOrientacao.buscarSolicitacaoPendente(emailAluno);
+                    if (solicitacaoPendente != null) {
+                        String nomeOrientador = solicitacaoPendente.get("nome_orientador");
+                        labelStatusAtual.setText(nomeOrientador + " (Pendente)");
+                    } else {
+                        labelStatusAtual.setText("Você possui uma solicitação pendente");
+                    }
+                    labelStatusAtual.setStyle("-fx-text-fill: #F57C00; -fx-font-weight: bold;");
+                    
+                    // Mostra mensagem informativa
+                    if (labelMensagemInfo != null) {
+                        labelMensagemInfo.setText("Você possui uma solicitação pendente. Aguarde a resposta ou cancele a solicitação antes de criar uma nova.");
+                        labelMensagemInfo.setStyle("-fx-text-fill: #F57C00; -fx-font-weight: bold;");
+                    }
+                    
+                    // Desabilita o comboBox e botão se tiver solicitação pendente
+                    comboBoxOrientadores.setDisable(true);
+                    if (btnSolicitar != null) {
+                        btnSolicitar.setDisable(true);
+                        btnSolicitar.setStyle("-fx-background-color: #95A5A6; -fx-background-radius: 8; -fx-cursor: default;");
+                    }
+                } else {
                     labelStatusAtual.setText("Nenhum orientador atribuído");
                     labelStatusAtual.setStyle("-fx-text-fill: #F57C00; -fx-font-weight: bold;");
                     
@@ -152,28 +275,12 @@ public class SolicitarOrientacaoController {
                         labelMensagemInfo.setText("");
                     }
                     
-                    // Habilita o comboBox e botão se não tiver orientador
+                    // Habilita o comboBox e botão se não tiver orientador nem solicitação pendente
                     comboBoxOrientadores.setDisable(false);
                     if (btnSolicitar != null) {
                         btnSolicitar.setDisable(false);
                         btnSolicitar.setStyle("-fx-background-color: #27AE60; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(39,174,96,0.3), 5, 0, 0, 2);");
                     }
-                }
-            } else {
-                temOrientador = false;
-                labelStatusAtual.setText("Nenhum orientador atribuído");
-                labelStatusAtual.setStyle("-fx-text-fill: #F57C00; -fx-font-weight: bold;");
-                
-                // Limpa mensagem informativa
-                if (labelMensagemInfo != null) {
-                    labelMensagemInfo.setText("");
-                }
-                
-                // Habilita o comboBox e botão se não tiver orientador
-                comboBoxOrientadores.setDisable(false);
-                if (btnSolicitar != null) {
-                    btnSolicitar.setDisable(false);
-                    btnSolicitar.setStyle("-fx-background-color: #27AE60; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(39,174,96,0.3), 5, 0, 0, 2);");
                 }
             }
             conn.close();
@@ -192,6 +299,12 @@ public class SolicitarOrientacaoController {
             return;
         }
 
+        // Verifica se existe alguma solicitação pendente (para qualquer orientador)
+        if (SolicitacaoOrientacao.existeAlgumaSolicitacaoPendente(emailAluno)) {
+            mostrarAlertaErro("Solicitação pendente", "Você já possui uma solicitação pendente. Aguarde a resposta ou cancele a solicitação antes de criar uma nova.");
+            return;
+        }
+
         if (comboBoxOrientadores.getValue() == null || comboBoxOrientadores.getValue().isEmpty()) {
             mostrarAlertaErro("Selecione um orientador", "Por favor, selecione um orientador da lista.");
             return;
@@ -205,12 +318,6 @@ public class SolicitarOrientacaoController {
             return;
         }
 
-        // Verifica se já existe uma solicitação pendente
-        if (SolicitacaoOrientacao.existeSolicitacaoPendente(emailAluno, emailOrientador)) {
-            mostrarAlertaErro("Solicitação já existe", "Você já possui uma solicitação pendente para este orientador.");
-            return;
-        }
-
         // Cria a solicitação
         SolicitacaoOrientacao solicitacao = new SolicitacaoOrientacao(emailAluno, emailOrientador);
         solicitacao.criar();
@@ -219,6 +326,7 @@ public class SolicitarOrientacaoController {
         
         // Recarrega os dados
         carregarSolicitacoes();
+        atualizarStatusAtual();
         comboBoxOrientadores.getSelectionModel().clearSelection();
     }
 
@@ -238,30 +346,52 @@ public class SolicitarOrientacaoController {
         alert.showAndWait();
     }
 
+    /**
+     * Cria uma célula centralizada para as colunas da tabela
+     */
+    private TableCell<Map<String, String>, String> criarCellCentralizado() {
+        TableCell<Map<String, String>, String> cell = new TableCell<Map<String, String>, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                }
+                setAlignment(Pos.CENTER);
+            }
+        };
+        return cell;
+    }
+
+    /**
+     * Apaga uma solicitação pendente
+     */
+    private void apagarSolicitacao(int id) {
+        Alert confirmacao = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmacao.setTitle("Confirmar exclusão");
+        confirmacao.setHeaderText("Apagar solicitação");
+        confirmacao.setContentText("Tem certeza que deseja apagar esta solicitação pendente?");
+        
+        confirmacao.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                boolean deletado = SolicitacaoOrientacao.deletarSolicitacaoPendente(id, emailAluno);
+                
+                if (deletado) {
+                    mostrarAlertaSucesso("Solicitação apagada", "A solicitação foi apagada com sucesso.");
+                    carregarSolicitacoes();
+                    atualizarStatusAtual();
+                } else {
+                    mostrarAlertaErro("Erro", "Não foi possível apagar a solicitação. Ela pode não estar mais pendente.");
+                }
+            }
+        });
+    }
+
     public void recarregarDados() {
         carregarSolicitacoes();
         atualizarStatusAtual();
-        // Atualiza o estado do comboBox e botão após recarregar
-        if (temOrientador) {
-            if (labelMensagemInfo != null) {
-                labelMensagemInfo.setText("Você já possui um orientador atribuído. Não é possível criar novas solicitações.");
-                labelMensagemInfo.setStyle("-fx-text-fill: #E74C3C; -fx-font-weight: bold;");
-            }
-            comboBoxOrientadores.setDisable(true);
-            if (btnSolicitar != null) {
-                btnSolicitar.setDisable(true);
-                btnSolicitar.setStyle("-fx-background-color: #95A5A6; -fx-background-radius: 8; -fx-cursor: default;");
-            }
-        } else {
-            if (labelMensagemInfo != null) {
-                labelMensagemInfo.setText("");
-            }
-            comboBoxOrientadores.setDisable(false);
-            if (btnSolicitar != null) {
-                btnSolicitar.setDisable(false);
-                btnSolicitar.setStyle("-fx-background-color: #27AE60; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(39,174,96,0.3), 5, 0, 0, 2);");
-            }
-        }
     }
 }
 

@@ -32,10 +32,7 @@ import java.util.Map;
 public class GerarReadmeController {
     
     @FXML
-    private Button btnAdicionarFoto;
-    
-    @FXML
-    private Button btnGerarReadme;
+    private Button btnGerarPortfolio;
     
     @FXML
     private Button btnSalvarPasta;
@@ -84,44 +81,51 @@ public class GerarReadmeController {
     }
     
     @FXML
-    private void adicionarFoto(ActionEvent event) {
-        Stage stage = (Stage) btnAdicionarFoto.getScene().getWindow();
+    private void gerarPortfolio(ActionEvent event) {
+        if (totalSecoesAprovadas == 0) {
+            mostrarAlerta("Aviso", "Você não possui seções aprovadas para gerar o portfólio.");
+            return;
+        }
         
-        // Escolhe a foto
+        Stage stage = (Stage) btnGerarPortfolio.getScene().getWindow();
+        
+        // Escolhe a foto primeiro
         FileChooser fotoChooser = new FileChooser();
-        fotoChooser.setTitle("Escolha a foto do aluno");
+        fotoChooser.setTitle("Escolha a foto para o portfólio");
         fotoChooser.getExtensionFilters().addAll(
             new FileChooser.ExtensionFilter("Imagens", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp"),
             new FileChooser.ExtensionFilter("Todos os arquivos", "*.*")
         );
         File fotoSelecionada = fotoChooser.showOpenDialog(stage);
         
-        if (fotoSelecionada != null) {
-            this.fotoSelecionada = fotoSelecionada;
-            String extensao = getFileExtension(fotoSelecionada.getName());
-                nomeFoto = "foto" + extensao;
-            
-            // Atualiza label de status
-            labelStatusFoto.setText("Foto: " + fotoSelecionada.getName());
-            
-            // Habilita botão de gerar README
-            btnGerarReadme.setDisable(false);
-            
-            mostrarAlerta("Sucesso", "Foto selecionada! Agora você pode gerar o README.");
-        }
-    }
-    
-    @FXML
-    private void gerarReadme(ActionEvent event) {
-        if (fotoSelecionada == null || nomeFoto == null) {
-            mostrarAlerta("Aviso", "Por favor, adicione uma foto primeiro.");
+        // Se o usuário cancelar a seleção da foto, não gera o portfólio
+        if (fotoSelecionada == null) {
             return;
         }
         
-        if (totalSecoesAprovadas == 0) {
-            mostrarAlerta("Aviso", "Você não possui seções aprovadas para gerar o README.");
-            return;
+        // Verifica se tem menos de 7 seções e pergunta confirmação
+        if (totalSecoesAprovadas < 7) {
+            Alert confirmacao = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmacao.setTitle("Confirmar geração do portfólio");
+            confirmacao.setHeaderText("Atenção");
+            confirmacao.setContentText("Você possui apenas " + totalSecoesAprovadas + " seção(ões) aprovada(s).\n\n" +
+                    "Deseja realmente gerar o portfólio com apenas " + totalSecoesAprovadas + " seção(ões)?");
+            
+            javafx.scene.control.ButtonType resultado = confirmacao.showAndWait().orElse(javafx.scene.control.ButtonType.CANCEL);
+            
+            // Se o usuário cancelou, não continua
+            if (resultado != javafx.scene.control.ButtonType.OK) {
+                return;
+            }
         }
+        
+        // Armazena a foto selecionada
+        this.fotoSelecionada = fotoSelecionada;
+        String extensao = getFileExtension(fotoSelecionada.getName());
+        nomeFoto = "foto" + extensao;
+        
+        // Atualiza label de status
+        labelStatusFoto.setText("Foto: " + fotoSelecionada.getName());
         
         // Gera o conteúdo MD apenas com seções aprovadas
         gerarConteudoMDComSecoesAprovadas();
@@ -139,7 +143,7 @@ public class GerarReadmeController {
         btnSalvarPasta.setVisible(true);
         btnSalvarPasta.setManaged(true);
         
-        mostrarAlerta("Sucesso", "README gerado com sucesso! Agora você pode salvar a pasta.");
+        mostrarAlerta("Sucesso", "Portfólio gerado com sucesso! Agora você pode salvar a pasta.");
     }
     
     @FXML

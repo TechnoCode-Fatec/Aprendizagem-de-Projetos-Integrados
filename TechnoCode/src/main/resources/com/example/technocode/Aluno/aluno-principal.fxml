@@ -79,7 +79,7 @@
               </Button>
 
               <!-- Botão Sessões Atuais -->
-              <Button contentDisplay="LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarSessoesAtuais" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Sessões Atuais">
+              <Button contentDisplay="LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarSessoesAtuais" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Seções Atuais">
                   <graphic>
                       <ImageView fitHeight="18" fitWidth="18" preserveRatio="true">
                           <image>
@@ -105,18 +105,18 @@
                   <graphic>
                       <ImageView fitHeight="18" fitWidth="18" preserveRatio="true">
                           <image>
-                              <Image url="@../imagens/doc.png" />
+                              <Image url="@../imagens/solicitacao.png" />
                           </image>
                       </ImageView>
                   </graphic>
               </Button>
 
               <!-- Botão Gerar README -->
-              <Button contentDisplay="LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarGerarReadme" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Gerar README.md">
+              <Button contentDisplay="LEFT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#navegarGerarReadme" style="-fx-background-color: WHITE;" styleClass="menu-button" text="Gerar Portfólio">
                   <graphic>
                       <ImageView fitHeight="18" fitWidth="18" preserveRatio="true">
                           <image>
-                              <Image url="@../imagens/doc.png" />
+                              <Image url="@../imagens/md.png" />
                           </image>
                       </ImageView>
                   </graphic>

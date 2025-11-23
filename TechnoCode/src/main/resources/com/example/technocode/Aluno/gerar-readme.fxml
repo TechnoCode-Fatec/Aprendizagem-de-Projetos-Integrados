@@ -3,23 +3,22 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<?import javafx.scene.web.WebView?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.web.*?>
 
 <ScrollPane id="telas-aluno" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: #F8F9FA; -fx-background: transparent;" vbarPolicy="AS_NEEDED" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.technocode.Controllers.Aluno.GerarReadmeController">
    <content>
-      <VBox alignment="TOP_CENTER" style="-fx-background-color: #F8F9FA; -fx-padding: 25;" spacing="20" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+      <VBox alignment="TOP_CENTER" maxWidth="1.7976931348623157E308" spacing="20" style="-fx-background-color: #F8F9FA; -fx-padding: 25;" VBox.vgrow="ALWAYS">
          
          <!-- Header Moderno -->
          <HBox alignment="CENTER" spacing="30" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);">
             <children>
                <VBox alignment="CENTER_LEFT" spacing="5" HBox.hgrow="ALWAYS">
-                  <Label text="GERAR README.md" textFill="#2C3E50">
+                  <Label text="GERAR PORTFÓLIO" textFill="#2C3E50">
                      <font>
                         <Font name="System Bold" size="26.0" />
                      </font>
                   </Label>
-                  <Label text="Crie seu README.md profissional para GitHub" textFill="#7F8C8D">
+                  <Label text="Crie seu portfólio em markdown para GitHub" textFill="#7F8C8D">
                      <font>
                         <Font size="12.0" />
                      </font>
@@ -32,26 +31,18 @@
                      </Label>
                   </HBox>
                </VBox>
-               <VBox spacing="10" alignment="CENTER_RIGHT">
-                  <HBox spacing="10">
-                     <Button fx:id="btnAdicionarFoto" mnemonicParsing="false" onAction="#adicionarFoto" prefHeight="40.0" prefWidth="150.0" 
-                             style="-fx-background-color: #3498DB; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.3), 5, 0, 0, 2);" 
-                             text="📷 Adicionar Foto" textFill="WHITE">
-                        <font>
-                           <Font name="System Bold" size="12.0" />
-                        </font>
-                     </Button>
-                     <Button fx:id="btnGerarReadme" mnemonicParsing="false" onAction="#gerarReadme" prefHeight="40.0" prefWidth="150.0" 
-                             style="-fx-background-color: #9B59B6; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(155,89,182,0.3), 5, 0, 0, 2);" 
-                             text="✨ Gerar README" textFill="WHITE" disable="true">
-                        <font>
-                           <Font name="System Bold" size="12.0" />
-                        </font>
-                     </Button>
-                  </HBox>
-                  <Button fx:id="btnSalvarPasta" mnemonicParsing="false" onAction="#salvarPasta" prefHeight="40.0" prefWidth="310.0" 
-                          style="-fx-background-color: #27AE60; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(39,174,96,0.3), 5, 0, 0, 2);" 
-                          text="💾 Salvar Pasta (README + Foto)" textFill="WHITE" visible="false" managed="false">
+               <VBox alignment="CENTER_RIGHT" spacing="10">
+                  <Button fx:id="btnGerarPortfolio" mnemonicParsing="false" onAction="#gerarPortfolio" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #9B59B6; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(155,89,182,0.3), 5, 0, 0, 2);" text="Gerar Portfólio" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                  </Button>
+                  <Label text="Você precisará escolher uma foto para o portfólio" textFill="#7F8C8D" wrapText="true">
+                     <font>
+                        <Font size="11.0" />
+                     </font>
+                  </Label>
+                  <Button fx:id="btnSalvarPasta" managed="false" mnemonicParsing="false" onAction="#salvarPasta" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #27AE60; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(39,174,96,0.3), 5, 0, 0, 2);" text="Salvar" textFill="WHITE" visible="false">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
@@ -61,18 +52,18 @@
          </HBox>
 
          <!-- Card Principal com Preview -->
-         <VBox fx:id="cardCodePreview" spacing="0" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS" minHeight="600.0" visible="false" managed="false">
+         <VBox fx:id="cardCodePreview" managed="false" maxWidth="1.7976931348623157E308" minHeight="600.0" spacing="0" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);" visible="false" VBox.vgrow="ALWAYS">
             <children>
                <!-- Header do Preview -->
                <HBox spacing="0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E1E4E8; -fx-border-width: 0 0 1 0; -fx-background-radius: 12 12 0 0; -fx-padding: 10;">
                   <children>
-                     <Label text="Preview" textFill="#24292E" style="-fx-font-weight: bold; -fx-padding: 0 0 0 10;">
+                     <Label style="-fx-font-weight: bold; -fx-padding: 0 0 0 10;" text="Preview" textFill="#24292E">
                         <font>
                            <Font name="System Bold" size="14.0" />
                         </font>
                      </Label>
                      <Region HBox.hgrow="ALWAYS" />
-                     <Label fx:id="labelStatusFoto" text="Nenhuma foto adicionada" textFill="#586069" style="-fx-padding: 0 15 0 0;">
+                     <Label fx:id="labelStatusFoto" style="-fx-padding: 0 15 0 0;" text="Nenhuma foto adicionada" textFill="#586069">
                         <font>
                            <Font size="11.0" />
                         </font>
@@ -81,10 +72,9 @@
                </HBox>
                
                <!-- Preview (WebView) -->
-               <WebView fx:id="webViewPreview" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS" minHeight="500.0" prefHeight="600.0" />
+               <WebView fx:id="webViewPreview" maxWidth="1.7976931348623157E308" minHeight="500.0" prefHeight="600.0" VBox.vgrow="ALWAYS" />
             </children>
          </VBox>
       </VBox>
    </content>
 </ScrollPane>
-

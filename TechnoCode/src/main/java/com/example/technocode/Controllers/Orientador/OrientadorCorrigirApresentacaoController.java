@@ -121,7 +121,7 @@ public class OrientadorCorrigirApresentacaoController {
                                 LocalDate dataNascimento = LocalDate.parse(dataNascimentoStr);
                                 LocalDate hoje = LocalDate.now();
                                 int idade = Period.between(dataNascimento, hoje).getYears();
-                                alunoTextIdade.setText(String.valueOf(idade));
+                                alunoTextIdade.setText(idade + " anos");
                             } catch (Exception e) {
                                 alunoTextIdade.setText(dataNascimentoStr);
                             }
@@ -654,17 +654,41 @@ public class OrientadorCorrigirApresentacaoController {
         if (btnAprovar != null && btnRevisar != null) {
             if ("Aprovado".equals(status)) {
                 // Botão aprovar selecionado (destacado)
-                btnAprovar.setStyle("-fx-background-color: #229954; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white; -fx-border-color: #1E8449; -fx-border-width: 3px; -fx-border-radius: 6; -fx-effect: dropshadow(gaussian, rgba(39,174,96,0.5), 8, 0, 0, 2);");
+                btnAprovar.setMinWidth(50);
+                btnAprovar.setPrefWidth(50);
+                btnAprovar.setMinHeight(34);
+                btnAprovar.setPrefHeight(34);
+                btnAprovar.setStyle("-fx-background-color: #229954; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white; -fx-border-color: #1E8449; -fx-border-width: 3px; -fx-border-radius: 6; -fx-effect: dropshadow(gaussian, rgba(39,174,96,0.5), 8, 0, 0, 2); -fx-font-size: 10px; -fx-padding: 2px 4px;");
                 // Botão revisar não selecionado (normal)
+                btnRevisar.setMinWidth(45);
+                btnRevisar.setPrefWidth(45);
+                btnRevisar.setMinHeight(30);
+                btnRevisar.setPrefHeight(30);
                 btnRevisar.setStyle("-fx-background-color: #E74C3C; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white; -fx-border-color: transparent; -fx-border-width: 0px; -fx-effect: null;");
             } else if ("Revisar".equals(status)) {
                 // Botão aprovar não selecionado (normal)
+                btnAprovar.setMinWidth(45);
+                btnAprovar.setPrefWidth(45);
+                btnAprovar.setMinHeight(30);
+                btnAprovar.setPrefHeight(30);
                 btnAprovar.setStyle("-fx-background-color: #27AE60; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white; -fx-border-color: transparent; -fx-border-width: 0px; -fx-effect: null;");
                 // Botão revisar selecionado (destacado)
-                btnRevisar.setStyle("-fx-background-color: #C0392B; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white; -fx-border-color: #A93226; -fx-border-width: 3px; -fx-border-radius: 6; -fx-effect: dropshadow(gaussian, rgba(231,76,60,0.5), 8, 0, 0, 2);");
+                btnRevisar.setMinWidth(50);
+                btnRevisar.setPrefWidth(50);
+                btnRevisar.setMinHeight(34);
+                btnRevisar.setPrefHeight(34);
+                btnRevisar.setStyle("-fx-background-color: #C0392B; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white; -fx-border-color: #A93226; -fx-border-width: 3px; -fx-border-radius: 6; -fx-effect: dropshadow(gaussian, rgba(231,76,60,0.5), 8, 0, 0, 2); -fx-font-size: 10px; -fx-padding: 2px 4px;");
             } else {
                 // Nenhum selecionado (estado inicial)
+                btnAprovar.setMinWidth(45);
+                btnAprovar.setPrefWidth(45);
+                btnAprovar.setMinHeight(30);
+                btnAprovar.setPrefHeight(30);
                 btnAprovar.setStyle("-fx-background-color: #27AE60; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white; -fx-border-color: transparent; -fx-border-width: 0px; -fx-effect: null;");
+                btnRevisar.setMinWidth(45);
+                btnRevisar.setPrefWidth(45);
+                btnRevisar.setMinHeight(30);
+                btnRevisar.setPrefHeight(30);
                 btnRevisar.setStyle("-fx-background-color: #E74C3C; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white; -fx-border-color: transparent; -fx-border-width: 0px; -fx-effect: null;");
             }
         }

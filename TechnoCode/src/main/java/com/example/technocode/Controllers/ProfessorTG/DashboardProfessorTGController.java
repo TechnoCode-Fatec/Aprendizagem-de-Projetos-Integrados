@@ -57,7 +57,7 @@ public class DashboardProfessorTGController {
     // Campo de busca
     @FXML
     private TextField txtBuscaAluno;
-    
+
     @FXML
     private VBox cardAlunosOrientados;
     
@@ -249,7 +249,7 @@ public class DashboardProfessorTGController {
             String sql = "SELECT " +
                      "COUNT(DISTINCT CASE WHEN a.orientador IS NOT NULL THEN a.email END) as orientados, " +
                      "COUNT(DISTINCT a.email) as total " +
-                     "FROM aluno a " +
+                        "FROM aluno a " +
                      "WHERE a.professor_tg = ?";
             
             if (disciplinaFiltro != null) {
@@ -290,10 +290,10 @@ public class DashboardProfessorTGController {
             // Busca todos os orientadores e conta quantos alunos estão orientando no total (geral)
             String sql = "SELECT o.nome, " +
                      "COUNT(DISTINCT a.email) as qtd_alunos " +
-                     "FROM orientador o " +
+                        "FROM orientador o " +
                      "LEFT JOIN aluno a ON o.email = a.orientador " +
-                     "GROUP BY o.email, o.nome " +
-                     "ORDER BY qtd_alunos DESC, o.nome";
+                        "GROUP BY o.email, o.nome " +
+                        "ORDER BY qtd_alunos DESC, o.nome";
             
             PreparedStatement pst = conn.prepareStatement(sql);
             ResultSet rs = pst.executeQuery();
@@ -317,8 +317,8 @@ public class DashboardProfessorTGController {
                 } else {
                     textoQtd = String.valueOf(qtdAlunos) + " aluno(s)";
                     Label labelQtd = new Label(textoQtd);
-                    labelQtd.setStyle("-fx-text-fill: #7F8C8D;");
-                    labelQtd.setFont(Font.font(12));
+                labelQtd.setStyle("-fx-text-fill: #7F8C8D;");
+                labelQtd.setFont(Font.font(12));
                     hbox.getChildren().addAll(labelNome, labelQtd);
                 }
                 

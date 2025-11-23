@@ -6,8 +6,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -54,38 +57,46 @@ public class SolicitacoesOrientacaoController {
         
         // Configura colunas da tabela de pendentes
         colNomeAluno.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("nome_aluno")));
+        colNomeAluno.setCellFactory(col -> criarCellCentralizado());
+        
         colEmailAluno.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("aluno")));
+        colEmailAluno.setCellFactory(col -> criarCellCentralizado());
+        
         colDataSolicitacao.setCellValueFactory(data -> {
-            String dataStr = data.getValue().get("data_solicitacao");
-            if (dataStr != null && dataStr.length() > 19) {
-                return new SimpleStringProperty(dataStr.substring(0, 19));
-            }
-            return new SimpleStringProperty(dataStr != null ? dataStr : "");
+            String dataStr = formatarData(data.getValue().get("data_solicitacao"));
+            return new SimpleStringProperty(dataStr);
         });
+        colDataSolicitacao.setCellFactory(col -> criarCellCentralizado());
 
         tabelaSolicitacoes.setStyle("-fx-control-inner-background: #ffffff; -fx-text-background-color: black;");
 
         // Configura colunas da tabela de histórico
         colHistoricoNomeAluno.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("nome_aluno")));
+        colHistoricoNomeAluno.setCellFactory(col -> criarCellCentralizado());
+        
         colHistoricoEmailAluno.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("aluno")));
+        colHistoricoEmailAluno.setCellFactory(col -> criarCellCentralizado());
+        
         colHistoricoStatus.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("status")));
+        
         colHistoricoDataSolicitacao.setCellValueFactory(data -> {
-            String dataStr = data.getValue().get("data_solicitacao");
-            if (dataStr != null && dataStr.length() > 19) {
-                return new SimpleStringProperty(dataStr.substring(0, 19));
-            }
-            return new SimpleStringProperty(dataStr != null ? dataStr : "");
+            String dataStr = formatarData(data.getValue().get("data_solicitacao"));
+            return new SimpleStringProperty(dataStr);
         });
+        colHistoricoDataSolicitacao.setCellFactory(col -> criarCellCentralizado());
+        
         colHistoricoMensagem.setCellValueFactory(data -> {
             String msg = data.getValue().get("mensagem_orientador");
             return new SimpleStringProperty(msg != null ? msg : "");
         });
+        colHistoricoMensagem.setCellFactory(col -> criarCellCentralizado());
 
-        // Aplica estilo customizado na coluna de status do histórico
+        // Aplica estilo customizado na coluna de status do histórico com centralização
         colHistoricoStatus.setCellFactory(col -> new TableCell<Map<String, String>, String>() {
             @Override
             protected void updateItem(String status, boolean empty) {
                 super.updateItem(status, empty);
+                setAlignment(Pos.CENTER);
                 
                 if (empty || status == null) {
                     setText(null);
@@ -140,6 +151,7 @@ public class SolicitacoesOrientacaoController {
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
                 setGraphic(empty ? null : btnResponder);
+                setAlignment(Pos.CENTER);
             }
         });
     }
@@ -154,6 +166,44 @@ public class SolicitacoesOrientacaoController {
                 }
             }
         );
+    }
+
+    /**
+     * Cria uma célula centralizada para as colunas da tabela
+     */
+    private TableCell<Map<String, String>, String> criarCellCentralizado() {
+        TableCell<Map<String, String>, String> cell = new TableCell<Map<String, String>, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                }
+                setAlignment(Pos.CENTER);
+            }
+        };
+        return cell;
+    }
+    
+    /**
+     * Formata a data para exibição amigável (ex: "22/11/2024 às 14:30")
+     */
+    private String formatarData(String dataStr) {
+        if (dataStr == null || dataStr.isEmpty()) {
+            return "";
+        }
+        
+        try {
+            // Tenta parsear como Timestamp (formato do banco: "2024-11-22 14:30:00")
+            Timestamp timestamp = Timestamp.valueOf(dataStr);
+            SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy 'às' HH:mm");
+            return formato.format(timestamp);
+        } catch (Exception e) {
+            // Se não conseguir parsear, retorna a string original
+            return dataStr;
+        }
     }
 
     public void recarregarSolicitacoes() {

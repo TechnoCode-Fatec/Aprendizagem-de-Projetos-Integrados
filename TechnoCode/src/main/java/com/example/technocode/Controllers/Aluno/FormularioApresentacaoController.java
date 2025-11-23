@@ -25,7 +25,7 @@ public class FormularioApresentacaoController {
 
     @FXML
     private void initialize(){
-        choiceBoxCurso.getItems().addAll("ADS","BD");
+        choiceBoxCurso.getItems().addAll("Analise e Desenvolvimento de Sistemas","Banco de Dados", "Desenvolvimento de Software Multiplataforma");
     }
 
     /**

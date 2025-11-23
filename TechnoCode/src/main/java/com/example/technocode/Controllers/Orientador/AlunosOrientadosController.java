@@ -6,6 +6,7 @@ import com.example.technocode.model.Aluno;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.geometry.Pos;
 import javafx.util.Callback;
 
 import java.io.IOException;
@@ -67,14 +68,12 @@ public class AlunosOrientadosController {
 
             tabelaAlunos.getItems().setAll(alunos);
 
-            // Configura alinhamento das colunas
-            colNome.setStyle("-fx-alignment: CENTER-LEFT;");
-            colEmail.setStyle("-fx-alignment: CENTER-LEFT;");
-            colDisciplina.setStyle("-fx-alignment: CENTER-LEFT;");
-            colSecoesAprovadas.setStyle("-fx-alignment: CENTER;");
-            colAnalisar.setStyle("-fx-alignment: CENTER;");
+            // Configura células centralizadas para Nome, Email e Disciplina
+            colNome.setCellFactory(col -> criarCellCentralizado());
+            colEmail.setCellFactory(col -> criarCellCentralizado());
+            colDisciplina.setCellFactory(col -> criarCellCentralizado());
 
-            // Estiliza coluna de seções aprovadas
+            // Estiliza coluna de seções aprovadas com centralização
             colSecoesAprovadas.setCellFactory(col -> new TableCell<Map<String, String>, String>() {
                 @Override
                 protected void updateItem(String item, boolean empty) {
@@ -84,6 +83,7 @@ public class AlunosOrientadosController {
                         setStyle("");
                     } else {
                         setText(item);
+                        setAlignment(Pos.CENTER);
                         // Extrai números para colorir
                         String[] partes = item.split("/");
                         if (partes.length == 2) {
@@ -170,11 +170,31 @@ public class AlunosOrientadosController {
                             protected void updateItem(Void item, boolean empty) {
                                 super.updateItem(item, empty);
                                 setGraphic(empty ? null : btn);
+                                setAlignment(Pos.CENTER);
                             }
                         };
                     }
                 };
         colAnalisar.setCellFactory(cellFactory);
+    }
+    
+    /**
+     * Cria uma célula centralizada para as colunas da tabela
+     */
+    private TableCell<Map<String, String>, String> criarCellCentralizado() {
+        TableCell<Map<String, String>, String> cell = new TableCell<Map<String, String>, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                }
+                setAlignment(Pos.CENTER);
+            }
+        };
+        return cell;
     }
     
     private void abrirTelaAluno(String emailAluno) {

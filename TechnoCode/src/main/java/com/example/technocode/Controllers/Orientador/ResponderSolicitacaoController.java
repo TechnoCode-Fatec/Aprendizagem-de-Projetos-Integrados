@@ -1,12 +1,19 @@
 package com.example.technocode.Controllers.Orientador;
 
 import com.example.technocode.model.SolicitacaoOrientacao;
+import com.example.technocode.model.dao.Connector;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Button;
+import javafx.scene.layout.VBox;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class ResponderSolicitacaoController {
 
@@ -18,6 +25,9 @@ public class ResponderSolicitacaoController {
 
     @FXML
     private Label labelDataSolicitacao;
+    
+    @FXML
+    private Label labelDisciplina;
 
     @FXML
     private TextArea textAreaMensagem;
@@ -27,6 +37,9 @@ public class ResponderSolicitacaoController {
 
     @FXML
     private Button btnRecusar;
+    
+    @FXML
+    private VBox cardJustificativa;
 
     private int solicitacaoId;
     private SolicitacaoOrientacao solicitacao;
@@ -34,6 +47,13 @@ public class ResponderSolicitacaoController {
     public void setSolicitacaoId(int id) {
         this.solicitacaoId = id;
         carregarDadosSolicitacao();
+    }
+    
+    public void setSolicitacaoIdComRecusa(int id) {
+        this.solicitacaoId = id;
+        carregarDadosSolicitacao();
+        // Mostra o card de justificativa imediatamente
+        mostrarCardJustificativa();
     }
 
     private void carregarDadosSolicitacao() {
@@ -45,6 +65,25 @@ public class ResponderSolicitacaoController {
             
             labelNomeAluno.setText("Nome: " + dadosAluno.get("nome"));
             labelEmailAluno.setText("Email: " + solicitacao.getAluno());
+            
+            // Busca disciplina do aluno
+            try (Connection conn = new Connector().getConnection()) {
+                String sql = "SELECT disciplina_tg FROM aluno WHERE email = ?";
+                PreparedStatement pst = conn.prepareStatement(sql);
+                pst.setString(1, solicitacao.getAluno());
+                ResultSet rs = pst.executeQuery();
+                if (rs.next()) {
+                    String disciplina = rs.getString("disciplina_tg");
+                    // Formata a disciplina para exibição (TG1 -> TG 1, TG2 -> TG 2, TG1/TG2 -> TG 1/TG 2)
+                    String disciplinaFormatada = disciplina != null ? disciplina.replace("TG1", "TG 1").replace("TG2", "TG 2") : "N/A";
+                    labelDisciplina.setText("Disciplina: " + disciplinaFormatada);
+                } else {
+                    labelDisciplina.setText("Disciplina: N/A");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                labelDisciplina.setText("Disciplina: N/A");
+            }
             
             if (solicitacao.getDataSolicitacao() != null) {
                 String dataStr = solicitacao.getDataSolicitacao().toString();
@@ -79,6 +118,31 @@ public class ResponderSolicitacaoController {
         } catch (Exception e) {
             e.printStackTrace();
             mostrarAlertaErro("Erro", "Não foi possível aceitar a solicitação. Erro: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void mostrarCardJustificativa(ActionEvent event) {
+        mostrarCardJustificativa();
+    }
+    
+    private void mostrarCardJustificativa() {
+        // Mostra o card de justificativa
+        if (cardJustificativa != null) {
+            cardJustificativa.setVisible(true);
+            cardJustificativa.setManaged(true);
+            // Foca no TextArea
+            textAreaMensagem.requestFocus();
+        }
+    }
+    
+    @FXML
+    private void cancelarRecusa(ActionEvent event) {
+        // Oculta o card de justificativa e limpa o texto
+        if (cardJustificativa != null) {
+            cardJustificativa.setVisible(false);
+            cardJustificativa.setManaged(false);
+            textAreaMensagem.clear();
         }
     }
 

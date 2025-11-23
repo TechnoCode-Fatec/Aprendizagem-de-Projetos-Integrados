@@ -4,7 +4,9 @@ import com.example.technocode.Services.NavigationService;
 import com.example.technocode.model.Aluno;
 import com.example.technocode.model.SecaoApi;
 import com.example.technocode.model.SecaoApresentacao;
+import com.example.technocode.model.dao.Connector;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.geometry.Pos;
 
 import java.util.Map;
 import java.util.List;
@@ -13,6 +15,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class EntregasDoAlunoController {
 
@@ -49,7 +55,11 @@ public class EntregasDoAlunoController {
     public void initialize() {
         try {
             colNomeSecao.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("id")));
+            colNomeSecao.setCellFactory(col -> criarCellCentralizado());
+            
             colDescricao.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("empresa")));
+            colDescricao.setCellFactory(col -> criarCellCentralizado());
+            
             colItensAprovados.setCellValueFactory(data -> {
                 Map<String, String> secao = data.getValue();
                 String tipo = secao.getOrDefault("tipo", "api");
@@ -94,13 +104,16 @@ public class EntregasDoAlunoController {
                 
                 return new SimpleStringProperty("-");
             });
+            colItensAprovados.setCellFactory(col -> criarCellCentralizado());
+            
             colStatusFeedback.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("status_feedback")));
 
-            // Aplica estilo customizado na coluna de status
+            // Aplica estilo customizado na coluna de status com centralização
             colStatusFeedback.setCellFactory(col -> new TableCell<Map<String, String>, String>() {
                 @Override
                 protected void updateItem(String status, boolean empty) {
                     super.updateItem(status, empty);
+                    setAlignment(Pos.CENTER);
                     
                     if (empty || status == null) {
                         setText(null);
@@ -111,7 +124,7 @@ public class EntregasDoAlunoController {
                         // Aplica cor baseada no status
                         if ("Respondida".equals(status)) {
                             setStyle("-fx-text-fill: #2E7D32; -fx-font-weight: bold;"); // Verde escuro
-                        } else if ("Á responder".equals(status)) {
+                        } else if ("Aguardando resposta".equals(status)) {
                             setStyle("-fx-text-fill: #C62828; -fx-font-weight: bold;"); // Vermelho escuro
                         } else {
                             setStyle(""); // Padrão
@@ -169,7 +182,7 @@ public class EntregasDoAlunoController {
                 String versao = secao.getOrDefault("versao", null);
                 if (versao != null) {
                     boolean temFeedback = SecaoApresentacao.verificarFeedback(emailAluno, Integer.parseInt(versao));
-                    return temFeedback ? "Respondida" : "Á responder";
+                    return temFeedback ? "Respondida" : "Aguardando resposta";
                 }
             } else {
                 // Para seções de API, verifica se existe feedback
@@ -182,7 +195,7 @@ public class EntregasDoAlunoController {
                     // Extrair apenas o ano da data (ex: "2024-01-01" -> "2024")
                     String anoExtraido = ano.split("-")[0];
                     boolean temFeedback = SecaoApi.verificarFeedback(emailAluno, semestreCurso, Integer.parseInt(anoExtraido), semestreAno, Integer.parseInt(versao));
-                    return temFeedback ? "Respondida" : "Á responder";
+                    return temFeedback ? "Respondida" : "Aguardando resposta";
                 }
             }
         } catch (Exception e) {
@@ -191,7 +204,7 @@ public class EntregasDoAlunoController {
         }
         
         // Em caso de erro ou dados incompletos, assume que não tem feedback
-        return "Á responder";
+        return "Aguardando resposta";
     }
 
     private void addButtonToTable() {
@@ -247,6 +260,7 @@ public class EntregasDoAlunoController {
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
                 setGraphic(empty ? null : btn);
+                setAlignment(Pos.CENTER);
             }
         });
     }
@@ -284,11 +298,48 @@ public class EntregasDoAlunoController {
             Map<String, String> dadosAluno = Aluno.buscarDadosPorEmail(emailAluno);
             
             if (!dadosAluno.isEmpty()) {
-                nomeAluno.setText(dadosAluno.get("nome"));
-                this.emailAluno.setText(dadosAluno.get("email"));
-                cursoAluno.setText(dadosAluno.get("curso"));
+                nomeAluno.setText("Nome: " + dadosAluno.get("nome"));
+                this.emailAluno.setText("Email: " + dadosAluno.get("email"));
+                
+                // Busca disciplina do aluno
+                try (Connection conn = new Connector().getConnection()) {
+                    String sql = "SELECT disciplina_tg FROM aluno WHERE email = ?";
+                    PreparedStatement pst = conn.prepareStatement(sql);
+                    pst.setString(1, emailAluno);
+                    ResultSet rs = pst.executeQuery();
+                    if (rs.next()) {
+                        String disciplina = rs.getString("disciplina_tg");
+                        // Formata a disciplina para exibição (TG1 -> TG 1, TG2 -> TG 2, TG1/TG2 -> TG 1/TG 2)
+                        String disciplinaFormatada = disciplina != null ? disciplina.replace("TG1", "TG 1").replace("TG2", "TG 2") : "N/A";
+                        cursoAluno.setText("Matriculado em: " + disciplinaFormatada);
+                    } else {
+                        cursoAluno.setText("Matriculado em: N/A");
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    cursoAluno.setText("Matriculado em: N/A");
+                }
             }
         }
+    }
+    
+    /**
+     * Cria uma célula centralizada para as colunas da tabela
+     */
+    private TableCell<Map<String, String>, String> criarCellCentralizado() {
+        TableCell<Map<String, String>, String> cell = new TableCell<Map<String, String>, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                }
+                setAlignment(Pos.CENTER);
+            }
+        };
+        return cell;
     }
 
     // Método público para recarregar os dados da tabela

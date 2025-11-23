@@ -347,7 +347,7 @@ public class DashboardAlunoController {
             Label labelIdentificador = new Label(identificador);
             labelIdentificador.setTextFill(Color.web("#7F8C8D"));
             labelIdentificador.setFont(javafx.scene.text.Font.font(11.0));
-            
+
             // Region para empurrar o horário para a direita
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -379,7 +379,7 @@ public class DashboardAlunoController {
             vboxUltimosFeedbacks.getChildren().add(btnFeedback);
         }
     }
-    
+
     private void abrirFeedback(Map<String, Object> feedback, String tipo) {
         if ("api".equals(tipo)) {
             String semestreCurso = (String) feedback.get("semestre_curso");
@@ -526,13 +526,13 @@ public class DashboardAlunoController {
                 
                 aprovada = aprovados == 9;
             }
-        } else {
+                } else {
             String semestreCurso = (String) secao.get("semestre_curso");
             int ano = (Integer) secao.get("ano");
             String semestreAno = (String) secao.get("semestre_ano");
             int versao = (Integer) secao.get("versao");
             String empresa = (String) secao.get("empresa");
-            
+                        
             if (semestreCurso != null && empresa != null) {
                 nome = semestreCurso + " - " + empresa;
             } else if (semestreCurso != null) {
@@ -547,13 +547,13 @@ public class DashboardAlunoController {
                         "FROM secao_api WHERE aluno = ? AND semestre_curso = ? AND ano = ? " +
                         "AND semestre_ano = ? AND versao = ?";
             
-            PreparedStatement pst = conn.prepareStatement(sql);
-            pst.setString(1, emailAluno);
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, emailAluno);
             pst.setString(2, semestreCurso);
             pst.setInt(3, ano);
             pst.setString(4, semestreAno);
             pst.setInt(5, versao);
-            ResultSet rs = pst.executeQuery();
+        ResultSet rs = pst.executeQuery();
             
             if (rs.next()) {
                 if ("Aprovado".equals(rs.getString("status_empresa"))) aprovados++;

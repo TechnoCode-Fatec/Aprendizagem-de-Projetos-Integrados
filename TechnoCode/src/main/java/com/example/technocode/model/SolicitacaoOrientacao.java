@@ -364,5 +364,84 @@ public class SolicitacaoOrientacao {
 
         return false;
     }
+
+    /**
+     * Verifica se existe alguma solicitação pendente do aluno (para qualquer orientador)
+     */
+    public static boolean existeAlgumaSolicitacaoPendente(String emailAluno) {
+        String sql = "SELECT COUNT(*) FROM solicitacao_orientacao " +
+                     "WHERE aluno = ? AND status = 'Pendente'";
+
+        try (Connection conn = new Connector().getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setString(1, emailAluno);
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao verificar solicitação pendente", e);
+        }
+
+        return false;
+    }
+
+    /**
+     * Busca a primeira solicitação pendente do aluno (para qualquer orientador)
+     */
+    public static Map<String, String> buscarSolicitacaoPendente(String emailAluno) {
+        String sql = "SELECT so.id, so.aluno, so.orientador, so.status, o.nome as nome_orientador " +
+                     "FROM solicitacao_orientacao so " +
+                     "INNER JOIN orientador o ON so.orientador = o.email " +
+                     "WHERE so.aluno = ? AND so.status = 'Pendente' " +
+                     "ORDER BY so.data_solicitacao DESC LIMIT 1";
+
+        try (Connection conn = new Connector().getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setString(1, emailAluno);
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                Map<String, String> solicitacao = new HashMap<>();
+                solicitacao.put("id", String.valueOf(rs.getInt("id")));
+                solicitacao.put("nome_orientador", rs.getString("nome_orientador"));
+                solicitacao.put("status", rs.getString("status"));
+                return solicitacao;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao buscar solicitação pendente", e);
+        }
+
+        return null;
+    }
+
+    /**
+     * Deleta uma solicitação de orientação (apenas se estiver pendente)
+     */
+    public static boolean deletarSolicitacaoPendente(int id, String emailAluno) {
+        String sql = "DELETE FROM solicitacao_orientacao " +
+                     "WHERE id = ? AND aluno = ? AND status = 'Pendente'";
+
+        try (Connection conn = new Connector().getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setInt(1, id);
+            pst.setString(2, emailAluno);
+            int rowsAffected = pst.executeUpdate();
+
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao deletar solicitação", e);
+        }
+    }
 }
 

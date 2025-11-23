@@ -149,9 +149,9 @@ public class VisualizarSecoesAlunoController {
 
             // só carrega dados se já tiver o e-mail (pode ser setado após o load)
             if (emailAlunoParaConsulta != null && !emailAlunoParaConsulta.isBlank()) {
-                carregarSecoesDoAluno();
+            carregarSecoesDoAluno();
                 carregarSolicitacoesOrientacao();
-                tabelaSecao.refresh();
+            tabelaSecao.refresh();
             }
         } catch (Exception e) {
             System.err.println("Erro durante a inicialização: " + e.getMessage());

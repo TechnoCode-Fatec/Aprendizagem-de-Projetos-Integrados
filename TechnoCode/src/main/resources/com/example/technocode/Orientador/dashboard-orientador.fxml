@@ -134,7 +134,7 @@
                     </VBox>
 
                     <!-- Card 3: Seções Pendentes -->
-                    <VBox spacing="10" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);" GridPane.columnIndex="2">
+                    <VBox fx:id="cardSecoesPendentes" onMouseClicked="#clicarCardSecoesPendentes" spacing="10" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2); -fx-cursor: hand;" GridPane.columnIndex="2">
                         <children>
                             <HBox alignment="CENTER_LEFT" spacing="10">
                                 <Region prefHeight="24" prefWidth="4" style="-fx-background-color: #F57C00; -fx-background-radius: 4;" />
@@ -157,6 +157,36 @@
                     </VBox>
                 </children>
             </GridPane>
+
+            <!-- Tabela de Seções Pendentes (inicialmente oculta) -->
+            <VBox fx:id="vboxTabelaSecoesPendentes" managed="false" spacing="10" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);" visible="false">
+                <children>
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Region prefHeight="24" prefWidth="4" style="-fx-background-color: #F57C00; -fx-background-radius: 4;" />
+                        <Label text="Seções Pendentes - Detalhes" textFill="#2C3E50">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </Label>
+                    </HBox>
+                    <ScrollPane fx:id="scrollPaneSecoesPendentes" fitToWidth="true" style="-fx-background-color: transparent;" vbarPolicy="AS_NEEDED">
+                        <content>
+                            <TableView fx:id="tabelaSecoesPendentes" maxWidth="1.7976931348623157E308">
+                                <columns>
+                                    <TableColumn fx:id="colNomeAluno" prefWidth="250.0" text="Nome do Aluno" />
+                                    <TableColumn fx:id="colEmailAluno" prefWidth="250.0" text="Email do Aluno" />
+                                    <TableColumn fx:id="colTipoSecao" prefWidth="150.0" text="Tipo de Seção" />
+                                    <TableColumn fx:id="colIdentificador" prefWidth="300.0" text="Identificador" />
+                                    <TableColumn fx:id="colAcao" prefWidth="150.0" text="Ação" />
+                                </columns>
+                                <columnResizePolicy>
+                                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                </columnResizePolicy>
+                            </TableView>
+                        </content>
+                    </ScrollPane>
+                </children>
+            </VBox>
 
             <!-- (C) Bloco Inferior - 2 colunas -->
             <GridPane hgap="15" style="-fx-background-color: transparent;" vgap="15">

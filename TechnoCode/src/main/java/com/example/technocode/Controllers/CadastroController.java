@@ -162,11 +162,11 @@ public class CadastroController {
             
             if (nomeOrientadorSelecionado != null && !nomeOrientadorSelecionado.isEmpty()) {
                 emailOrientador = Orientador.buscarEmailPorNome(nomeOrientadorSelecionado);
-                
-                if (emailOrientador == null) {
-                    mostrarAlertaErro("Orientador inválido", "Não foi possível encontrar o email do orientador selecionado.");
-                    return;
-                }
+
+            if (emailOrientador == null) {
+                mostrarAlertaErro("Orientador inválido", "Não foi possível encontrar o email do orientador selecionado.");
+                return;
+            }
             }
 
             // Busca o email do professor selecionado
@@ -208,11 +208,11 @@ public class CadastroController {
             
             // Cria uma solicitação de orientação apenas se um orientador foi selecionado
             if (emailOrientador != null) {
-                SolicitacaoOrientacao solicitacao = new SolicitacaoOrientacao(
-                        txtEmail.getText(),
-                        emailOrientador
-                );
-                solicitacao.criar();
+            SolicitacaoOrientacao solicitacao = new SolicitacaoOrientacao(
+                    txtEmail.getText(),
+                    emailOrientador
+            );
+            solicitacao.criar();
             }
         } else if (tipo.equals("Orientador")) {
             Orientador orientador = new Orientador(
