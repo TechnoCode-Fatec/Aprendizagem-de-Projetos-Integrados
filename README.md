@@ -19,6 +19,10 @@ Nosso projeto busca propor uma solução em **Java Desktop**, com persistência 
 
 ---
 
+## 📷 Vídeo mostrando o projeto funcionando
+**Assista o vídeo no youtube: [TechnoTG](https://youtu.be/TBKKDVVWXEc)**
+
+---
 #### 📶 Backlog do Produto
 | Rank | Prioridade |User Story | Estimativa | Sprint |
 |:-------------|:---------|:-------------:| :-----------: | :-----------: |
