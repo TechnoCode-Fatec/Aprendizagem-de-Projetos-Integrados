@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import java.net.URI;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -35,8 +36,8 @@ public class OrientadorCorrigirApresentacaoController {
     @FXML private TextArea alunoTextMotivacao;
     @FXML private TextArea alunoTextHistorico;
     @FXML private TextArea alunoTextHistoricoProfissional;
-    @FXML private TextArea alunoTextGithub;
-    @FXML private TextArea alunoTextLinkedin;
+    @FXML private Hyperlink alunoTextGithub;
+    @FXML private Hyperlink alunoTextLinkedin;
     @FXML private TextArea alunoTextConhecimentos;
 
 
@@ -133,8 +134,32 @@ public class OrientadorCorrigirApresentacaoController {
                     if (alunoTextMotivacao != null) alunoTextMotivacao.setText(motivacao != null ? motivacao : "");
                     if (alunoTextHistorico != null) alunoTextHistorico.setText(historico != null ? historico : "");
                     if (alunoTextHistoricoProfissional != null) alunoTextHistoricoProfissional.setText(historicoProfissional != null ? historicoProfissional : "");
-                    if (alunoTextGithub != null) alunoTextGithub.setText(github != null ? github : "");
-                    if (alunoTextLinkedin != null) alunoTextLinkedin.setText(linkedin != null ? linkedin : "");
+                    if (alunoTextGithub != null) {
+                        String githubUrl = github != null ? github : "";
+                        if (githubUrl.isEmpty()) {
+                            alunoTextGithub.setText("N/A");
+                            alunoTextGithub.setDisable(true);
+                            alunoTextGithub.setStyle("-fx-text-fill: #95A5A6; -fx-underline: false;");
+                        } else {
+                            alunoTextGithub.setText(githubUrl);
+                            alunoTextGithub.setDisable(false);
+                            alunoTextGithub.setStyle("-fx-text-fill: #3498DB; -fx-underline: true;");
+                            alunoTextGithub.setOnAction(e -> abrirLink(githubUrl));
+                        }
+                    }
+                    if (alunoTextLinkedin != null) {
+                        String linkedinUrl = linkedin != null ? linkedin : "";
+                        if (linkedinUrl.isEmpty()) {
+                            alunoTextLinkedin.setText("N/A");
+                            alunoTextLinkedin.setDisable(true);
+                            alunoTextLinkedin.setStyle("-fx-text-fill: #95A5A6; -fx-underline: false;");
+                        } else {
+                            alunoTextLinkedin.setText(linkedinUrl);
+                            alunoTextLinkedin.setDisable(false);
+                            alunoTextLinkedin.setStyle("-fx-text-fill: #3498DB; -fx-underline: true;");
+                            alunoTextLinkedin.setOnAction(e -> abrirLink(linkedinUrl));
+                        }
+                    }
                     if (alunoTextConhecimentos != null) alunoTextConhecimentos.setText(conhecimentos != null ? conhecimentos : "");
                 }
             }
@@ -356,7 +381,12 @@ public class OrientadorCorrigirApresentacaoController {
                     if (feedback != null && !feedback.trim().isEmpty()) {
                         feedbackArea.setText(feedback);
                     }
-                    feedbackArea.setPrefHeight(80);
+                    // Para GitHub e LinkedIn, usar altura menor já que estão lado a lado
+                    if ("github".equals(campo) || "linkedin".equals(campo)) {
+                        feedbackArea.setPrefHeight(60);
+                    } else {
+                        feedbackArea.setPrefHeight(80);
+                    }
                     feedbackArea.setWrapText(true);
                 } else if ("Aprovado".equals(status)) {
                     // Se foi aprovado, esconde o campo de feedback
@@ -492,7 +522,12 @@ public class OrientadorCorrigirApresentacaoController {
             areaFeedback.setVisible(true);
             areaFeedback.setManaged(true);
             areaFeedback.setPromptText("Digite seu feedback aqui...");
-            areaFeedback.setPrefHeight(80);
+            // Para GitHub e LinkedIn, usar altura menor já que estão lado a lado
+            if ("github".equals(campo) || "linkedin".equals(campo)) {
+                areaFeedback.setPrefHeight(60);
+            } else {
+                areaFeedback.setPrefHeight(80);
+            }
             areaFeedback.setWrapText(true);
         }
         atualizarCorBotoes(campo, "Revisar");
@@ -500,23 +535,44 @@ public class OrientadorCorrigirApresentacaoController {
     }
     
     private void aplicarBordaVerdeCampo(String campo) {
-        TextArea textArea = obterTextAreaAluno(campo);
-        if (textArea != null) {
-            textArea.setStyle("-fx-background-color: #F8F9FA; -fx-border-color: #27AE60; -fx-border-width: 2px; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;");
+        if ("github".equals(campo) || "linkedin".equals(campo)) {
+            Hyperlink hyperlink = obterHyperlinkAluno(campo);
+            if (hyperlink != null && hyperlink.getParent() != null) {
+                ((javafx.scene.layout.HBox) hyperlink.getParent()).setStyle("-fx-background-color: #F8F9FA; -fx-border-color: #27AE60; -fx-border-width: 2px; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10;");
+            }
+        } else {
+            TextArea textArea = obterTextAreaAluno(campo);
+            if (textArea != null) {
+                textArea.setStyle("-fx-background-color: #F8F9FA; -fx-border-color: #27AE60; -fx-border-width: 2px; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;");
+            }
         }
     }
     
     private void aplicarBordaVermelhaCampo(String campo) {
-        TextArea textArea = obterTextAreaAluno(campo);
-        if (textArea != null) {
-            textArea.setStyle("-fx-background-color: #F8F9FA; -fx-border-color: #E74C3C; -fx-border-width: 2px; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;");
+        if ("github".equals(campo) || "linkedin".equals(campo)) {
+            Hyperlink hyperlink = obterHyperlinkAluno(campo);
+            if (hyperlink != null && hyperlink.getParent() != null) {
+                ((javafx.scene.layout.HBox) hyperlink.getParent()).setStyle("-fx-background-color: #F8F9FA; -fx-border-color: #E74C3C; -fx-border-width: 2px; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10;");
+            }
+        } else {
+            TextArea textArea = obterTextAreaAluno(campo);
+            if (textArea != null) {
+                textArea.setStyle("-fx-background-color: #F8F9FA; -fx-border-color: #E74C3C; -fx-border-width: 2px; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;");
+            }
         }
     }
     
     private void removerBordaCampo(String campo) {
-        TextArea textArea = obterTextAreaAluno(campo);
-        if (textArea != null) {
-            textArea.setStyle("-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;");
+        if ("github".equals(campo) || "linkedin".equals(campo)) {
+            Hyperlink hyperlink = obterHyperlinkAluno(campo);
+            if (hyperlink != null && hyperlink.getParent() != null) {
+                ((javafx.scene.layout.HBox) hyperlink.getParent()).setStyle("-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10;");
+            }
+        } else {
+            TextArea textArea = obterTextAreaAluno(campo);
+            if (textArea != null) {
+                textArea.setStyle("-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;");
+            }
         }
     }
     
@@ -534,14 +590,57 @@ public class OrientadorCorrigirApresentacaoController {
                 return alunoTextHistorico;
             case "historico_profissional":
                 return alunoTextHistoricoProfissional;
-            case "github":
-                return alunoTextGithub;
-            case "linkedin":
-                return alunoTextLinkedin;
             case "conhecimentos":
                 return alunoTextConhecimentos;
             default:
                 return null;
+        }
+    }
+    
+    private Hyperlink obterHyperlinkAluno(String campo) {
+        switch (campo) {
+            case "github":
+                return alunoTextGithub;
+            case "linkedin":
+                return alunoTextLinkedin;
+            default:
+                return null;
+        }
+    }
+    
+    /**
+     * Abre um link no navegador padrão
+     */
+    private void abrirLink(String url) {
+        if (url == null || url.isEmpty() || url.equals("N/A")) {
+            return;
+        }
+        
+        try {
+            // Garante que a URL tenha protocolo
+            String urlCompleta = url;
+            if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                urlCompleta = "https://" + url;
+            }
+            
+            // Tenta usar Desktop via reflection (funciona mesmo sem módulo java.desktop)
+            try {
+                Class<?> desktopClass = Class.forName("java.awt.Desktop");
+                Object desktop = desktopClass.getMethod("getDesktop").invoke(null);
+                Boolean isSupported = (Boolean) desktopClass.getMethod("isDesktopSupported").invoke(desktop);
+                if (isSupported != null && isSupported) {
+                    desktopClass.getMethod("browse", URI.class).invoke(desktop, new URI(urlCompleta));
+                    return;
+                }
+            } catch (Exception e) {
+                // Ignora erros de reflection
+            }
+            // Se Desktop não funcionar, mostra mensagem
+            System.err.println("Não foi possível abrir a URL automaticamente: " + urlCompleta);
+            System.out.println("Por favor, copie e cole a URL no navegador: " + urlCompleta);
+        } catch (Exception e) {
+            System.err.println("Erro ao abrir link: " + e.getMessage());
+            e.printStackTrace();
         }
     }
     

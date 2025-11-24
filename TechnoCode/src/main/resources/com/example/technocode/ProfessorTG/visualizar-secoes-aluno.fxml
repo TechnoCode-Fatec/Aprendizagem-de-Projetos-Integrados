@@ -85,8 +85,6 @@
                             <TableColumn fx:id="colNomeSecao" prefWidth="200" text="Nome da Seção" />
                             <TableColumn fx:id="colDescricao" prefWidth="250" text="Descrição" />
                             <TableColumn fx:id="colItensAprovados" prefWidth="200" text="Itens Aprovados" />
-                            <TableColumn fx:id="colStatusFeedback" prefWidth="200" text="Status" />
-                            <TableColumn fx:id="colVisualizar" prefWidth="150" text="Visualizar" />
                         </columns>
                         <columnResizePolicy>
                             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

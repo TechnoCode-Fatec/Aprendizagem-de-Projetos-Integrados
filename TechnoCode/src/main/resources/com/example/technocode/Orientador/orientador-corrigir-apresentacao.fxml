@@ -32,11 +32,15 @@
             </HBox>
 
             <!-- Layout em 2 Colunas Principais -->
-            <HBox alignment="TOP_CENTER" spacing="20">
+            <GridPane hgap="20" vgap="20">
+                <columnConstraints>
+                    <ColumnConstraints hgrow="ALWAYS" minWidth="400.0" percentWidth="50.0" />
+                    <ColumnConstraints hgrow="ALWAYS" minWidth="400.0" percentWidth="50.0" />
+                </columnConstraints>
                 <children>
                     
                     <!-- Coluna Esquerda -->
-                    <VBox spacing="20" HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308">
+                    <VBox spacing="20" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" maxWidth="1.7976931348623157E308">
                         <children>
                             <!-- Card: Informações Pessoais -->
                             <VBox spacing="15" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);">
@@ -67,7 +71,7 @@
                                                 <Button fx:id="aprovarNome" onAction="#aprovarNome" minWidth="45.0" prefHeight="30.0" prefWidth="45.0" style="-fx-background-color: #27AE60; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✔" />
                                                 <Button fx:id="revisarNome" onAction="#revisarNome" minWidth="45.0" prefHeight="30.0" prefWidth="45.0" style="-fx-background-color: #E74C3C; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✖" />
                                             </HBox>
-                                            <TextArea fx:id="alunoTextNome" editable="false" prefHeight="100.0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
+                                            <TextArea fx:id="alunoTextNome" editable="false" prefHeight="40.0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
                                             <VBox fx:id="containerFeedbackNome" managed="false" spacing="5" visible="false">
                                                 <Label style="-fx-font-weight: bold; -fx-font-size: 11px;" text="Feedback:" textFill="#E74C3C" />
                                                 <TextArea fx:id="feedbackTextNome" prefHeight="80.0" promptText="Digite seu feedback..." style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
@@ -91,7 +95,7 @@
                                                 <Button fx:id="aprovarIdade" onAction="#aprovarIdade" minWidth="45.0" prefHeight="30.0" prefWidth="45.0" style="-fx-background-color: #27AE60; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✔" />
                                                 <Button fx:id="revisarIdade" onAction="#revisarIdade" minWidth="45.0" prefHeight="30.0" prefWidth="45.0" style="-fx-background-color: #E74C3C; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✖" />
                                             </HBox>
-                                            <TextArea fx:id="alunoTextIdade" editable="false" prefHeight="100.0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
+                                            <TextArea fx:id="alunoTextIdade" editable="false" prefHeight="40.0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
                                             <VBox fx:id="containerFeedbackIdade" managed="false" spacing="5" visible="false">
                                                 <Label style="-fx-font-weight: bold; -fx-font-size: 11px;" text="Feedback:" textFill="#E74C3C" />
                                                 <TextArea fx:id="feedbackTextIdade" prefHeight="80.0" promptText="Digite seu feedback..." style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
@@ -115,7 +119,7 @@
                                                 <Button fx:id="aprovarCurso" onAction="#aprovarCurso" minWidth="45.0" prefHeight="30.0" prefWidth="45.0" style="-fx-background-color: #27AE60; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✔" />
                                                 <Button fx:id="revisarCurso" onAction="#revisarCurso" minWidth="45.0" prefHeight="30.0" prefWidth="45.0" style="-fx-background-color: #E74C3C; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✖" />
                                             </HBox>
-                                            <TextArea fx:id="alunoTextCurso" editable="false" prefHeight="100.0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
+                                            <TextArea fx:id="alunoTextCurso" editable="false" prefHeight="40.0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
                                             <VBox fx:id="containerFeedbackCurso" managed="false" spacing="5" visible="false">
                                                 <Label style="-fx-font-weight: bold; -fx-font-size: 11px;" text="Feedback:" textFill="#E74C3C" />
                                                 <TextArea fx:id="feedbackTextCurso" prefHeight="80.0" promptText="Digite seu feedback..." style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
@@ -152,7 +156,7 @@
                     </VBox>
 
                     <!-- Coluna Direita -->
-                    <VBox spacing="20" HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308">
+                    <VBox spacing="20" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" maxWidth="1.7976931348623157E308">
                         <children>
                             <!-- Card: Informações Profissionais -->
                             <VBox spacing="15" style="-fx-background-color: WHITE; -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);">
@@ -215,52 +219,64 @@
                                         </VBox>
 
                                         <!-- GitHub e LinkedIn em linha -->
-                                        <HBox spacing="15">
-                                            <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                                <HBox alignment="CENTER_LEFT" spacing="10">
-                                                    <Label text="GitHub" textFill="#34495E">
-                                                        <font>
-                                                            <Font name="System Bold" size="12.0" />
-                                                        </font>
-                                                    </Label>
-                                                    <Label fx:id="labelVersaoGithub" text="" textFill="#95A5A6" visible="false" managed="false">
-                                                        <font>
-                                                            <Font size="10.0" />
-                                                        </font>
-                                                    </Label>
-                                                    <Region HBox.hgrow="ALWAYS" />
-                                                    <Button fx:id="aprovarGithub" onAction="#aprovarGithub" minWidth="45.0" prefHeight="30.0" prefWidth="45.0" style="-fx-background-color: #27AE60; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✔" />
-                                                    <Button fx:id="revisarGithub" onAction="#revisarGithub" minWidth="45.0" prefHeight="30.0" prefWidth="45.0" style="-fx-background-color: #E74C3C; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✖" />
-                                                </HBox>
-                                                <TextArea fx:id="alunoTextGithub" editable="false" prefHeight="60.0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
-                                                <VBox fx:id="containerFeedbackGithub" managed="false" spacing="5" visible="false">
-                                                    <Label style="-fx-font-weight: bold; -fx-font-size: 11px;" text="Feedback:" textFill="#E74C3C" />
-                                                    <TextArea fx:id="feedbackTextGithub" prefHeight="60.0" promptText="Digite seu feedback..." style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
+                                        <GridPane hgap="15" vgap="0">
+                                            <columnConstraints>
+                                                <ColumnConstraints hgrow="ALWAYS" minWidth="0.0" percentWidth="50.0" />
+                                                <ColumnConstraints hgrow="ALWAYS" minWidth="0.0" percentWidth="50.0" />
+                                            </columnConstraints>
+                                            <children>
+                                                <!-- GitHub -->
+                                                <VBox spacing="8" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" maxWidth="1.7976931348623157E308">
+                                                    <HBox alignment="CENTER_LEFT" spacing="10">
+                                                        <Label text="GitHub" textFill="#34495E">
+                                                            <font>
+                                                                <Font name="System Bold" size="12.0" />
+                                                            </font>
+                                                        </Label>
+                                                        <Label fx:id="labelVersaoGithub" text="" textFill="#95A5A6" visible="false" managed="false">
+                                                            <font>
+                                                                <Font size="10.0" />
+                                                            </font>
+                                                        </Label>
+                                                        <Region HBox.hgrow="ALWAYS" />
+                                                        <Button fx:id="aprovarGithub" onAction="#aprovarGithub" minWidth="45.0" prefHeight="30.0" prefWidth="45.0" style="-fx-background-color: #27AE60; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✔" />
+                                                        <Button fx:id="revisarGithub" onAction="#revisarGithub" minWidth="45.0" prefHeight="30.0" prefWidth="45.0" style="-fx-background-color: #E74C3C; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✖" />
+                                                    </HBox>
+                                                    <HBox alignment="CENTER_LEFT" prefHeight="60.0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10;" VBox.vgrow="NEVER">
+                                                        <Hyperlink fx:id="alunoTextGithub" style="-fx-text-fill: #3498DB; -fx-underline: true;" />
+                                                    </HBox>
+                                                    <VBox fx:id="containerFeedbackGithub" managed="false" spacing="5" visible="false" VBox.vgrow="NEVER" maxWidth="1.7976931348623157E308">
+                                                        <Label style="-fx-font-weight: bold; -fx-font-size: 11px;" text="Feedback:" textFill="#E74C3C" />
+                                                        <TextArea fx:id="feedbackTextGithub" prefHeight="80.0" maxWidth="1.7976931348623157E308" promptText="Digite seu feedback..." style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
+                                                    </VBox>
                                                 </VBox>
-                                            </VBox>
-                                            <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                                <HBox alignment="CENTER_LEFT" spacing="10">
-                                                    <Label text="LinkedIn" textFill="#34495E">
-                                                        <font>
-                                                            <Font name="System Bold" size="12.0" />
-                                                        </font>
-                                                    </Label>
-                                                    <Label fx:id="labelVersaoLinkedin" text="" textFill="#95A5A6" visible="false" managed="false">
-                                                        <font>
-                                                            <Font size="10.0" />
-                                                        </font>
-                                                    </Label>
-                                                    <Region HBox.hgrow="ALWAYS" />
-                                                    <Button fx:id="aprovarLinkedin" onAction="#aprovarLinkedin" minWidth="45.0" prefHeight="30.0" prefWidth="45.0" style="-fx-background-color: #27AE60; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✔" />
-                                                    <Button fx:id="revisarLinkedin" onAction="#revisarLinkedin" minWidth="45.0" prefHeight="30.0" prefWidth="45.0" style="-fx-background-color: #E74C3C; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✖" />
-                                                </HBox>
-                                                <TextArea fx:id="alunoTextLinkedin" editable="false" prefHeight="60.0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
-                                                <VBox fx:id="containerFeedbackLinkedin" managed="false" spacing="5" visible="false">
-                                                    <Label style="-fx-font-weight: bold; -fx-font-size: 11px;" text="Feedback:" textFill="#E74C3C" />
-                                                    <TextArea fx:id="feedbackTextLinkedin" prefHeight="60.0" promptText="Digite seu feedback..." style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
+                                                <!-- LinkedIn -->
+                                                <VBox spacing="8" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" maxWidth="1.7976931348623157E308">
+                                                    <HBox alignment="CENTER_LEFT" spacing="10">
+                                                        <Label text="LinkedIn" textFill="#34495E">
+                                                            <font>
+                                                                <Font name="System Bold" size="12.0" />
+                                                            </font>
+                                                        </Label>
+                                                        <Label fx:id="labelVersaoLinkedin" text="" textFill="#95A5A6" visible="false" managed="false">
+                                                            <font>
+                                                                <Font size="10.0" />
+                                                            </font>
+                                                        </Label>
+                                                        <Region HBox.hgrow="ALWAYS" />
+                                                        <Button fx:id="aprovarLinkedin" onAction="#aprovarLinkedin" minWidth="45.0" prefHeight="30.0" prefWidth="45.0" style="-fx-background-color: #27AE60; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✔" />
+                                                        <Button fx:id="revisarLinkedin" onAction="#revisarLinkedin" minWidth="45.0" prefHeight="30.0" prefWidth="45.0" style="-fx-background-color: #E74C3C; -fx-background-radius: 6; -fx-cursor: hand; -fx-text-fill: white;" text="✖" />
+                                                    </HBox>
+                                                    <HBox alignment="CENTER_LEFT" prefHeight="60.0" style="-fx-background-color: #F8F9FA; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10;" VBox.vgrow="NEVER">
+                                                        <Hyperlink fx:id="alunoTextLinkedin" style="-fx-text-fill: #3498DB; -fx-underline: true;" />
+                                                    </HBox>
+                                                    <VBox fx:id="containerFeedbackLinkedin" managed="false" spacing="5" visible="false" VBox.vgrow="NEVER" maxWidth="1.7976931348623157E308">
+                                                        <Label style="-fx-font-weight: bold; -fx-font-size: 11px;" text="Feedback:" textFill="#E74C3C" />
+                                                        <TextArea fx:id="feedbackTextLinkedin" prefHeight="80.0" maxWidth="1.7976931348623157E308" promptText="Digite seu feedback..." style="-fx-background-color: #FFFFFF; -fx-border-color: #E0E0E0; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10; -fx-wrap-text: true; -fx-text-fill: #2C3E50;" wrapText="true" />
+                                                    </VBox>
                                                 </VBox>
-                                            </VBox>
-                                        </HBox>
+                                            </children>
+                                        </GridPane>
 
                                         <!-- Principais Conhecimentos -->
                                         <VBox spacing="8">
@@ -291,7 +307,7 @@
                         </children>
                     </VBox>
                 </children>
-            </HBox>
+            </GridPane>
 
             <!-- Botão Enviar Feedback -->
             <HBox alignment="CENTER" style="-fx-padding: 10;">

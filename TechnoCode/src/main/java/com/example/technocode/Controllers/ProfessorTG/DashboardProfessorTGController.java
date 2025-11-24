@@ -18,6 +18,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
 import java.util.Map;
 
 /**
@@ -66,10 +67,13 @@ public class DashboardProfessorTGController {
     private ComboBox<String> comboBoxFiltroDisciplina;
     @FXML
     private Label labelFiltroDisciplina;
+    @FXML
+    private CheckBox checkBoxFiltrarParaAgendar;
 
     private String emailProfessorLogado;
     private String disciplinaProfessor;
     private boolean filtrarSemOrientador = false;
+    private boolean filtrarApenasParaAgendar = false;
 
     @FXML
     public void initialize() {
@@ -165,10 +169,29 @@ public class DashboardProfessorTGController {
                     setGraphic(null);
                 } else {
                     AlunoProgresso aluno = getTableView().getItems().get(getIndex());
-                    btnAgendar.setDisable(!aluno.isPodeAgendar());
-                    btnAgendar.setOnAction(e -> agendarDefesa(aluno));
-                    // Aplica estilo CSS específico do dashboard do professor
-                    btnAgendar.getStyleClass().add("button");
+                    
+                    if (aluno.isJaAgendado()) {
+                        // Se já está agendado, mostra "Agendado" em verde e clicável
+                        btnAgendar.setText("Agendado");
+                        btnAgendar.setDisable(false);
+                        btnAgendar.setStyle("-fx-background-color: #27AE60; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;");
+                        btnAgendar.setOnAction(e -> mostrarDetalhesAgendamento(aluno));
+                    } else {
+                        // Se não está agendado, mostra "Agendar"
+                        btnAgendar.setText("Agendar");
+                        if (aluno.isPodeAgendar()) {
+                            // Pode agendar: vermelho e ativo
+                            btnAgendar.setDisable(false);
+                            btnAgendar.setStyle("-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;");
+                            btnAgendar.setOnAction(e -> agendarDefesa(aluno));
+                        } else {
+                            // Não pode agendar: cinza e desabilitado
+                            btnAgendar.setDisable(true);
+                            btnAgendar.setStyle("-fx-background-color: #95A5A6; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: default;");
+                            btnAgendar.setOnAction(null);
+                        }
+                    }
+                    
                     setGraphic(btnAgendar);
                     setAlignment(Pos.CENTER);
                 }
@@ -218,10 +241,16 @@ public class DashboardProfessorTGController {
                 
                 // Configura filtro de disciplina se o professor for TG1/TG2
                 if (disciplinaProfessor.equals("TG1/TG2") && comboBoxFiltroDisciplina != null && labelFiltroDisciplina != null) {
+                    // Limpa os itens antes de adicionar para evitar duplicação
+                    comboBoxFiltroDisciplina.getItems().clear();
                     comboBoxFiltroDisciplina.getItems().addAll("Todas", "TG1", "TG2", "TG1/TG2");
-                    comboBoxFiltroDisciplina.setValue("Todas");
+                    if (comboBoxFiltroDisciplina.getValue() == null) {
+                        comboBoxFiltroDisciplina.setValue("Todas");
+                    }
                     comboBoxFiltroDisciplina.setVisible(true);
                     labelFiltroDisciplina.setVisible(true);
+                    // Remove listeners anteriores para evitar múltiplos listeners
+                    comboBoxFiltroDisciplina.setOnAction(null);
                     comboBoxFiltroDisciplina.setOnAction(e -> {
                         carregarTabelaAlunos();
                         carregarQtdAlunosOrientados();
@@ -483,8 +512,9 @@ public class DashboardProfessorTGController {
                         "  versoes_recentes.versao_recente = fa.versao " +
                         "WHERE fa.status_nome = 'Aprovado' AND fa.status_idade = 'Aprovado' " +
                         "AND fa.status_curso = 'Aprovado' AND fa.status_motivacao = 'Aprovado' " +
-                        "AND fa.status_historico = 'Aprovado' AND fa.status_github = 'Aprovado' " +
-                        "AND fa.status_linkedin = 'Aprovado' AND fa.status_conhecimentos = 'Aprovado') + " +
+                        "AND fa.status_historico = 'Aprovado' AND fa.status_historico_profissional = 'Aprovado' " +
+                        "AND fa.status_github = 'Aprovado' AND fa.status_linkedin = 'Aprovado' " +
+                        "AND fa.status_conhecimentos = 'Aprovado') + " +
                         "(SELECT COUNT(*) FROM ( " +
                         "  SELECT sa.aluno, sa.semestre_curso, sa.ano, sa.semestre_ano, MAX(sa.versao) as versao_recente " +
                         "  FROM secao_api sa WHERE sa.aluno = a.email " +
@@ -496,9 +526,11 @@ public class DashboardProfessorTGController {
                         "  versoes_recentes.ano = fapi.ano AND " +
                         "  versoes_recentes.semestre_ano = fapi.semestre_ano AND " +
                         "  versoes_recentes.versao_recente = fapi.versao " +
-                        "WHERE fapi.status_problema = 'Aprovado' AND fapi.status_solucao = 'Aprovado' " +
-                        "AND fapi.status_tecnologias = 'Aprovado' AND fapi.status_contribuicoes = 'Aprovado' " +
-                        "AND fapi.status_hard_skills = 'Aprovado' AND fapi.status_soft_skills = 'Aprovado') as aprovadas " +
+                        "WHERE fapi.status_empresa = 'Aprovado' AND fapi.status_descricao_empresa = 'Aprovado' " +
+                        "AND fapi.status_problema = 'Aprovado' AND fapi.status_solucao = 'Aprovado' " +
+                        "AND fapi.status_repositorio = 'Aprovado' AND fapi.status_tecnologias = 'Aprovado' " +
+                        "AND fapi.status_contribuicoes = 'Aprovado' AND fapi.status_hard_skills = 'Aprovado' " +
+                        "AND fapi.status_soft_skills = 'Aprovado') as aprovadas " +
                         "FROM aluno a " +
                         "LEFT JOIN orientador o ON a.orientador = o.email " +
                         "WHERE a.professor_tg = ? ";
@@ -547,7 +579,15 @@ public class DashboardProfessorTGController {
                 // Verifica se pode agendar (todas as seções enviadas estão aprovadas)
                 boolean podeAgendar = verificarPodeAgendar(email, conn);
                 
-                alunos.add(new AlunoProgresso(nome, email, orientador, progresso, podeAgendar));
+                // Verifica se já tem agendamento
+                boolean jaAgendado = verificarJaAgendado(email, conn);
+                
+                // Se o filtro "Apenas para agendar" estiver ativo, só adiciona se pode agendar e não está agendado
+                if (filtrarApenasParaAgendar && (!podeAgendar || jaAgendado)) {
+                    continue;
+                }
+                
+                alunos.add(new AlunoProgresso(nome, email, orientador, progresso, podeAgendar, jaAgendado));
             }
 
             tabelaAlunos.setItems(alunos);
@@ -579,6 +619,25 @@ public class DashboardProfessorTGController {
     }
 
     /**
+     * Verifica se o aluno já tem agendamento de defesa
+     */
+    private boolean verificarJaAgendado(String emailAluno, Connection conn) throws SQLException {
+        String sql = "SELECT COUNT(*) as total " +
+                "FROM agendamento_defesa_tg " +
+                "WHERE email_aluno = ? AND email_professor = ?";
+        
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setString(1, emailAluno);
+        pst.setString(2, emailProfessorLogado);
+        ResultSet rs = pst.executeQuery();
+        
+        if (rs.next()) {
+            return rs.getInt("total") > 0;
+        }
+        return false;
+    }
+    
+    /**
      * Verifica se o aluno pode agendar defesa
      * Retorna true apenas se todas as seções enviadas estiverem aprovadas
      */
@@ -603,8 +662,9 @@ public class DashboardProfessorTGController {
                 String sqlUltimaVersao = "SELECT COUNT(*) as total, " +
                         "COUNT(CASE WHEN status_nome = 'Aprovado' AND status_idade = 'Aprovado' " +
                         "AND status_curso = 'Aprovado' AND status_motivacao = 'Aprovado' " +
-                        "AND status_historico = 'Aprovado' AND status_github = 'Aprovado' " +
-                        "AND status_linkedin = 'Aprovado' AND status_conhecimentos = 'Aprovado' " +
+                        "AND status_historico = 'Aprovado' AND status_historico_profissional = 'Aprovado' " +
+                        "AND status_github = 'Aprovado' AND status_linkedin = 'Aprovado' " +
+                        "AND status_conhecimentos = 'Aprovado' " +
                         "THEN 1 END) as aprovadas " +
                         "FROM secao_apresentacao " +
                         "WHERE aluno = ? AND versao = (SELECT MAX(versao) FROM secao_apresentacao WHERE aluno = ?)";
@@ -644,9 +704,11 @@ public class DashboardProfessorTGController {
             if (temApi) {
                 // Verifica se todas as versões recentes estão totalmente aprovadas
                 String sqlApiAprovadas = "SELECT COUNT(*) as total_secoes, " +
-                        "COUNT(CASE WHEN sa.status_problema = 'Aprovado' AND sa.status_solucao = 'Aprovado' " +
-                        "AND sa.status_tecnologias = 'Aprovado' AND sa.status_contribuicoes = 'Aprovado' " +
-                        "AND sa.status_hard_skills = 'Aprovado' AND sa.status_soft_skills = 'Aprovado' " +
+                        "COUNT(CASE WHEN sa.status_empresa = 'Aprovado' AND sa.status_descricao_empresa = 'Aprovado' " +
+                        "AND sa.status_problema = 'Aprovado' AND sa.status_solucao = 'Aprovado' " +
+                        "AND sa.status_repositorio = 'Aprovado' AND sa.status_tecnologias = 'Aprovado' " +
+                        "AND sa.status_contribuicoes = 'Aprovado' AND sa.status_hard_skills = 'Aprovado' " +
+                        "AND sa.status_soft_skills = 'Aprovado' " +
                         "THEN 1 END) as aprovadas " +
                         "FROM ( " +
                         "SELECT aluno, semestre_curso, ano, semestre_ano, MAX(versao) as versao_recente " +
@@ -703,6 +765,52 @@ public class DashboardProfessorTGController {
     }
 
     /**
+     * Mostra os detalhes do agendamento do aluno em um Alert
+     */
+    private void mostrarDetalhesAgendamento(AlunoProgresso aluno) {
+        try (Connection conn = new Connector().getConnection()) {
+            String sql = "SELECT data_defesa, horario, sala " +
+                        "FROM agendamento_defesa_tg " +
+                        "WHERE email_aluno = ? AND email_professor = ? " +
+                        "ORDER BY data_defesa, horario LIMIT 1";
+            
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, aluno.getEmail());
+            pst.setString(2, emailProfessorLogado);
+            ResultSet rs = pst.executeQuery();
+            
+            if (rs.next()) {
+                java.sql.Date dataDefesa = rs.getDate("data_defesa");
+                String horario = rs.getString("horario");
+                String sala = rs.getString("sala");
+                
+                // Formata a data
+                SimpleDateFormat sdfData = new SimpleDateFormat("dd/MM/yyyy");
+                String dataFormatada = sdfData.format(dataDefesa);
+                
+                // Formata o horário (remove segundos se houver)
+                if (horario != null && horario.length() > 5) {
+                    horario = horario.substring(0, 5);
+                }
+                
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Agendamento de Defesa");
+                alert.setHeaderText("Detalhes do Agendamento");
+                alert.setContentText("Aluno: " + aluno.getNome() + "\n\n" +
+                                    "Data: " + dataFormatada + "\n" +
+                                    "Horário: " + (horario != null ? horario : "-") + "\n" +
+                                    "Sala: " + (sala != null ? sala : "-"));
+                alert.showAndWait();
+            } else {
+                mostrarErro("Erro", "Não foi possível encontrar os detalhes do agendamento.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            mostrarErro("Erro", "Erro ao buscar detalhes do agendamento: " + e.getMessage());
+        }
+    }
+    
+    /**
      * Navega para a tela de visualização de seções do aluno
      */
     private void visualizarSecoesAluno(AlunoProgresso aluno) {
@@ -729,6 +837,10 @@ public class DashboardProfessorTGController {
      */
     @FXML
     private void filtrarAlunos() {
+        // Atualiza o estado do filtro "Apenas para agendar"
+        if (checkBoxFiltrarParaAgendar != null) {
+            filtrarApenasParaAgendar = checkBoxFiltrarParaAgendar.isSelected();
+        }
         carregarTabelaAlunos();
     }
 
@@ -760,13 +872,15 @@ public class DashboardProfessorTGController {
         private final String orientador;
         private final String progresso;
         private final boolean podeAgendar;
+        private final boolean jaAgendado;
 
-        public AlunoProgresso(String nome, String email, String orientador, String progresso, boolean podeAgendar) {
+        public AlunoProgresso(String nome, String email, String orientador, String progresso, boolean podeAgendar, boolean jaAgendado) {
             this.nome = nome;
             this.email = email;
             this.orientador = orientador;
             this.progresso = progresso;
             this.podeAgendar = podeAgendar;
+            this.jaAgendado = jaAgendado;
         }
 
         public String getNome() { return nome; }
@@ -774,6 +888,10 @@ public class DashboardProfessorTGController {
         public String getOrientador() { return orientador; }
         public String getProgresso() { return progresso; }
         public boolean isPodeAgendar() { return podeAgendar; }
-        public String getAcao() { return podeAgendar ? "Agendar" : "Aguardar"; }
+        public boolean isJaAgendado() { return jaAgendado; }
+        public String getAcao() { 
+            if (jaAgendado) return "Agendado";
+            return podeAgendar ? "Agendar" : "Aguardar"; 
+        }
     }
 }

@@ -176,3 +176,25 @@
 .table-row-cell:hover {
     -fx-background-color: #F0F0F0;
 }
+
+/* Estilos para CheckBox no dashboard do professor */
+#dashboard-professor-tg .check-box {
+    -fx-text-fill: #7F8C8D;
+    -fx-font-size: 12px;
+}
+
+#dashboard-professor-tg .check-box .box {
+    -fx-background-color: white;
+    -fx-border-color: #cccccc;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+}
+
+#dashboard-professor-tg .check-box:selected .box {
+    -fx-background-color: #3498DB;
+    -fx-border-color: #3498DB;
+}
+
+#dashboard-professor-tg .check-box:selected .mark {
+    -fx-background-color: white;
+}

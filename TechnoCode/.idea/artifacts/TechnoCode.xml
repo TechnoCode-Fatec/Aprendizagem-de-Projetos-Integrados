@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" build-on-make="true" name="TechnoCode">
+    <output-path>$PROJECT_DIR$/out/artifacts/TechnoCode</output-path>
+    <root id="root">
+      <element id="archive" name="TechnoCode.jar">
+        <element id="module-output" name="TechnoCode" />
+      </element>
+    </root>
+  </artifact>
+</component>

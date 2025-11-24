@@ -39,10 +39,6 @@ public class VisualizarSecoesAlunoController {
     private TableColumn<Map<String, String>, String> colDescricao;
     @FXML 
     private TableColumn<Map<String, String>, String> colItensAprovados;
-    @FXML 
-    private TableColumn<Map<String, String>, String> colStatusFeedback;
-    @FXML 
-    private TableColumn<Map<String, String>, Void> colVisualizar;
 
     // Tabela de solicitações de orientação
     @FXML 
@@ -68,8 +64,37 @@ public class VisualizarSecoesAlunoController {
     @FXML
     public void initialize() {
         try {
+            // Centraliza coluna Nome da Seção
             colNomeSecao.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("id")));
+            colNomeSecao.setCellFactory(column -> new TableCell<Map<String, String>, String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        setText(item);
+                        setAlignment(Pos.CENTER);
+                    }
+                }
+            });
+            
+            // Centraliza coluna Descrição
             colDescricao.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("empresa")));
+            colDescricao.setCellFactory(column -> new TableCell<Map<String, String>, String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        setText(item);
+                        setAlignment(Pos.CENTER);
+                    }
+                }
+            });
+            
+            // Centraliza coluna Itens Aprovados
             colItensAprovados.setCellValueFactory(data -> {
                 Map<String, String> secao = data.getValue();
                 String tipo = secao.getOrDefault("tipo", "api");
@@ -114,35 +139,20 @@ public class VisualizarSecoesAlunoController {
                 
                 return new SimpleStringProperty("-");
             });
-            colStatusFeedback.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get("status_feedback")));
-
-            // Aplica estilo customizado na coluna de status
-            colStatusFeedback.setCellFactory(col -> new TableCell<Map<String, String>, String>() {
+            colItensAprovados.setCellFactory(column -> new TableCell<Map<String, String>, String>() {
                 @Override
-                protected void updateItem(String status, boolean empty) {
-                    super.updateItem(status, empty);
-                    
-                    if (empty || status == null) {
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
                         setText(null);
-                        setStyle("");
                     } else {
-                        setText(status);
-                        
-                        // Aplica cor baseada no status
-                        if ("Respondida".equals(status)) {
-                            setStyle("-fx-text-fill: #2E7D32; -fx-font-weight: bold;"); // Verde escuro
-                        } else if ("Á responder".equals(status)) {
-                            setStyle("-fx-text-fill: #C62828; -fx-font-weight: bold;"); // Vermelho escuro
-                        } else {
-                            setStyle(""); // Padrão
-                        }
+                        setText(item);
+                        setAlignment(Pos.CENTER);
                     }
                 }
             });
 
             tabelaSecao.setStyle("-fx-control-inner-background: #ffffff; -fx-text-background-color: black;");
-
-            addButtonToTable();
             
             // Configura tabela de solicitações de orientação
             configurarTabelaSolicitacoes();
@@ -392,80 +402,6 @@ public class VisualizarSecoesAlunoController {
         return "Á responder";
     }
 
-    private void addButtonToTable() {
-        colVisualizar.setCellFactory(col -> new TableCell<>() {
-            private final Button btn = new Button("Visualizar");
-            {
-                btn.setStyle("-fx-background-color: #3498DB; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 5;");
-                btn.setOnAction(event -> {
-                    Map<String, String> item = getTableView().getItems().get(getIndex());
-                    try {
-                        String tipo = item.getOrDefault("tipo", "api");
-                        
-                        ProfessorTGPrincipalController principalController = ProfessorTGPrincipalController.getInstance();
-                        if (principalController == null) {
-                            mostrarErro("Erro", "Não foi possível acessar o controlador principal.");
-                            return;
-                        }
-                        
-                        if ("apresentacao".equals(tipo)) {
-                            // Abre tela de visualização de apresentação (somente leitura)
-                            String versao = item.getOrDefault("versao", null);
-                            if (versao != null) {
-                                final int versaoFinal = Integer.parseInt(versao);
-                                principalController.navegarParaTela(
-                                    "/com/example/technocode/Aluno/aluno-visualizar-apresentacao.fxml",
-                                    controller -> {
-                                        if (controller instanceof com.example.technocode.Controllers.Aluno.AlunoVisualizarApresentacaoController) {
-                                            com.example.technocode.Controllers.Aluno.AlunoVisualizarApresentacaoController visualizarController = 
-                                                (com.example.technocode.Controllers.Aluno.AlunoVisualizarApresentacaoController) controller;
-                                            visualizarController.setIdentificadorSecao(emailAlunoParaConsulta, versaoFinal);
-                                            visualizarController.esconderBotaoFeedback();
-                                        }
-                                    });
-                            } else {
-                                mostrarErro("Erro", "Versão da seção não encontrada.");
-                            }
-                        } else {
-                            // Abre tela de visualização de API (somente leitura)
-                            String semestreCurso = item.getOrDefault("semestre_curso", null);
-                            String ano = item.getOrDefault("ano", null);
-                            String semestreAno = item.getOrDefault("semestre_ano", null);
-                            String versao = item.getOrDefault("versao", null);
-                            
-                            if (semestreCurso != null && ano != null && semestreAno != null && versao != null) {
-                                String anoExtraido = ano.split("-")[0];
-                                final int anoFinal = Integer.parseInt(anoExtraido);
-                                final int versaoFinal = Integer.parseInt(versao);
-                                
-                                principalController.navegarParaTela(
-                                    "/com/example/technocode/Aluno/aluno-visualizar-api.fxml",
-                                    controller -> {
-                                        if (controller instanceof com.example.technocode.Controllers.Aluno.AlunoVisualizarApiController) {
-                                            com.example.technocode.Controllers.Aluno.AlunoVisualizarApiController visualizarController = 
-                                                (com.example.technocode.Controllers.Aluno.AlunoVisualizarApiController) controller;
-                                            visualizarController.setIdentificadorSecao(
-                                                emailAlunoParaConsulta, semestreCurso, anoFinal, semestreAno, versaoFinal);
-                                            visualizarController.esconderBotaoFeedback();
-                                        }
-                                    });
-                            } else {
-                                mostrarErro("Erro", "Dados da seção incompletos.");
-                            }
-                        }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        mostrarErro("Erro", "Não foi possível abrir a visualização da seção: " + ex.getMessage());
-                    }
-                });
-            }
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                setGraphic(empty ? null : btn);
-            }
-        });
-    }
 
     @FXML
     private void voltarTelaDashboard(ActionEvent event) throws IOException {
@@ -486,9 +422,18 @@ public class VisualizarSecoesAlunoController {
             Map<String, String> dadosAluno = Aluno.buscarDadosPorEmail(emailAluno);
             
             if (!dadosAluno.isEmpty()) {
-                nomeAluno.setText(dadosAluno.get("nome"));
-                this.emailAluno.setText(dadosAluno.get("email"));
-                cursoAluno.setText(dadosAluno.get("curso"));
+                nomeAluno.setText("Nome: " + (dadosAluno.get("nome") != null ? dadosAluno.get("nome") : "N/A"));
+                this.emailAluno.setText("Email: " + (dadosAluno.get("email") != null ? dadosAluno.get("email") : "N/A"));
+                
+                // Adiciona a disciplina do aluno
+                String disciplinaTG = dadosAluno.get("disciplina_tg");
+                String disciplinaFormatada = "N/A";
+                if (disciplinaTG != null && !disciplinaTG.isBlank()) {
+                    disciplinaFormatada = disciplinaTG.equals("TG1") ? "TG 1" : 
+                                         disciplinaTG.equals("TG2") ? "TG 2" : disciplinaTG;
+                }
+                String textoCurso = "Matriculado em: " + disciplinaFormatada;
+                cursoAluno.setText(textoCurso);
             }
         }
     }

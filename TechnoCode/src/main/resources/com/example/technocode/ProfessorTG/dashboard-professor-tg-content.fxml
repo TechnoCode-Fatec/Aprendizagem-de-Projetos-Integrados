@@ -167,6 +167,7 @@
                             </Label>
                             <TextField fx:id="txtBuscaAluno" onKeyReleased="#filtrarAlunos" prefWidth="200.0" promptText="Digite o nome do aluno..." style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #cccccc;" />
                             <Region HBox.hgrow="ALWAYS" />
+                            <CheckBox fx:id="checkBoxFiltrarParaAgendar" onAction="#filtrarAlunos" text="Apenas para agendar" />
                             <Label fx:id="labelFiltroDisciplina" text="Filtrar por disciplina:" textFill="#7F8C8D" visible="false">
                                 <font>
                                     <Font size="12.0" />

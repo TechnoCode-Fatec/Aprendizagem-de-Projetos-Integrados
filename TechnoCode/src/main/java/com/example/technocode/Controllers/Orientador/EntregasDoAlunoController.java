@@ -4,7 +4,6 @@ import com.example.technocode.Services.NavigationService;
 import com.example.technocode.model.Aluno;
 import com.example.technocode.model.SecaoApi;
 import com.example.technocode.model.SecaoApresentacao;
-import com.example.technocode.model.dao.Connector;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Pos;
 
@@ -15,10 +14,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class EntregasDoAlunoController {
 
@@ -301,24 +296,17 @@ public class EntregasDoAlunoController {
                 nomeAluno.setText("Nome: " + dadosAluno.get("nome"));
                 this.emailAluno.setText("Email: " + dadosAluno.get("email"));
                 
-                // Busca disciplina do aluno
-                try (Connection conn = new Connector().getConnection()) {
-                    String sql = "SELECT disciplina_tg FROM aluno WHERE email = ?";
-                    PreparedStatement pst = conn.prepareStatement(sql);
-                    pst.setString(1, emailAluno);
-                    ResultSet rs = pst.executeQuery();
-                    if (rs.next()) {
-                        String disciplina = rs.getString("disciplina_tg");
-                        // Formata a disciplina para exibição (TG1 -> TG 1, TG2 -> TG 2, TG1/TG2 -> TG 1/TG 2)
-                        String disciplinaFormatada = disciplina != null ? disciplina.replace("TG1", "TG 1").replace("TG2", "TG 2") : "N/A";
-                        cursoAluno.setText("Matriculado em: " + disciplinaFormatada);
-                    } else {
-                        cursoAluno.setText("Matriculado em: N/A");
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    cursoAluno.setText("Matriculado em: N/A");
+                // Adiciona a disciplina do aluno (usando o mesmo padrão do VisualizarSecoesAlunoController)
+                String disciplinaTG = dadosAluno.get("disciplina_tg");
+                String disciplinaFormatada = "";
+                if (disciplinaTG != null) {
+                    disciplinaFormatada = disciplinaTG.equals("TG1") ? "TG 1" : 
+                                         disciplinaTG.equals("TG2") ? "TG 2" : disciplinaTG;
+                } else {
+                    disciplinaFormatada = "N/A";
                 }
+                String textoCurso = "Matriculado em: " + disciplinaFormatada;
+                cursoAluno.setText(textoCurso);
             }
         }
     }

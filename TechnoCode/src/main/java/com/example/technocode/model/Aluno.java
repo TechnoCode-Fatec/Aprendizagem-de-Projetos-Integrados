@@ -167,7 +167,7 @@ public class Aluno {
      * Formata a disciplina para exibição
      * TG1 -> TG 1, TG2 -> TG 2, TG1/TG2 -> TG 1/TG 2
      */
-    private static String formatarDisciplina(String disciplina) {
+    public static String formatarDisciplina(String disciplina) {
         if (disciplina == null || disciplina.equals("N/A")) {
             return disciplina;
         }
@@ -181,7 +181,7 @@ public class Aluno {
     public static Map<String, String> buscarDadosPorEmail(String emailAluno) {
         Map<String, String> dadosAluno = new HashMap<>();
         try (Connection conn = new Connector().getConnection()) {
-            String selectAluno = "SELECT nome, email FROM aluno WHERE email = ?";
+            String selectAluno = "SELECT nome, email, disciplina_tg FROM aluno WHERE email = ?";
             PreparedStatement pst = conn.prepareStatement(selectAluno);
             pst.setString(1, emailAluno);
             ResultSet rs = pst.executeQuery();
@@ -189,6 +189,7 @@ public class Aluno {
             if (rs.next()) {
                 dadosAluno.put("nome", rs.getString("nome"));
                 dadosAluno.put("email", rs.getString("email"));
+                dadosAluno.put("disciplina_tg", rs.getString("disciplina_tg"));
             }
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao buscar dados do aluno", e);
