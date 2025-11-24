@@ -588,7 +588,7 @@ public class SessoesAtuaisAlunoController {
             try {
                 LocalDate dataNascimento = LocalDate.parse(apresentacao.get("idade"));
                 int idade = Period.between(dataNascimento, LocalDate.now()).getYears();
-                idadeStr = String.valueOf(idade);
+                idadeStr = String.valueOf(idade) + " anos";
             } catch (Exception e) {
                 idadeStr = apresentacao.get("idade");
             }
