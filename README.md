@@ -19,6 +19,11 @@ Nosso projeto busca propor uma solução em **Java Desktop**, com persistência 
 
 ---
 
+## 📷 Vídeo mostrando o projeto funcionando
+[![Assista ao vídeo no YouTube](https://img.youtube.com/vi/TBKKDVVWXEc/maxresdefault.jpg)](https://youtu.be/TBKKDVVWXEc)
+
+
+---
 #### 📶 Backlog do Produto
 | Rank | Prioridade |User Story | Estimativa | Sprint |
 |:-------------|:---------|:-------------:| :-----------: | :-----------: |
