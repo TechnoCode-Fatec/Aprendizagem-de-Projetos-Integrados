@@ -22,6 +22,6 @@
 
 ---
 
+## 📈 Burndown da Sprint
 
-
-
+<img width="1572" height="582" alt="image" src="https://github.com/user-attachments/assets/cbd357d0-19c4-4c0b-92ea-759fa5b8bb77" />
